@@ -1,3 +1,4 @@
+let saveTimeout;
 // Default Data based on Angus MacGyver PDF
 const defaultData = {
     vorname: 'Angus',
@@ -74,7 +75,7 @@ const blankData = {
 // Application State
 let appData = {};
 
-let saveTimeout;
+
 let lastRollTimestamp = 0;
 
 // Initialization
@@ -107,7 +108,7 @@ function saveData() {
     // Data is kept in memory until the user clicks "Speichern (JSON)".
 }
 
-let saveTimeout;
+
 function showSaveIndicator() {
     const ind = document.getElementById('save-indicator');
     if (!ind) return;
@@ -678,5 +679,7 @@ function applyTheme(theme) {
         document.body.classList.add(`theme-${theme}`);
     }
 }
+
+
 
 
