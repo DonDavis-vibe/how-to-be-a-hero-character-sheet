@@ -6,11 +6,12 @@
 
 ## Features
 - **Auto-Kalkulation:** Berechnet Basiswerte (Handeln, Wissen, Soziales) automatisch anhand der verteilten Punkte.
-- **Punkte-Tracker:** Behalte deine maximalen (z.B. 400) und verteilten Punkte im Auge.
-- **Würfel-Tool:** Integrierter 1W6 und 1W100 Würfel mit Animationen und visuellem Feedback (Kritischer Erfolg / Patzer).
-- **Inventar:** Dynamisches, anpassbares Inventar.
-- **Lokales Speichern:** Speichere deinen Charakter als `.json` Datei und lade ihn jederzeit wieder.
-- **Responsive Design:** Perfekt nutzbar am PC, Tablet oder Smartphone dank modernem Glassmorphism-Look.
+- **Geistesblitzpunkte (GBP):** Rechnet automatisch das offizielle Maximum (Basiswert / 10, kaufmännisch gerundet) aus, mit "Aktuell / Max"-Ansicht zum Auffüllen und Verbrauchen.
+- **Punkte-Tracker:** Behalte deine maximalen (z.B. 400) und verteilten Punkte stets im Blick (mit Warnung bei Überschreitung).
+- **Custom Würfel-Tool:** Integrierter W6, W100 sowie frei wählbare Würfel (Custom Dice) mit dynamischem Log und visuellem Feedback (Kritischer Erfolg / Patzer).
+- **Themes & UI:** 5 epische Farb-Themen (Zeitreise, Steampunk, Apokalypse, Cyberpunk, Synthwave, Deep Space, Biohazard, Royal Magic) wählbar! Inklusive Glassmorphism-Look und dynamischem Mouse-Spotlight-Effekt.
+- **Notizen & Inventar:** Dynamisches, anpassbares Inventar sowie einklappbarer Notizen-Bereich mit holographischen 3D-Icons.
+- **Lokales Speichern:** Speichere deinen Charakter als `.json` Datei und lade ihn jederzeit wieder – ohne Datenbank!
 
 ## Nutzung
 1. Öffne die `index.html` im Browser.
