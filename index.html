@@ -83,9 +83,13 @@
                         <h2 class="cat-title"><img src="icon_handeln.jpg" class="category-icon"> Handeln</h2>
                         <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly>
                     </div>
-                    <div class="gbp-row">
-                        <span>Geistesblitzpunkte</span>
-                        <input type="number" id="gbp-handeln" value="2" data-field="gbp_handeln">
+                    <div class="attr-gbp">
+                        <label>Geistesblitzpunkte</label>
+                        <div class="gbp-counter">
+                            <input type="number" id="gbp-current-handeln" value="0" data-field="gbp_handeln" class="gbp-input" min="0">
+                            <span class="gbp-separator">/</span>
+                            <span id="gbp-max-handeln" class="gbp-max">0</span>
+                        </div>
                     </div>
                     <div class="skills-list" id="skills-handeln">
                         <!-- Populated by JS -->
@@ -99,9 +103,13 @@
                         <h2 class="cat-title"><img src="icon_wissen.jpg" class="category-icon"> Wissen</h2>
                         <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly>
                     </div>
-                    <div class="gbp-row">
-                        <span>Geistesblitzpunkte</span>
-                        <input type="number" id="gbp-wissen" value="2" data-field="gbp_wissen">
+                    <div class="attr-gbp">
+                        <label>Geistesblitzpunkte</label>
+                        <div class="gbp-counter">
+                            <input type="number" id="gbp-current-wissen" value="0" data-field="gbp_wissen" class="gbp-input" min="0">
+                            <span class="gbp-separator">/</span>
+                            <span id="gbp-max-wissen" class="gbp-max">0</span>
+                        </div>
                     </div>
                     <div class="skills-list" id="skills-wissen">
                         <!-- Populated by JS -->
@@ -115,9 +123,13 @@
                         <h2 class="cat-title"><img src="icon_soziales.jpg" class="category-icon"> Soziales</h2>
                         <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly>
                     </div>
-                    <div class="gbp-row">
-                        <span>Geistesblitzpunkte</span>
-                        <input type="number" id="gbp-soziales" value="1" data-field="gbp_soziales">
+                    <div class="attr-gbp">
+                        <label>Geistesblitzpunkte</label>
+                        <div class="gbp-counter">
+                            <input type="number" id="gbp-current-soziales" value="0" data-field="gbp_soziales" class="gbp-input" min="0">
+                            <span class="gbp-separator">/</span>
+                            <span id="gbp-max-soziales" class="gbp-max">0</span>
+                        </div>
                     </div>
                     <div class="skills-list" id="skills-soziales">
                         <!-- Populated by JS -->
