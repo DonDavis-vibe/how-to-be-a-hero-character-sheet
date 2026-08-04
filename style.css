@@ -372,7 +372,7 @@ h2 {
     border-color: var(--accent) !important;
 }
 
-.gbp-row {
+.attr-gbp {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -383,7 +383,43 @@ h2 {
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.gbp-row input { width: 65px; text-align: center; padding-right: 15px !important; }
+.gbp-counter {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--glass-border);
+}
+
+.gbp-input {
+    width: 2.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: right;
+    outline: none;
+    padding: 0;
+}
+.gbp-input::-webkit-inner-spin-button {
+    opacity: 1; /* Always show spin buttons */
+}
+
+.gbp-separator {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin: 0 0.4rem;
+}
+
+.gbp-max {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    width: 2.5rem;
+    text-align: left;
+}
 
 .skills-list {
     display: flex;

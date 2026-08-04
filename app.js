@@ -322,6 +322,28 @@ function calculatePoints() {
         if (attrInput) {
             attrInput.value = baseAttr;
         }
+
+        // --- Geistesblitzpunkte Logic ---
+        // Max GBP = Base Attribute / 10 (abgerundet)
+        const maxGbp = Math.floor(baseAttr / 10);
+        
+        appData[`gbp_${attr}`] = parseInt(appData[`gbp_${attr}`]);
+        if (isNaN(appData[`gbp_${attr}`])) {
+            appData[`gbp_${attr}`] = maxGbp; // default to max
+        } else if (appData[`gbp_${attr}`] > maxGbp) {
+            appData[`gbp_${attr}`] = maxGbp; // cap if base attribute drops
+        } else if (appData[`gbp_${attr}`] < 0) {
+            appData[`gbp_${attr}`] = 0;
+        }
+        
+        const maxGbpEl = document.getElementById(`gbp-max-${attr}`);
+        if (maxGbpEl) maxGbpEl.textContent = maxGbp;
+        
+        const currGbpInput = document.getElementById(`gbp-current-${attr}`);
+        if (currGbpInput) {
+            currGbpInput.value = appData[`gbp_${attr}`];
+            currGbpInput.max = maxGbp;
+        }
     });
     
     const max = appData.maxPoints || 400;
