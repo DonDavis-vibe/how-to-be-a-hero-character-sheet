@@ -63,7 +63,7 @@ body.theme-cyberpunk {
 
 body {
     background-color: var(--bg-color);
-    background-image: url('bg_time_travel.jpg');
+    background-image: url('bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
