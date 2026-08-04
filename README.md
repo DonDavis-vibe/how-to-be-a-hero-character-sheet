@@ -44,6 +44,8 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
 
 ## 🛠️ Für Entwickler
 
+👉 **Willst du die JSON-Dateien auslesen oder für deine eigene App generieren?** Schau dir die [JSON Datenstruktur & Export Regeln (DATA_FORMAT.md)](DATA_FORMAT.md) an!
+
 Da dieses Tool komplett clientseitig (nur HTML, CSS und pures JavaScript) gebaut ist, kannst du es dir extrem einfach lokal anpassen:
 ```bash
 # Repo klonen
