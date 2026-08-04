@@ -21,6 +21,40 @@
     --font-mono: 'JetBrains Mono', monospace;
 }
 
+/* Themes */
+body.theme-steampunk {
+    --glass-bg: rgba(40, 25, 10, 0.7);
+    --glass-border: rgba(212, 175, 55, 0.3);
+    --text-primary: #fcf1d7;
+    --text-secondary: #dcbfa3;
+    --color-action: #d4af37; /* Gold */
+    --color-knowledge: #b87333; /* Copper */
+    --color-social: #704214; /* Sepia */
+    --color-accent: #aa8529;
+}
+
+body.theme-apocalyptic {
+    --glass-bg: rgba(40, 10, 10, 0.7);
+    --glass-border: rgba(255, 60, 60, 0.3);
+    --text-primary: #ffeaea;
+    --text-secondary: #ffbaba;
+    --color-action: #ff3333; /* Blood Red */
+    --color-knowledge: #ff9933; /* Hazard Orange */
+    --color-social: #cccc00; /* Toxic Yellow */
+    --color-accent: #d93838;
+}
+
+body.theme-cyberpunk {
+    --glass-bg: rgba(5, 30, 15, 0.85);
+    --glass-border: rgba(0, 255, 128, 0.4);
+    --text-primary: #e0ffe0;
+    --text-secondary: #99e6b3;
+    --color-action: #ff00ff; /* Neon Pink */
+    --color-knowledge: #00ffff; /* Neon Cyan */
+    --color-social: #00ff80; /* Neon Green */
+    --color-accent: #00cc66;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
