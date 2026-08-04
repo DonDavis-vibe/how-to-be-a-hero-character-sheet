@@ -229,7 +229,7 @@ function renderSkills(attr) {
         const valInput = document.createElement('input');
         valInput.type = 'number';
         valInput.title = "Investierte Punkte";
-        valInput.value = skill.invested || 0;
+        valInput.value = skill.invested !== undefined ? skill.invested : (skill.value !== undefined ? skill.value : 0);
         valInput.oninput = (e) => {
             skill.invested = parseInt(e.target.value) || 0;
             saveData();
@@ -280,7 +280,13 @@ function calculatePoints() {
         let catSum = 0;
         if (appData[`skills_${attr}`]) {
             appData[`skills_${attr}`].forEach(skill => {
-                catSum += parseInt(skill.invested) || 0;
+                const pts = skill.invested !== undefined ? skill.invested : (skill.value !== undefined ? skill.value : 0);
+                catSum += parseInt(pts) || 0;
+                
+                // auto-migrate legacy data
+                if (skill.invested === undefined && skill.value !== undefined) {
+                    skill.invested = parseInt(skill.value) || 0;
+                }
             });
         }
         totalInvested += catSum;
