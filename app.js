@@ -74,6 +74,9 @@ const blankData = {
 // Application State
 let appData = {};
 
+let saveTimeout;
+let lastRollTimestamp = 0;
+
 // Initialization
 function init() {
     // Start with a blank character by default, since we are not using localStorage anymore
@@ -83,6 +86,8 @@ function init() {
     setupEventListeners();
     setupMouseSpotlight();
     calculatePoints();
+    
+    setInterval(updateLiveTimers, 1000);
 }
 
 function setupMouseSpotlight() {
@@ -442,8 +447,11 @@ function rollDice(sides) {
     displayNum.classList.add('shake');
     setTimeout(() => displayNum.classList.remove('shake'), 400);
 
+    lastRollTimestamp = Date.now();
+    updateLiveTimers();
+
     // Add to log
-    addToLog(`1W${sides}`, result);
+    addToLog(`1W${sides}`, result, lastRollTimestamp);
 
     // Confetti on 1 (Critical Success in HTBAH)
     if (result === 1) {
@@ -491,24 +499,63 @@ function rollCustomDice() {
     displayNum.classList.add('shake');
     setTimeout(() => displayNum.classList.remove('shake'), 400);
 
-    addToLog(`${count}W${sides}`, sum);
+    lastRollTimestamp = Date.now();
+    updateLiveTimers();
+
+    addToLog(`${count}W${sides}`, sum, lastRollTimestamp);
 
     if (sum === count) { // All 1s is a critical success in some variations, or just standard check
         fireConfetti();
     }
 }
 
-function addToLog(dice, result) {
+function updateLiveTimers() {
+    if (!lastRollTimestamp) return;
+    const now = Date.now();
+    const diffSec = Math.floor((now - lastRollTimestamp) / 1000);
+    
+    let timeStr = 'Gerade eben';
+    if (diffSec > 0 && diffSec < 60) {
+        timeStr = `vor ${diffSec} Sekunden`;
+    } else if (diffSec >= 60) {
+        const min = Math.floor(diffSec / 60);
+        timeStr = `vor ${min} Minute${min > 1 ? 'n' : ''}`;
+    }
+    
+    const timeEl = document.getElementById('main-dice-time');
+    if (timeEl) {
+        timeEl.textContent = timeStr;
+    }
+
+    // Also update log entries
+    document.querySelectorAll('.log-entry').forEach(li => {
+        const ts = parseInt(li.getAttribute('data-ts'));
+        if (ts) {
+            const lDiff = Math.floor((now - ts) / 1000);
+            let lStr = 'Gerade eben';
+            if (lDiff > 0 && lDiff < 60) {
+                lStr = `vor ${lDiff} Sek`;
+            } else if (lDiff >= 60) {
+                const lMin = Math.floor(lDiff / 60);
+                lStr = `vor ${lMin} Min`;
+            }
+            const timeSpan = li.querySelector('.log-time');
+            if (timeSpan) {
+                timeSpan.textContent = lStr;
+            }
+        }
+    });
+}
+
+function addToLog(dice, result, timestamp) {
     const logList = document.getElementById('dice-log');
     const li = document.createElement('li');
     li.className = 'log-entry';
+    li.setAttribute('data-ts', timestamp);
     
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
-
     li.innerHTML = `
         <div>
-            <span class="log-time">${timeStr}</span>
+            <span class="log-time">Gerade eben</span>
             <span class="log-type">${dice}</span>
         </div>
         <span class="log-val">${result}</span>
@@ -631,4 +678,5 @@ function applyTheme(theme) {
         document.body.classList.add(`theme-${theme}`);
     }
 }
+
 
