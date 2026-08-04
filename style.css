@@ -62,14 +62,46 @@ body.theme-cyberpunk {
 }
 
 body {
-    background: #0f172a url('bg.jpg') no-repeat center center fixed;
+    background-color: var(--bg-color);
+    background-image: url('bg_time_travel.jpg');
     background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: var(--text-primary);
     font-family: var(--font-main);
-    min-height: 100vh;
     padding: 2rem;
+    min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+}
+
+/* Mouse Spotlight Effect Base */
+.glass-panel, .tool-btn, .add-skill-btn, .add-item-row button, .points-counter {
+    position: relative;
+}
+.glass-panel::before, .tool-btn::before, .add-skill-btn::before, .add-item-row button::before, .points-counter::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+        800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        rgba(255, 255, 255, 0.06),
+        transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    z-index: 0;
+}
+.glass-panel:hover::before, .tool-btn:hover::before, .add-skill-btn:hover::before, .add-item-row button:hover::before, .points-counter:hover::before {
+    opacity: 1;
+}
+
+/* Ensure children sit above the spotlight */
+.glass-panel > *, .tool-btn > *, .add-skill-btn > *, .add-item-row button > *, .points-counter > * {
+    position: relative;
+    z-index: 1;
 }
 
 /* Subtle animated background blobs */

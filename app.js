@@ -81,7 +81,20 @@ function init() {
 
     renderAll();
     setupEventListeners();
+    setupMouseSpotlight();
     calculatePoints();
+}
+
+function setupMouseSpotlight() {
+    document.addEventListener('mousemove', (e) => {
+        document.querySelectorAll('.glass-panel, .tool-btn, .add-skill-btn, .add-item-row button, .points-counter').forEach(el => {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            el.style.setProperty('--mouse-x', `${x}px`);
+            el.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
 }
 
 function saveData() {
