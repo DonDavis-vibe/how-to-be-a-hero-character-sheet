@@ -577,6 +577,10 @@ function importData(event) {
             appData = Object.assign(appData, imported);
             saveData();
             renderAll();
+            calculatePoints();
+            
+            // Clear the file input so the same file can be loaded again if needed
+            document.getElementById('import-upload').value = '';
         } catch (err) {
             alert("Fehler beim Importieren der Datei!");
         }
