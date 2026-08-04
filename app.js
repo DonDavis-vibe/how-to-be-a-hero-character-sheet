@@ -66,6 +66,7 @@ const blankData = {
     skills_soziales: [],
 
     inventory: [],
+    notes: '',
     maxPoints: 400
 };
 
@@ -156,8 +157,7 @@ function setupEventListeners() {
     document.querySelectorAll('[data-field]').forEach(el => {
         el.addEventListener('input', (e) => {
             const field = e.target.getAttribute('data-field');
-            // Base attributes are read-only now, but just in case
-            appData[field] = parseInt(e.target.value) || e.target.value;
+            appData[field] = e.target.value;
             saveData();
             calculatePoints();
         });
@@ -553,3 +553,16 @@ function resetData() {
 
 // Boot up
 document.addEventListener('DOMContentLoaded', init);
+
+// --- Notes Management ---
+function toggleNotes() {
+    const content = document.getElementById('notes-content');
+    const chevron = document.getElementById('notes-chevron');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}

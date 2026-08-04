@@ -129,6 +129,17 @@
                 </div>
             </div>
 
+            <!-- Notes Section -->
+            <div class="notes-section glass-panel" style="margin-top: 1rem;">
+                <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="cat-title" style="margin: 0;"><img src="icon_notizen.jpg" class="category-icon"> Notizen</h2>
+                    <i class="fa-solid fa-chevron-down" id="notes-chevron" style="transition: transform 0.3s;"></i>
+                </div>
+                <div class="notes-content" id="notes-content" style="display: none; margin-top: 1rem;">
+                    <textarea id="game-notes" placeholder="Deine Aufzeichnungen..." data-field="notes" style="width: 100%; min-height: 150px; background: rgba(0,0,0,0.3); border: 1px solid rgba(150, 100, 255, 0.3); color: var(--text-light); padding: 0.75rem; border-radius: 4px; resize: vertical; font-family: inherit; font-size: 0.95rem;"></textarea>
+                </div>
+            </div>
+
         </div>
 
         <!-- Right Side: Tools (HP & Dice) -->
