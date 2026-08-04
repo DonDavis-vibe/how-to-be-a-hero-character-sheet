@@ -25,6 +25,12 @@
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
                 <input type="file" id="import-upload" accept=".json" style="display:none" onchange="importData(event)">
             </label>
+            <select id="theme-selector" class="tool-btn" onchange="changeTheme()" style="cursor: pointer; background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--panel-border);">
+                <option value="default">Vibe: Zeitreise</option>
+                <option value="steampunk">Vibe: Steampunk</option>
+                <option value="apocalyptic">Vibe: Apokalypse</option>
+                <option value="cyberpunk">Vibe: Cyberpunk</option>
+            </select>
         </div>
 
         <!-- Left Side: Character Sheet -->

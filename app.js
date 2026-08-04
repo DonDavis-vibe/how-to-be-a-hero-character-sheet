@@ -67,6 +67,7 @@ const blankData = {
 
     inventory: [],
     notes: '',
+    theme: 'default',
     maxPoints: 400
 };
 
@@ -133,6 +134,15 @@ function renderAll() {
 
     // Inventory
     renderInventory();
+
+    // Theme
+    if (appData.theme) {
+        document.getElementById('theme-selector').value = appData.theme;
+        applyTheme(appData.theme);
+    } else {
+        document.getElementById('theme-selector').value = 'default';
+        applyTheme('default');
+    }
 }
 
 function updateHpBarVisual() {
@@ -564,5 +574,21 @@ function toggleNotes() {
     } else {
         content.style.display = 'none';
         chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+// --- Theme Management ---
+function changeTheme() {
+    const selector = document.getElementById('theme-selector');
+    const theme = selector.value;
+    appData.theme = theme;
+    saveData();
+    applyTheme(theme);
+}
+
+function applyTheme(theme) {
+    document.body.className = '';
+    if (theme && theme !== 'default') {
+        document.body.classList.add(`theme-${theme}`);
     }
 }
