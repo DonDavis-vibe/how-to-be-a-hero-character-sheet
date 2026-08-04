@@ -572,3 +572,47 @@ h2 {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     pointer-events: none; z-index: 9999;
 }
+
+body.theme-synthwave {
+    --glass-bg: rgba(30, 5, 40, 0.75);
+    --glass-border: rgba(255, 0, 255, 0.4);
+    --text-primary: #fff0ff;
+    --text-secondary: #f0b3f0;
+    --color-action: #ff007f; /* Hot Pink */
+    --color-knowledge: #00e5ff; /* Cyan */
+    --color-social: #ffaa00; /* Sunset Orange */
+    --color-accent: #b300ff; /* Purple */
+}
+
+body.theme-deepspace {
+    --glass-bg: rgba(2, 5, 15, 0.85);
+    --glass-border: rgba(100, 150, 255, 0.2);
+    --text-primary: #f0f8ff;
+    --text-secondary: #8da4c7;
+    --color-action: #4da6ff; /* Star Blue */
+    --color-knowledge: #e6e6fa; /* Starlight White */
+    --color-social: #9933ff; /* Nebula Purple */
+    --color-accent: #3366cc;
+}
+
+body.theme-biohazard {
+    --glass-bg: rgba(15, 20, 5, 0.8);
+    --glass-border: rgba(150, 255, 0, 0.3);
+    --text-primary: #f2ffe6;
+    --text-secondary: #b3cc99;
+    --color-action: #99ff00; /* Toxic Green */
+    --color-knowledge: #ffcc00; /* Biohazard Yellow */
+    --color-social: #ff6600; /* Warning Orange */
+    --color-accent: #669900; /* Olive */
+}
+
+body.theme-magic {
+    --glass-bg: rgba(25, 0, 35, 0.7);
+    --glass-border: rgba(255, 215, 0, 0.4);
+    --text-primary: #fffaf0;
+    --text-secondary: #d8b4e2;
+    --color-action: #ffd700; /* Gold */
+    --color-knowledge: #ff00ff; /* Arcane Magenta */
+    --color-social: #00ffff; /* Ice Blue */
+    --color-accent: #8a2be2; /* Blue Violet */
+}
