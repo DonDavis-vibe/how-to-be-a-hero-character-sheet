@@ -1,7 +1,7 @@
 // Default Data based on Angus MacGyver PDF
 const defaultData = {
     vorname: 'Angus',
-    name: 'MacGyver',
+    name: 'assets/Macgyver',
     geschlecht: 'M',
     beruf: 'Problemlöser',
     alter: '42',
@@ -127,7 +127,7 @@ function renderAll() {
     if (appData.portrait) {
         document.getElementById('portrait-img').src = appData.portrait;
     } else {
-        document.getElementById('portrait-img').src = 'Macgyver-4141351554.jpg'; // default
+        document.getElementById('portrait-img').src = 'assets/Macgyver-4141351554.jpg'; // default
     }
 
     // Max Points
@@ -592,7 +592,7 @@ function resetData() {
     if (confirm("Möchtest du wirklich einen komplett neuen Charakter erstellen? Alle aktuellen Daten werden gelöscht!")) {
         appData = JSON.parse(JSON.stringify(blankData));
         delete appData.portrait;
-        document.getElementById('portrait-img').src = 'Macgyver-4141351554.jpg'; // default placeholder
+        document.getElementById('portrait-img').src = 'assets/Macgyver-4141351554.jpg'; // default placeholder
         
         saveData();
         renderAll();
@@ -631,3 +631,4 @@ function applyTheme(theme) {
         document.body.classList.add(`theme-${theme}`);
     }
 }
+
