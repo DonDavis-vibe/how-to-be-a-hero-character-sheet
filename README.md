@@ -56,3 +56,4 @@ git clone https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet.git
 
 - **Code:** Der Quellcode dieses Tools ist unter der [MIT License](LICENSE) veröffentlicht.
 - **Regelwerk:** Das Pen & Paper Regelsystem "How to be a Hero" stammt von den *Rocket Beans* und der großartigen Community und steht unter der **CC BY-NC-SA 4.0** Lizenz. Erfahre mehr auf dem offiziellen Wiki: [howtobeahero.de](https://howtobeahero.de/)
+
