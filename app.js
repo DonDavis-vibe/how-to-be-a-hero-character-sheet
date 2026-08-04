@@ -324,8 +324,8 @@ function calculatePoints() {
         }
 
         // --- Geistesblitzpunkte Logic ---
-        // Max GBP = Base Attribute / 10 (abgerundet)
-        const maxGbp = Math.floor(baseAttr / 10);
+        // Max GBP = Base Attribute / 10 (kaufmännisch gerundet nach offiziellen Regeln)
+        const maxGbp = Math.round(baseAttr / 10);
         
         appData[`gbp_${attr}`] = parseInt(appData[`gbp_${attr}`]);
         if (isNaN(appData[`gbp_${attr}`])) {
