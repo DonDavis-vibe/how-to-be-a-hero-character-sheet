@@ -42,7 +42,7 @@
             
             <header class="character-header">
                 <label class="portrait-container" for="portrait-upload">
-                    <img src="Macgyver-4141351554.jpg" alt="Character Portrait" class="character-portrait" id="portrait-img">
+                    <img src="assets/Macgyver-4141351554.jpg" alt="Character Portrait" class="character-portrait" id="portrait-img">
                     <div class="portrait-overlay"><i class="fa-solid fa-camera"></i></div>
                 </label>
                 <input type="file" id="portrait-upload" accept="image/*" style="display: none;" onchange="handlePortraitUpload(event)">
@@ -80,7 +80,7 @@
                 <!-- Handeln -->
                 <div class="attribute-card" style="--accent: var(--color-action);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img src="icon_handeln.jpg" class="category-icon"> Handeln</h2>
+                        <h2 class="cat-title"><img src="assets/icon_handeln.jpg" class="category-icon"> Handeln</h2>
                         <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly>
                     </div>
                     <div class="attr-gbp">
@@ -100,7 +100,7 @@
                 <!-- Wissen -->
                 <div class="attribute-card" style="--accent: var(--color-knowledge);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img src="icon_wissen.jpg" class="category-icon"> Wissen</h2>
+                        <h2 class="cat-title"><img src="assets/icon_wissen.jpg" class="category-icon"> Wissen</h2>
                         <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly>
                     </div>
                     <div class="attr-gbp">
@@ -120,7 +120,7 @@
                 <!-- Soziales -->
                 <div class="attribute-card" style="--accent: var(--color-social);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img src="icon_soziales.jpg" class="category-icon"> Soziales</h2>
+                        <h2 class="cat-title"><img src="assets/icon_soziales.jpg" class="category-icon"> Soziales</h2>
                         <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly>
                     </div>
                     <div class="attr-gbp">
@@ -141,7 +141,7 @@
 
             <!-- Inventory Section -->
             <div class="inventory-section">
-                <h2 class="cat-title"><img src="icon_inventar.jpg" class="category-icon"> Inventar</h2>
+                <h2 class="cat-title"><img src="assets/icon_inventar.jpg" class="category-icon"> Inventar</h2>
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
@@ -154,7 +154,7 @@
             <!-- Notes Section -->
             <div class="notes-section glass-panel" style="margin-top: 1rem;">
                 <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                    <h2 class="cat-title" style="margin: 0;"><img src="icon_notizen.jpg" class="category-icon"> Notizen</h2>
+                    <h2 class="cat-title" style="margin: 0;"><img src="assets/icon_notizen.jpg" class="category-icon"> Notizen</h2>
                     <i class="fa-solid fa-chevron-down" id="notes-chevron" style="transition: transform 0.3s;"></i>
                 </div>
                 <div class="notes-content" id="notes-content" style="display: none; margin-top: 1rem;">
@@ -169,7 +169,7 @@
             
             <!-- Lebenspunkte (HP) -->
             <div class="hp-tracker glass-panel">
-                <h2 class="cat-title"><img src="icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
+                <h2 class="cat-title"><img src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
                 <div class="hp-display">
                     <input type="number" id="hp-current" value="100" onchange="updateHp()">
                     <span class="hp-divider">/</span>
@@ -232,4 +232,5 @@
 <div class="footer-disclaimer">Dies ist ein inoffizielles Fan-Projekt und steht in keiner Verbindung zu Rocket Beans Entertainment GmbH.<br>Das Pen & Paper Regelsystem "How to be a Hero" unterliegt der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank">howtobeahero.de</a>.</div>
 </body>
 </html>
+
 

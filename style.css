@@ -63,7 +63,7 @@ body.theme-cyberpunk {
 
 body {
     background-color: var(--bg-color);
-    background-image: url('bg.jpg');
+    background-image: url('assets/bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -652,3 +652,4 @@ body.theme-magic {
     --color-social: #00ffff; /* Ice Blue */
     --color-accent: #8a2be2; /* Blue Violet */
 }
+
