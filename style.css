@@ -28,8 +28,8 @@
 }
 
 body {
-    background: var(--bg-gradient);
-    background-attachment: fixed;
+    background: #0f172a url('bg.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: var(--text-primary);
     font-family: var(--font-main);
     min-height: 100vh;
