@@ -393,15 +393,15 @@ h2 {
 }
 
 .gbp-input {
-    width: 2.5rem;
+    width: 65px;
     background: transparent;
     border: none;
     color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 700;
-    text-align: right;
+    text-align: center;
+    padding-right: 15px; /* Prevent number hiding under spin button */
     outline: none;
-    padding: 0;
 }
 .gbp-input::-webkit-inner-spin-button {
     opacity: 1; /* Always show spin buttons */
