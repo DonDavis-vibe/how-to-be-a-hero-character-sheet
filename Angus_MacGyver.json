@@ -1,0 +1,38 @@
+{
+  "vorname": "Angus",
+  "name": "MacGyver",
+  "geschlecht": "M",
+  "beruf": "Problemlöser",
+  "alter": "42",
+  "statur": "SpOor",
+  "hpCurrent": 100,
+  "hpMax": 100,
+  "attr_handeln": 17,
+  "gbp_handeln": 2,
+  "skills_handeln": [
+    { "id": "h1", "name": "DIY Basteln", "invested": 70 },
+    { "id": "h2", "name": "Fahr- und Fluggeräte steuern", "invested": 43 },
+    { "id": "h3", "name": "leises Vorgehen", "invested": 33 },
+    { "id": "h4", "name": "Akrobatik", "invested": 24 }
+  ],
+  "attr_wissen": 16,
+  "gbp_wissen": 2,
+  "skills_wissen": [
+    { "id": "w1", "name": "angewandte Physik", "invested": 74 },
+    { "id": "w2", "name": "Elektrotechnisches Grundwissen", "invested": 56 },
+    { "id": "w3", "name": "erste Hilfe", "invested": 25 }
+  ],
+  "attr_soziales": 8,
+  "gbp_soziales": 1,
+  "skills_soziales": [
+    { "id": "s1", "name": "Überreden", "invested": 40 },
+    { "id": "s2", "name": "Menschenkenntnis", "invested": 35 }
+  ],
+  "inventory": [
+    { "id": "i1", "name": "Kaugummi" },
+    { "id": "i2", "name": "Gaffa Tape" },
+    { "id": "i3", "name": "Schweizer Taschenmesser" }
+  ],
+  "maxPoints": 400,
+  "portrait": "Macgyver-4141351554.jpg"
+}

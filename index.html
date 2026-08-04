@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTBAH - Character Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Top Toolbar -->
+        <div class="toolbar">
+            <div class="points-counter" id="points-counter">
+                Verteilte Punkte: <span id="points-total" class="pts-val">0</span> / <input type="number" id="points-max" class="pts-max-input" value="400" onchange="updateMaxPoints()">
+            </div>
+            <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
+            <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
+            <button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Speichern (JSON)</button>
+            <label class="tool-btn">
+                <i class="fa-solid fa-upload"></i> Laden (JSON)
+                <input type="file" id="import-upload" accept=".json" style="display:none" onchange="importData(event)">
+            </label>
+        </div>
+
+        <!-- Left Side: Character Sheet -->
+        <div class="character-sheet glass-panel">
+            
+            <header class="character-header">
+                <label class="portrait-container" for="portrait-upload">
+                    <img src="Macgyver-4141351554.jpg" alt="Character Portrait" class="character-portrait" id="portrait-img">
+                    <div class="portrait-overlay"><i class="fa-solid fa-camera"></i></div>
+                </label>
+                <input type="file" id="portrait-upload" accept="image/*" style="display: none;" onchange="handlePortraitUpload(event)">
+                <div class="basic-info grid-2-col">
+                    <div class="input-group">
+                        <label>Vorname</label>
+                        <input type="text" id="vorname" value="Angus" data-field="vorname">
+                    </div>
+                    <div class="input-group">
+                        <label>Name</label>
+                        <input type="text" id="name" value="MacGyver" data-field="name">
+                    </div>
+                    <div class="input-group">
+                        <label>Geschlecht</label>
+                        <input type="text" id="geschlecht" value="M" data-field="geschlecht">
+                    </div>
+                    <div class="input-group">
+                        <label>Beruf</label>
+                        <input type="text" id="beruf" value="Problemlöser" data-field="beruf">
+                    </div>
+                    <div class="input-group">
+                        <label>Alter</label>
+                        <input type="text" id="alter" value="42" data-field="alter">
+                    </div>
+                    <div class="input-group">
+                        <label>Statur</label>
+                        <input type="text" id="statur" value="SpOor" data-field="statur">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Attributes Section -->
+            <div class="attributes-grid">
+                
+                <!-- Handeln -->
+                <div class="attribute-card" style="--accent: var(--color-action);">
+                    <div class="attr-header">
+                        <h2>Handeln</h2>
+                        <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly>
+                    </div>
+                    <div class="gbp-row">
+                        <span>Geistesblitzpunkte</span>
+                        <input type="number" id="gbp-handeln" value="2" data-field="gbp_handeln">
+                    </div>
+                    <div class="skills-list" id="skills-handeln">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button class="add-skill-btn" onclick="addSkill('handeln')"><i class="fa-solid fa-plus"></i> Skill</button>
+                </div>
+
+                <!-- Wissen -->
+                <div class="attribute-card" style="--accent: var(--color-knowledge);">
+                    <div class="attr-header">
+                        <h2>Wissen</h2>
+                        <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly>
+                    </div>
+                    <div class="gbp-row">
+                        <span>Geistesblitzpunkte</span>
+                        <input type="number" id="gbp-wissen" value="2" data-field="gbp_wissen">
+                    </div>
+                    <div class="skills-list" id="skills-wissen">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button class="add-skill-btn" onclick="addSkill('wissen')"><i class="fa-solid fa-plus"></i> Skill</button>
+                </div>
+
+                <!-- Soziales -->
+                <div class="attribute-card" style="--accent: var(--color-social);">
+                    <div class="attr-header">
+                        <h2>Soziales</h2>
+                        <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly>
+                    </div>
+                    <div class="gbp-row">
+                        <span>Geistesblitzpunkte</span>
+                        <input type="number" id="gbp-soziales" value="1" data-field="gbp_soziales">
+                    </div>
+                    <div class="skills-list" id="skills-soziales">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button class="add-skill-btn" onclick="addSkill('soziales')"><i class="fa-solid fa-plus"></i> Skill</button>
+                </div>
+
+            </div>
+
+            <!-- Inventory Section -->
+            <div class="inventory-section">
+                <h2><i class="fa-solid fa-backpack"></i> Inventar</h2>
+                <div class="inventory-list" id="inventory-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="add-item-row">
+                    <input type="text" id="new-item-input" placeholder="Neues Item hinzufügen..." onkeypress="handleNewItemKey(event)">
+                    <button onclick="addInventoryItem()"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Side: Tools (HP & Dice) -->
+        <div class="tools-panel">
+            
+            <!-- Lebenspunkte (HP) -->
+            <div class="hp-tracker glass-panel">
+                <h2><i class="fa-solid fa-heart-pulse"></i> Lebenspunkte</h2>
+                <div class="hp-display">
+                    <input type="number" id="hp-current" value="100" onchange="updateHp()">
+                    <span class="hp-divider">/</span>
+                    <input type="number" id="hp-max" value="100" onchange="updateHpMax()">
+                </div>
+                
+                <!-- Health Bar Visual -->
+                <div class="hp-bar-container">
+                    <div class="hp-bar-fill" id="hp-bar"></div>
+                </div>
+
+                <div class="hp-controls">
+                    <button class="btn-dmg" onclick="adjustHp(-5)">-5</button>
+                    <button class="btn-dmg" onclick="adjustHp(-1)">-1</button>
+                    <button class="btn-heal" onclick="adjustHp(1)">+1</button>
+                    <button class="btn-heal" onclick="adjustHp(5)">+5</button>
+                </div>
+            </div>
+
+            <!-- Dice Roller -->
+            <div class="dice-roller glass-panel">
+                <h2><i class="fa-solid fa-dice-d20"></i> Würfel Tool</h2>
+                
+                <div class="dice-buttons">
+                    <button class="dice-btn w6" onclick="rollDice(6)">
+                        <i class="fa-solid fa-dice-six"></i> 1W6
+                    </button>
+                    <button class="dice-btn w100" onclick="rollDice(100)">
+                        <i class="fa-solid fa-dice-d20"></i> 1W100
+                    </button>
+                </div>
+
+                <div class="dice-result-display" id="dice-result">
+                    <span class="result-number">--</span>
+                    <span class="result-label">Warte auf Wurf...</span>
+                </div>
+                
+                <div class="dice-log-container">
+                    <h3>Letzte Würfe</h3>
+                    <ul id="dice-log">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Celebration Effect Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
