@@ -1,6 +1,8 @@
 # How to be a Hero - Charakterbogen Tool
 
-Ein interaktiver, digitaler Charakterbogen für das "How to be a Hero" (HTBAH) Pen & Paper Regelwerk. 
+## Live Demo
+**Das Tool kann hier direkt im Browser genutzt werden:** 
+[https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/)
 
 ## Features
 - **Auto-Kalkulation:** Berechnet Basiswerte (Handeln, Wissen, Soziales) automatisch anhand der verteilten Punkte.

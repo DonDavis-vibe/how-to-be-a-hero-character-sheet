@@ -401,6 +401,52 @@ function rollDice(sides) {
     // Darker effect on 100? Or just normal.
 }
 
+function rollCustomDice() {
+    const input = document.getElementById('custom-dice-input').value.trim().toLowerCase();
+    const match = input.match(/^(\d*)[wd](\d+)$/);
+    if (!match) {
+        alert("Bitte Format wie '2w10', '1w20' oder 'd6' verwenden.");
+        return;
+    }
+    
+    const count = parseInt(match[1]) || 1;
+    const sides = parseInt(match[2]);
+    
+    if (count > 50 || sides > 1000 || sides < 2) {
+        alert("Bitte realistische Zahlen verwenden.");
+        return;
+    }
+
+    const btn = document.querySelector('.dice-btn.w-custom');
+    if (btn) {
+        btn.classList.add('shake');
+        setTimeout(() => btn.classList.remove('shake'), 400);
+    }
+    
+    let sum = 0;
+    let results = [];
+    for (let i = 0; i < count; i++) {
+        const r = Math.floor(Math.random() * sides) + 1;
+        results.push(r);
+        sum += r;
+    }
+    
+    const displayNum = document.querySelector('.result-number');
+    const displayLabel = document.querySelector('.result-label');
+    
+    displayNum.textContent = sum;
+    displayLabel.textContent = `Gewürfelt: ${count}W${sides} ${count > 1 ? '(' + results.join(', ') + ')' : ''}`;
+    
+    displayNum.classList.add('shake');
+    setTimeout(() => displayNum.classList.remove('shake'), 400);
+
+    addToLog(`${count}W${sides}`, sum);
+
+    if (sum === count) { // All 1s is a critical success in some variations, or just standard check
+        fireConfetti();
+    }
+}
+
 function addToLog(dice, result) {
     const logList = document.getElementById('dice-log');
     const li = document.createElement('li');
