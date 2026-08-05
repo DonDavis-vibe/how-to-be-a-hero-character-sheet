@@ -3,7 +3,7 @@
   <h1>🎲 How to be a Hero - Digital Character Sheet 🎲</h1>
 
   <p>
-    <strong>A highly customizable, responsive, and beautiful digital character sheet for the "How to be a Hero" Pen & Paper roleplaying system.</strong><br>
+    <strong>Ein hochgradig anpassbarer, responsiver und wunderschöner digitaler Charakterbogen für das "How to be a Hero" Pen & Paper Rollenspielsystem.</strong><br>
     <em>Von der Community, für die Community gebaut!</em>
   </p>
 
