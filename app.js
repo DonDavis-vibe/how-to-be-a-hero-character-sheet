@@ -965,6 +965,57 @@ function clearFx() {
 
 
 
+
+function startLovecraftFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+
+    // Eldritch Mist
+    fxInterval = setInterval(() => {
+        const mist = document.createElement('div');
+        mist.style.position = 'absolute';
+        mist.style.width = '300px';
+        mist.style.height = '150px';
+        mist.style.borderRadius = '50%';
+        mist.style.background = 'radial-gradient(ellipse, rgba(50, 150, 100, 0.15) 0%, transparent 70%)';
+        mist.style.left = (Math.random() * 100 - 10) + 'vw';
+        mist.style.bottom = '-10vh';
+        mist.style.filter = 'blur(20px)';
+        
+        const duration = Math.random() * 10 + 15; // 15-25s slow mist
+        mist.style.animation = `lovecraftMist ${duration}s ease-in-out forwards`;
+        
+        layer.appendChild(mist);
+        
+        setTimeout(() => {
+            if (mist.parentNode) mist.parentNode.removeChild(mist);
+        }, duration * 1000);
+    }, 2500); 
+
+    // Watching Eyes
+    fxInterval2 = setInterval(() => {
+        const eye = document.createElement('div');
+        eye.style.position = 'absolute';
+        eye.style.width = '50px';
+        eye.style.height = '25px';
+        eye.style.borderRadius = '50%';
+        eye.style.background = 'radial-gradient(circle at center, #000 15%, #4ade80 40%, transparent 75%)';
+        eye.style.left = Math.random() * 90 + 5 + 'vw';
+        eye.style.top = Math.random() * 80 + 10 + 'vh';
+        eye.style.boxShadow = '0 0 15px rgba(74, 222, 128, 0.3)';
+        
+        const duration = Math.random() * 3 + 3; // 3-6s
+        eye.style.animation = `lovecraftEye ${duration}s ease-in-out forwards`;
+        
+        layer.appendChild(eye);
+        
+        setTimeout(() => {
+            if (eye.parentNode) eye.parentNode.removeChild(eye);
+        }, duration * 1000);
+    }, 3500);
+}
+
 function startMafiaFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
@@ -1144,6 +1195,7 @@ function applyTheme(theme) {
         else if(theme === 'steampunk') startSteampunkFx();
         else if(theme === 'cyberpunk') startCyberpunkFx();
         else if(theme === 'mafia') startMafiaFx();
+        else if(theme === 'lovecraft') startLovecraftFx();
     }
     
     // Default image paths
