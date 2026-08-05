@@ -1729,3 +1729,51 @@ function rollSkillCheck(skillName, skillValue) {
 
     addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>`);
 }
+
+function handleThemeLogoUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_SIZE = 300;
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                
+                appData.customThemeLogo = compressedDataUrl;
+                saveData();
+                applyTheme(appData.theme || 'default');
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeCustomLogo(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (confirm("Möchtest du das eigene Logo entfernen und zum Theme-Logo zurückkehren?")) {
+        delete appData.customThemeLogo;
+        saveData();
+        applyTheme(appData.theme || 'default');
+    }
+}
