@@ -616,11 +616,33 @@ function renderInventory() {
 }
 
 function addInventoryItem() {
-    const input = document.getElementById('new-item-input');
-    const val = input.value.trim();
-    if (val) {
-        appData.inventory.push({ id: 'i' + Date.now(), name: val, amount: 1 });
-        input.value = '';
+    const nameInput = document.getElementById('new-item-input');
+    const amountInput = document.getElementById('new-item-amount');
+    const descInput = document.getElementById('new-item-desc');
+    
+    if(!nameInput) return;
+    
+    const name = nameInput.value.trim();
+    if (name) {
+        if (!appData.inventory) appData.inventory = [];
+        
+        let amount = 1;
+        let desc = '';
+        if(amountInput) amount = parseInt(amountInput.value) || 1;
+        if(descInput) desc = descInput.value.trim();
+        
+        appData.inventory.push({ 
+            id: 'inv_' + Date.now(), 
+            name: name,
+            amount: amount,
+            description: desc,
+            showDesc: !!desc // auto-expand if description was added
+        });
+        
+        nameInput.value = '';
+        if(amountInput) amountInput.value = '1';
+        if(descInput) descInput.value = '';
+        
         saveData();
         renderInventory();
     }
@@ -1132,13 +1154,29 @@ function renderWeapons() {
 function addWeaponItem() {
     const nameInput = document.getElementById('new-weapon-name');
     const dmgInput = document.getElementById('new-weapon-dmg');
+    const descInput = document.getElementById('new-weapon-desc');
+    
     const name = nameInput.value.trim();
     const dmg = dmgInput.value.trim();
+    
     if (name && dmg) {
         if (!appData.weapons) appData.weapons = [];
-        appData.weapons.push({ id: 'w_' + Date.now(), name: name, damage: dmg });
+        
+        let desc = '';
+        if(descInput) desc = descInput.value.trim();
+        
+        appData.weapons.push({ 
+            id: 'w_' + Date.now(), 
+            name: name, 
+            damage: dmg,
+            description: desc,
+            showDesc: !!desc
+        });
+        
         nameInput.value = '';
         dmgInput.value = '';
+        if(descInput) descInput.value = '';
+        
         saveData();
         renderWeapons();
     }
