@@ -656,3 +656,117 @@ body.theme-magic {
 }
 
 
+/* Utility Pack Styles */
+.status-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+.status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-secondary);
+    transition: all 0.3s;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+.status-badge.active {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border-color: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+.currency-widget {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,0,0,0.3);
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--glass-border);
+}
+.currency-name {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    width: 70px;
+    font-size: 0.9rem;
+    outline: none;
+}
+.currency-val {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    width: 60px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: right;
+    outline: none;
+}
+.weapon-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: background 0.3s;
+}
+.weapon-item:hover {
+    background: rgba(255,255,255,0.1);
+}
+.weapon-name {
+    flex-grow: 1;
+    font-weight: 500;
+}
+.weapon-dmg {
+    color: var(--text-secondary);
+    margin-right: 1rem;
+}
+.btn-roll-dmg {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+}
+.btn-roll-dmg:hover {
+    background: rgba(239, 68, 68, 0.4);
+    transform: scale(1.05);
+}
+.gbp-use-btn {
+    background: transparent;
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    color: #fde047;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.gbp-use-btn:hover {
+    background: rgba(250, 204, 21, 0.2);
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+.skill-val.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 4px;
+    padding: 0 0.3rem;
+}
+.skill-val.clickable:hover {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    transform: scale(1.1);
+}
