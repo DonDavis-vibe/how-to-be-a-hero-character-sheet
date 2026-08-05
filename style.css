@@ -1112,3 +1112,8 @@ input[type="number"] { -moz-appearance: textfield; }
     transform: scale(1.1);
     box-shadow: 0 0 10px var(--color-accent);
 }
+
+@keyframes rainFall {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(120vh); }
+}
