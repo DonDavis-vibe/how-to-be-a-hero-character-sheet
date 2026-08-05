@@ -461,7 +461,7 @@ h2 {
     color: rgba(255,255,255,0.3);
 }
 
-.skill-item input[type="number"] { width: 50px; text-align: center; padding-right: 2px !important; flex-shrink: 0; }\n.skill-item input[type="number"]::-webkit-inner-spin-button, .skill-item input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.skill-item input[type="number"] { width: 60px; text-align: center; padding-right: 15px !important; flex-shrink: 0; }
 .skill-total {
     font-weight: 700;
     min-width: 35px;
