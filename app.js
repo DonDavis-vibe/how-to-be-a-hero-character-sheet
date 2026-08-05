@@ -1,4 +1,5 @@
 let saveTimeout;
+let fxEnabled = true;
 // Default Data based on Angus MacGyver PDF
 const defaultData = {
     vorname: 'Angus',
@@ -196,16 +197,20 @@ function renderAll() {
     }
 
     // Theme
+        // Theme and FX
+    if (appData.fxEnabled !== undefined) {
+        fxEnabled = appData.fxEnabled;
+        const btn = document.getElementById('toggle-fx-btn');
+        if (btn) btn.style.opacity = fxEnabled ? '1' : '0.5';
+    }
+    
     if (appData.theme) {
-            const selector = document.getElementById('theme-selector');
-            if (selector) selector.value = appData.theme;
-        }
-        if (appData.fxEnabled !== undefined) {
-            fxEnabled = appData.fxEnabled;
-            const btn = document.getElementById('toggle-fx-btn');
-            if (btn) btn.style.opacity = fxEnabled ? '1' : '0.5';
-        } else {
-        document.getElementById('theme-selector').value = 'default';
+        const selector = document.getElementById('theme-selector');
+        if (selector) selector.value = appData.theme;
+        applyTheme(appData.theme);
+    } else {
+        const selector = document.getElementById('theme-selector');
+        if (selector) selector.value = 'default';
         applyTheme('default');
     }
 }
