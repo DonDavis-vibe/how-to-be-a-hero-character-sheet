@@ -116,8 +116,10 @@
                         <label>Geistesblitzpunkte</label>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <button class="gbp-use-btn" onclick="useGBP('handeln')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
-                            <div class="gbp-counter">
-                                <input type="number" id="gbp-current-handeln" value="0" data-field="gbp_handeln" class="gbp-input" min="0">
+                            <div class="gbp-counter" style="gap: 0.3rem;">
+                                <button class="gbp-adjust-btn" onclick="adjustGbp('handeln', -1)">-</button>
+                                <input type="number" id="gbp-current-handeln" value="0" data-field="gbp_handeln" class="gbp-input" min="0" style="width: 30px; padding: 0;">
+                                <button class="gbp-adjust-btn" onclick="adjustGbp('handeln', 1)">+</button>
                                 <span class="gbp-separator">/</span>
                                 <span id="gbp-max-handeln" class="gbp-max">0</span>
                             </div>
@@ -139,8 +141,10 @@
                         <label>Geistesblitzpunkte</label>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <button class="gbp-use-btn" onclick="useGBP('wissen')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
-                            <div class="gbp-counter">
-                                <input type="number" id="gbp-current-wissen" value="0" data-field="gbp_wissen" class="gbp-input" min="0">
+                            <div class="gbp-counter" style="gap: 0.3rem;">
+                                <button class="gbp-adjust-btn" onclick="adjustGbp('wissen', -1)">-</button>
+                                <input type="number" id="gbp-current-wissen" value="0" data-field="gbp_wissen" class="gbp-input" min="0" style="width: 30px; padding: 0;">
+                                <button class="gbp-adjust-btn" onclick="adjustGbp('wissen', 1)">+</button>
                                 <span class="gbp-separator">/</span>
                                 <span id="gbp-max-wissen" class="gbp-max">0</span>
                             </div>
@@ -162,8 +166,10 @@
                         <label>Geistesblitzpunkte</label>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <button class="gbp-use-btn" onclick="useGBP('soziales')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
-                            <div class="gbp-counter">
-                                <input type="number" id="gbp-current-soziales" value="0" data-field="gbp_soziales" class="gbp-input" min="0">
+                            <div class="gbp-counter" style="gap: 0.3rem;">
+                                <button class="gbp-adjust-btn" onclick="adjustGbp('soziales', -1)">-</button>
+                                <input type="number" id="gbp-current-soziales" value="0" data-field="gbp_soziales" class="gbp-input" min="0" style="width: 30px; padding: 0;">
+                                <button class="gbp-adjust-btn" onclick="adjustGbp('soziales', 1)">+</button>
                                 <span class="gbp-separator">/</span>
                                 <span id="gbp-max-soziales" class="gbp-max">0</span>
                             </div>

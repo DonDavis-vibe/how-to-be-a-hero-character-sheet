@@ -413,12 +413,36 @@ h2 {
     font-size: 1.1rem;
     font-weight: 700;
     text-align: center;
-    padding-right: 15px; /* Prevent number hiding under spin button */
+    padding: 0;
     outline: none;
 }
-.gbp-input::-webkit-inner-spin-button {
-    opacity: 1; /* Always show spin buttons */
+
+.gbp-input::-webkit-inner-spin-button,
+.gbp-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
+.gbp-input {
+    -moz-appearance: textfield;
+}
+
+.gbp-adjust-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.gbp-adjust-btn:hover { background: rgba(255,255,255,0.25); }
+
 
 .gbp-separator {
     color: var(--text-secondary);
