@@ -859,7 +859,7 @@ function rollWeaponDamage(id) {
     }, 300);
     
     let rollStr = `[${rolls.join('+')}]` + (parsed.mod !== 0 ? (parsed.mod > 0 ? '+'+parsed.mod : parsed.mod) : '');
-    addToLog(`💥 ${weapon.name} Schaden: <b>${total}</b> <span style="font-size:0.75rem;opacity:0.7">(${weapon.damage} = ${rollStr})</span>`);
+    addToLog(`<i class="fa-solid fa-burst"></i> ${weapon.name} Schaden`, `<b>${total}</b> <span style="font-size:0.75rem;opacity:0.7">(${weapon.damage} = ${rollStr})</span>`);
 }
 
 function useGBP(category) {
@@ -868,7 +868,7 @@ function useGBP(category) {
         appData[field]--;
         document.getElementById('gbp-current-' + category).value = appData[field];
         saveData();
-        addToLog(`💡 Geistesblitzpunkt für <b>${category.charAt(0).toUpperCase() + category.slice(1)}</b> eingesetzt!`);
+        addToLog(`<i class="fa-solid fa-lightbulb"></i> Geistesblitzpunkt`, `für ${category.charAt(0).toUpperCase() + category.slice(1)} eingesetzt`);
     }
 }
 
@@ -900,5 +900,5 @@ function rollSkillCheck(skillName, skillValue) {
         displayRes.className = 'dice-result-display';
     }, 500);
 
-    addToLog(`🎲 ${skillName}-Probe (Wert: ${skillValue}): gewürfelt <b>${result}</b> ➔ <span style="color:var(--accent)">${statusText}</span>`);
+    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>`);
 }
