@@ -59,6 +59,8 @@ Warum sollte ein Charakterbogen langweilig aussehen? Wähle aus 8 völlig unters
 - 🐙 **Lovecraft (Cthulhu)** - Grüner Eldritch-Nebel, beobachtende Augen und seltene "Sanity Twitches" (Bildschirmverzerrungen).
 - 🏰 **Royal Magic** - Schwebende, leuchtende Magie-Partikel in Gold und Violett, wie verzauberte Glühwürmchen.
 - 🚀 **Deep Space** - Funkelnde Sterne im Hintergrund und blitzschnelle, leuchtend blaue Sternschnuppen.
+- 🤠 **Wilder Westen** - Trockenes Wüsten-Setting mit einem animierten, vom Wind getriebenen Tumbleweed.
+- 🏴‍☠️ **Piraten** - Sanft rollende Meereswellen am unteren Rand und gelegentlich auftauchende Kraken-Tentakel.
 
 ## 🚀 Quick Start / Nutzung
 
