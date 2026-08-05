@@ -955,12 +955,14 @@ function toggleNotes() {
 // --- Theme FX Logic ---
 let fxInterval = null;
 let fxInterval2 = null;
+let fxInterval3 = null;
 
 function clearFx() {
     const layer = document.getElementById('fx-layer');
     if(layer) layer.innerHTML = '';
     if(fxInterval) clearInterval(fxInterval);
     if(typeof fxInterval2 !== 'undefined' && fxInterval2) clearInterval(fxInterval2);
+    if(typeof fxInterval3 !== 'undefined' && fxInterval3) clearInterval(fxInterval3);
 }
 
 
@@ -1016,7 +1018,30 @@ function startLovecraftFx() {
     }, 3500);
 }
 
-function startMafiaFx() {
+
+    // Sanity Twitch / Glitch
+    fxInterval3 = setInterval(() => {
+        const container = document.querySelector('.app-container');
+        if(container) {
+            const twitchType = Math.floor(Math.random() * 3);
+            if (twitchType === 0) {
+                container.style.transform = \`translateX(\${Math.random() * 6 - 3}px) rotate(\${Math.random() * 2 - 1}deg)\`;
+            } else if (twitchType === 1) {
+                container.style.transform = \`skewX(\${Math.random() * 2 - 1}deg)\`;
+                container.style.filter = \`blur(\${Math.random() * 2 + 1}px) sepia(1)\`;
+            } else {
+                container.style.transform = \`translateY(\${Math.random() * 4 - 2}px) scale(1.01)\`;
+            }
+            
+            setTimeout(() => {
+                if(container) {
+                    container.style.transform = '';
+                    container.style.filter = '';
+                }
+            }, 100 + Math.random() * 150); // very brief twitch
+        }
+    }, 4000); // Try twitching roughly every 4 seconds
+\nfunction startMafiaFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
     if(!layer) return;
