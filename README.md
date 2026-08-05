@@ -26,13 +26,15 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
   - **1-Klick Proben:** Klicke einfach auf das '=' neben einem Skill, um sofort auf den Wert zu würfeln. Das Ergebnis (Erfolg, Fehlschlag, Krit) wird live ausgewertet und im Log vermerkt!
   - **Waffen-Schaden:** Klicke im Inventar auf das Waffen-Icon, um direkt den Waffenschaden (z.B. W6+2) auszuwürfeln.
   - **Custom Dice Generator:** Standard W6 & W100 Würfel sowie flexible Eingabe (z.B. `2w10`, `3d8`) mit dynamischem Würfel-Log und visuellen Konfetti-Effekten bei kritischen Erfolgen!
-- 🧬 **Dynamische Status-Effekte:**
+- 🎲 **Dynamische Status-Effekte:**
   - Lege beliebig viele eigene Status-Effekte an (z.B. "Wahnsinn", "Verstrahlt").
   - Weise ihnen bei Bedarf einen Wert (z.B. "60%") zu. Alle Werte lassen sich per Klick live editieren.
+  - Klassifiziere sie als **Malus (Rot)**, **Bonus (Grün)** oder **Neutral (Grau)** für maximale Übersicht.
 - 💡 **Interaktives GBP-Tracking:**
   - Behalte den Überblick über deine Geistesblitzpunkte mit einem interaktiven Widget in der Werkzeugleiste.
   - Verbrauche GBP per Klick, was sofort dokumentiert wird.
-- 🎒 **Erweitertes Charakter-Management:**
+- ⚙️ **Erweitertes Charakter-Management:**
+  - Komfortable **[+] / [-] Buttons** zur schnellen und intuitiven Verteilung der Skill-Punkte.
   - Interaktives, dynamisches **Inventar**.
   - Einklappbares **Notizen**-System mit coolen 3D-Icons (perfekt für Lore, Quests oder Geheimnisse).
   - Profilbild-Upload für deinen Helden!
@@ -40,7 +42,8 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
   - Wähle aus Themes wie *Zeitreise*, *Steampunk*, *Cyberpunk*, *Synthwave*, *Biohazard* und mehr! 
   - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
 - 💾 **100% Offline & Lokal Speichern:** 
-  - Keine Datenbank! Lade deinen Charakter als `.json` Datei herunter und teile ihn mit deinem Spielleiter, oder lade ihn beim nächsten Spieleabend einfach wieder ein.
+  - Keine Datenbank! Lade deinen Charakter als `.json` Datei herunter und teile ihn mit deinem Spielleiter.
+  - **Tipp:** Lade dir den Beispiel-Charakter `dr_aris_thorne.json` (im `assets/` Ordner) in die App, um alle Features (Waffen, Themes, Status) sofort live in Aktion zu sehen!
 
 ## 🚀 Nutzung
 
