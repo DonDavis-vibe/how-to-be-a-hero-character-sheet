@@ -54,13 +54,13 @@
                     <div class="portrait-overlay"><i class="fa-solid fa-camera"></i></div>
                 </label>
                 <input type="file" id="portrait-upload" accept="image/*" style="display: none;" onchange="handlePortraitUpload(event)">
-                <div class="basic-info grid-2-col">
+                <div class="basic-info" style="flex-grow: 1; display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1.5fr 0.8fr 1fr; gap: 1rem; align-items: start;">
                     <div class="input-group">
-                        <label>Vorname</label>
+                        <label style="font-size: 0.9rem;">Vorname</label>
                         <input type="text" id="vorname" value="Angus" data-field="vorname">
                     </div>
                     <div class="input-group">
-                        <label>Name</label>
+                        <label style="font-size: 0.9rem;">Name</label>
                         <input type="text" id="name" value="MacGyver" data-field="name">
                     </div>
                     <div class="input-group">
@@ -68,11 +68,11 @@
                         <input type="text" id="geschlecht" value="M" data-field="geschlecht">
                     </div>
                     <div class="input-group">
-                        <label>Beruf</label>
+                        <label style="font-size: 0.9rem;">Beruf</label>
                         <input type="text" id="beruf" value="Problemlöser" data-field="beruf">
                     </div>
                     <div class="input-group">
-                        <label>Alter</label>
+                        <label style="font-size: 0.75rem;">Alter</label>
                         <input type="text" id="alter" value="42" data-field="alter">
                     </div>
                     <div class="input-group">
@@ -95,7 +95,13 @@
                         </div>
                     </div>
                 </div>
+            
+                <!-- Theme Main Logo -->
+                <div class="main-logo-container" style="flex-shrink: 0; display: none; align-items: center; justify-content: center; width: 120px; height: 120px;" id="main-logo-wrapper">
+                    <img id="main-theme-logo" src="" alt="Theme Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2px solid var(--glass-border, rgba(255,255,255,0.2));">
+                </div>
             </header>
+
 
             <!-- Attributes Section -->
             <div class="attributes-grid">
@@ -211,14 +217,8 @@
         <!-- Right Side: Tools (HP & Dice) -->
         <div class="tools-panel">
             
-            <div style="display: flex; gap: 1rem; align-items: stretch; margin-bottom: 2rem;">
-                <!-- Theme Main Logo -->
-                <div class="main-logo-container" style="flex: 1; display: none; align-items: center; justify-content: center;" id="main-logo-wrapper">
-                    <img id="main-theme-logo" src="" alt="Theme Logo" style="width: 100%; height: auto; max-height: 200px; object-fit: contain; border-radius: 16px; box-shadow: 0 0 20px rgba(0,0,0,0.5); border: 2px solid var(--glass-border, rgba(255,255,255,0.1));">
-                </div>
-
-                <!-- Lebenspunkte (HP) -->
-                <div class="hp-tracker glass-panel" style="flex: 2; margin-bottom: 0;">
+            <!-- Lebenspunkte (HP) -->
+            <div class="hp-tracker glass-panel">
                 <h2 class="cat-title"><img id="icon-hp" src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
                 <div class="hp-display">
                     <input type="number" id="hp-current" value="100" onchange="updateHp()">
@@ -237,7 +237,6 @@
                     <button class="btn-heal" onclick="adjustHp(1)">+1</button>
                     <button class="btn-heal" onclick="adjustHp(5)">+5</button>
                 </div>
-            </div>
             </div>
 
             <!-- Dice Roller -->
