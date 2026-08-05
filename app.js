@@ -271,7 +271,7 @@ function renderSkills(attr) {
 
         const totalSpan = document.createElement('span');
         totalSpan.className = 'skill-total skill-val clickable';
-        totalSpan.title = 'Probe würfeln!';
+        totalSpan.title = 'Probe wï¿½rfeln!';
         totalSpan.id = 'total-' + skill.id;
         let totalSkillVal = attrVal + (skill.invested || 0);
         totalSpan.textContent = '= ' + totalSkillVal;
@@ -727,31 +727,50 @@ function applyTheme(theme) {
 
 
 // ==================== UTILITY PACK FUNCTIONS ====================
-const AVAILABLE_STATUSES = ['Verletzt', 'Vergiftet', 'Bewusstlos', 'Kritisch', 'Verstrahlt', 'Gestunnt'];
-
 function renderStatuses() {
     const container = document.getElementById('status-container');
     if (!container) return;
     container.innerHTML = '';
-    AVAILABLE_STATUSES.forEach(status => {
-        const isActive = appData.statuses && appData.statuses.includes(status);
+    
+    if (!appData.statuses) appData.statuses = [];
+    
+    if (appData.statuses.length > 0 && typeof appData.statuses[0] === 'string') {
+        appData.statuses = appData.statuses.map(s => ({ id: 'st_' + Math.random().toString(36).substr(2, 9), name: s, value: '' }));
+        saveData();
+    }
+
+    appData.statuses.forEach(statusObj => {
         const badge = document.createElement('span');
-        badge.className = `status-badge ${isActive ? 'active' : ''}`;
-        badge.textContent = status;
-        badge.onclick = () => toggleStatus(status);
+        badge.className = 'status-badge active';
+        let text = statusObj.name;
+        if (statusObj.value) text += `: ${statusObj.value}`;
+        badge.innerHTML = `${text} <i class="fa-solid fa-times" style="margin-left: 0.3rem; opacity: 0.7;"></i>`;
+        badge.onclick = () => removeStatus(statusObj.id);
         container.appendChild(badge);
     });
 }
 
-function toggleStatus(status) {
-    if (!appData.statuses) appData.statuses = [];
-    if (appData.statuses.includes(status)) {
-        appData.statuses = appData.statuses.filter(s => s !== status);
-    } else {
-        appData.statuses.push(status);
-    }
+function removeStatus(id) {
+    if (!appData.statuses) return;
+    appData.statuses = appData.statuses.filter(s => s.id !== id);
     saveData();
     renderStatuses();
+}
+
+function addCustomStatus() {
+    const nameInput = document.getElementById('new-status-name');
+    const valInput = document.getElementById('new-status-val');
+    if (!nameInput) return;
+    const name = nameInput.value.trim();
+    const val = valInput ? valInput.value.trim() : '';
+    if (name) {
+        if (!appData.statuses) appData.statuses = [];
+        appData.statuses.push({ id: 'st_' + Date.now(), name: name, value: val });
+        nameInput.value = '';
+        if (valInput) valInput.value = '';
+        saveData();
+        renderStatuses();
+    }
 }
 
 function updateCurrency() {
