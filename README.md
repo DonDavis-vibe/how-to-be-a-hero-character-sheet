@@ -22,18 +22,25 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
 - 🧮 **Offizielle Regelwerks-Kalkulation:** 
   - Basiswerte (Handeln, Wissen, Soziales) werden **automatisch berechnet** (Summe / 10, kaufmännisch gerundet).
   - Maximale **Geistesblitzpunkte (GBP)** werden absolut regelkonform abgeleitet.
-- 🎨 **8 Epische Themes & UI-Effekte:** 
-  - Wähle aus Themes wie *Zeitreise*, *Steampunk*, *Cyberpunk*, *Synthwave*, *Biohazard* und mehr! 
-  - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
-- 🎲 **Mächtiges Würfel-Tool:**
-  - Standard W6 & W100 Würfel.
-  - **Custom Dice Generator** (z.B. `2w10`, `3d8`) mit dynamischem Würfel-Log und visuellen Konfetti-Effekten bei kritischen Erfolgen!
-- 💾 **100% Offline & Lokal Speichern:** 
-  - Keine Datenbank! Lade deinen Charakter als `.json` Datei herunter und teile ihn mit deinem Spielleiter, oder lade ihn beim nächsten Spieleabend einfach wieder ein.
-- 🎒 **Erweitertes Management:**
+- 🎲 **Smartes Würfel- & Log-System:**
+  - **1-Klick Proben:** Klicke einfach auf das '=' neben einem Skill, um sofort auf den Wert zu würfeln. Das Ergebnis (Erfolg, Fehlschlag, Krit) wird live ausgewertet und im Log vermerkt!
+  - **Waffen-Schaden:** Klicke im Inventar auf das Waffen-Icon, um direkt den Waffenschaden (z.B. W6+2) auszuwürfeln.
+  - **Custom Dice Generator:** Standard W6 & W100 Würfel sowie flexible Eingabe (z.B. `2w10`, `3d8`) mit dynamischem Würfel-Log und visuellen Konfetti-Effekten bei kritischen Erfolgen!
+- 🧬 **Dynamische Status-Effekte:**
+  - Lege beliebig viele eigene Status-Effekte an (z.B. "Wahnsinn", "Verstrahlt").
+  - Weise ihnen bei Bedarf einen Wert (z.B. "60%") zu. Alle Werte lassen sich per Klick live editieren.
+- 💡 **Interaktives GBP-Tracking:**
+  - Behalte den Überblick über deine Geistesblitzpunkte mit einem interaktiven Widget in der Werkzeugleiste.
+  - Verbrauche GBP per Klick, was sofort dokumentiert wird.
+- 🎒 **Erweitertes Charakter-Management:**
   - Interaktives, dynamisches **Inventar**.
   - Einklappbares **Notizen**-System mit coolen 3D-Icons (perfekt für Lore, Quests oder Geheimnisse).
   - Profilbild-Upload für deinen Helden!
+- 🎨 **8 Epische Themes & UI-Effekte:** 
+  - Wähle aus Themes wie *Zeitreise*, *Steampunk*, *Cyberpunk*, *Synthwave*, *Biohazard* und mehr! 
+  - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
+- 💾 **100% Offline & Lokal Speichern:** 
+  - Keine Datenbank! Lade deinen Charakter als `.json` Datei herunter und teile ihn mit deinem Spielleiter, oder lade ihn beim nächsten Spieleabend einfach wieder ein.
 
 ## 🚀 Nutzung
 
