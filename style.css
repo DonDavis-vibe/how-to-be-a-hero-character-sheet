@@ -1137,7 +1137,7 @@ body.theme-mafia {
     --color-wissen: #b3a890;
     --color-soziales: #d1c8b4;
     --color-accent: #c2a15f;
-    background-image: url('assets/bg_mafia.jpg'); 
+    background-image: url('assets/bg_mafia.png'); 
 }
 
 body.theme-mafia .app-container {
@@ -1185,9 +1185,7 @@ body.theme-lovecraft {
     --color-wissen: #38bdf8;
     --color-soziales: #c084fc;
     --color-accent: #4ade80;
-    background-image: url('assets/bg_lovecraft.jpg'); 
-    /* A sickly green tint for default images */
-    filter: sepia(0.5) hue-rotate(90deg) brightness(0.8) contrast(1.2);
+    background-image: url('assets/bg_lovecraft.png'); 
 }
 
 body.theme-lovecraft .app-container {
@@ -1222,4 +1220,287 @@ body.theme-lovecraft .btn-primary:hover {
     30% { transform: scaleY(1); opacity: 0.6; }
     70% { transform: scaleY(1); opacity: 0.6; }
     100% { transform: scaleY(0.1); opacity: 0; }
+}
+
+/* Royal Magic Theme */
+body.theme-magic {
+    --bg-color: #0d0a14; 
+    --glass-bg: rgba(15, 25, 20, 0.85); 
+    --glass-border: rgba(168, 85, 247, 0.4); 
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --color-action: #eab308; 
+    --color-wissen: #38bdf8;
+    --color-soziales: #a855f7; 
+    --color-accent: #eab308;
+    background-image: url('assets/bg_magic.png'); 
+}
+
+body.theme-magic .app-container {
+    box-shadow: 0 0 50px rgba(168, 85, 247, 0.15); 
+}
+
+body.theme-magic .card-layout {
+    background: linear-gradient(135deg, rgba(20,15,35,0.9), rgba(10,20,15,0.9)); 
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+body.theme-magic .btn-primary {
+    background: rgba(30, 20, 45, 0.8);
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+}
+
+body.theme-magic .btn-primary:hover {
+    background: var(--color-accent);
+    color: #000;
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.5); 
+}
+    0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+@keyframes floatAsh {
+    0% { transform: translate(0, -10vh); opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.8; }
+    100% { transform: translate(20vw, 110vh); opacity: 0; }
+}
+
+/* --- Dice Fumble FX --- */
+@keyframes shakeHard {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    10% { transform: translate(-10px, -10px) rotate(-2deg); }
+    20% { transform: translate(10px, 10px) rotate(2deg); }
+    30% { transform: translate(-15px, 5px) rotate(-3deg); }
+    40% { transform: translate(15px, -5px) rotate(3deg); }
+    50% { transform: translate(-10px, 10px) rotate(-2deg); }
+    60% { transform: translate(10px, -10px) rotate(2deg); }
+    70% { transform: translate(-5px, -5px) rotate(-1deg); }
+    80% { transform: translate(5px, 5px) rotate(1deg); }
+    90% { transform: translate(-2px, -2px) rotate(0deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.shake-hard-active {
+    animation: shakeHard 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+#crit-fail-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, transparent 40%, rgba(255, 0, 0, 0.4) 100%);
+    box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.6);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+#crit-fail-overlay.show {
+    opacity: 1;
+}
+
+/* Waffenschaden Button im Inventar */
+.weapon-damage-btn {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.weapon-damage-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px var(--color-accent);
+}
+
+@keyframes rainFall {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(120vh); }
+}
+
+@keyframes timeRipple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+}
+
+/* Mafia / 1920s Noir Theme */
+body.theme-mafia {
+    --bg-color: #111111;
+    --glass-bg: rgba(25, 25, 25, 0.9);
+    --glass-border: rgba(180, 160, 120, 0.4);
+    --text-primary: #e6dfcc;
+    --text-secondary: #b3a890;
+    --color-action: #c2a15f;
+    --color-wissen: #b3a890;
+    --color-soziales: #d1c8b4;
+    --color-accent: #c2a15f;
+    background-image: url('assets/bg_mafia.png'); 
+}
+
+body.theme-mafia .app-container {
+    box-shadow: 0 0 50px rgba(194, 161, 95, 0.1);
+}
+
+body.theme-mafia .card-layout {
+    background: linear-gradient(135deg, rgba(20,20,20,0.9), rgba(30,25,20,0.9));
+    border: 1px solid rgba(194, 161, 95, 0.3);
+}
+
+body.theme-mafia .btn-primary {
+    background: #2a2a2a;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+}
+
+body.theme-mafia .btn-primary:hover {
+    background: var(--color-accent);
+    color: #111;
+    box-shadow: 0 0 15px rgba(194, 161, 95, 0.5);
+}
+
+@keyframes mafiaRain {
+    0% { transform: translateY(-5vh) translateX(0) rotate(15deg); opacity: 0; }
+    20% { opacity: 0.6; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(105vh) translateX(-20vw) rotate(15deg); opacity: 0; }
+}
+
+@keyframes mafiaSmoke {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    50% { opacity: 0.2; }
+    100% { transform: translateY(-30vh) scale(3); opacity: 0; }
+}
+
+/* Lovecraft / Cthulhu Theme */
+body.theme-lovecraft {
+    --bg-color: #040806;
+    --glass-bg: rgba(10, 25, 18, 0.9);
+    --glass-border: rgba(74, 222, 128, 0.3);
+    --text-primary: #d0e5da;
+    --text-secondary: #7ba38c;
+    --color-action: #4ade80;
+    --color-wissen: #38bdf8;
+    --color-soziales: #c084fc;
+    --color-accent: #4ade80;
+    background-image: url('assets/bg_lovecraft.png'); 
+}
+
+body.theme-lovecraft .app-container {
+    box-shadow: 0 0 50px rgba(74, 222, 128, 0.1);
+}
+
+body.theme-lovecraft .card-layout {
+    background: linear-gradient(135deg, rgba(10,20,15,0.9), rgba(5,15,20,0.9));
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+body.theme-lovecraft .btn-primary {
+    background: rgba(10, 30, 20, 0.8);
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+}
+
+body.theme-lovecraft .btn-primary:hover {
+    background: var(--color-accent);
+    color: #000;
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+}
+
+@keyframes lovecraftMist {
+    0% { transform: translateY(0) translateX(-10vw) scale(1); opacity: 0; }
+    50% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) translateX(20vw) scale(3); opacity: 0; }
+}
+
+@keyframes lovecraftEye {
+    0% { transform: scaleY(0.1); opacity: 0; }
+    30% { transform: scaleY(1); opacity: 0.6; }
+    70% { transform: scaleY(1); opacity: 0.6; }
+    100% { transform: scaleY(0.1); opacity: 0; }
+}
+
+/* Royal Magic Theme */
+body.theme-magic {
+    --bg-color: #0d0a14; 
+    --glass-bg: rgba(15, 25, 20, 0.85); 
+    --glass-border: rgba(168, 85, 247, 0.4); 
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --color-action: #eab308; 
+    --color-wissen: #38bdf8;
+    --color-soziales: #a855f7; 
+    --color-accent: #eab308;
+    background-image: url('assets/bg_magic.png'); 
+}
+
+body.theme-magic .app-container {
+    box-shadow: 0 0 50px rgba(168, 85, 247, 0.15); 
+}
+
+body.theme-magic .card-layout {
+    background: linear-gradient(135deg, rgba(20,15,35,0.9), rgba(10,20,15,0.9)); 
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+body.theme-magic .btn-primary {
+    background: rgba(30, 20, 45, 0.8);
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+}
+
+body.theme-magic .btn-primary:hover {
+    background: var(--color-accent);
+    color: #000;
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.5); 
+}
+
+@keyframes magicFloat {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.8; }
+    100% { transform: translateY(-30vh) scale(1.5) rotate(45deg); opacity: 0; }
+}
+
+/* Deep Space Theme */
+body.theme-deepspace {
+    --bg-color: #02040a; 
+    --glass-bg: rgba(5, 10, 20, 0.85); 
+    --glass-border: rgba(56, 189, 248, 0.4); 
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --color-action: #0ea5e9; 
+    --color-wissen: #38bdf8;
+    --color-soziales: #818cf8; 
+    --color-accent: #38bdf8;
+    background-image: url('assets/bg_deepspace.png'); 
+}
+
+body.theme-deepspace .app-container {
+    box-shadow: 0 0 50px rgba(56, 189, 248, 0.15); 
+}
+
+body.theme-deepspace .card-layout {
+    background: linear-gradient(135deg, rgba(10,15,30,0.9), rgba(5,10,20,0.9)); 
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+body.theme-deepspace .btn-primary {
+    background: rgba(15, 25, 45, 0.8);
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+}
+
+body.theme-deepspace .btn-primary:hover {
+    background: var(--color-accent);
+    color: #000;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); 
+}
+
+@keyframes starTwinkle {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.5); }
+}
+
+@keyframes shootingStar {
+    0% { transform: translate(0, 0) rotate(45deg) scale(1); opacity: 1; }
+    100% { transform: translate(150vw, 150vh) rotate(45deg) scale(0.2); opacity: 0; }
 }
