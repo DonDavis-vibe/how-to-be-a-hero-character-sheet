@@ -741,7 +741,7 @@ function renderStatuses() {
 
     appData.statuses.forEach(statusObj => {
         const badge = document.createElement('span');
-        badge.className = 'status-badge active';
+        badge.className = `status-badge ${statusObj.type || 'malus'}`;
         badge.style.display = 'inline-flex';
         badge.style.alignItems = 'center';
         badge.style.cursor = 'default';
@@ -791,7 +791,9 @@ function addCustomStatus() {
     const val = valInput ? valInput.value.trim() : '';
     if (name) {
         if (!appData.statuses) appData.statuses = [];
-        appData.statuses.push({ id: 'st_' + Date.now(), name: name, value: val });
+        const typeInput = document.getElementById('new-status-type');
+        const statusType = typeInput ? typeInput.value : 'malus';
+        appData.statuses.push({ id: 'st_' + Date.now(), name: name, value: val, type: statusType });
         nameInput.value = '';
         if (valInput) valInput.value = '';
         saveData();
