@@ -1031,6 +1031,11 @@ function changeTheme() {
 function applyTheme(theme) {
     document.body.className = '';
     
+    clearFx();
+    if(theme === 'apocalyptic') startApocalypseFx();
+    else if(theme === 'steampunk') startSteampunkFx();
+    else if(theme === 'cyberpunk') startCyberpunkFx();
+    
     // Default image paths
     let imgPaths = {
         'icon-handeln': 'assets/icon_handeln.jpg',
