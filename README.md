@@ -35,17 +35,20 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
 - 💡 **Interaktives GBP-Tracking:**
   - Behalte den Überblick über deine Geistesblitzpunkte mit einem interaktiven Widget in der Werkzeugleiste.
   - Verbrauche GBP per Klick, was sofort dokumentiert wird.
+- 🎒 **Dynamisches Inventar & Waffen-Management:**
+  - Modernes, kachelbasiertes Grid-Design für Gegenstände und Waffen.
+  - **Drag & Drop** Funktionalität zum Sortieren deines Equipments.
+  - Jedes Item und jede Waffe hat **einklappbare Details/Beschreibungen**, die den Platz optimal ausnutzen.
 - ⚙️ **Erweitertes Charakter-Management:**
-  - Komfortable **[+] / [-] Buttons** zur schnellen und intuitiven Verteilung der Skill-Punkte.
-  - Interaktives, dynamisches **Inventar**.
+  - Überall im Tool kommen schicke, eigene **[+] / [-] Buttons** zum Einsatz (für Skills, Items, HP, GBP) statt der hässlichen Standard-Pfeile des Browsers.
   - Einklappbares **Notizen**-System mit coolen 3D-Icons (perfekt für Lore, Quests oder Geheimnisse).
-  - Profilbild-Upload für deinen Helden!
+  - Profilbild-Upload (oder GIF-Upload) für deinen Helden!
 - 🎨 **8 Epische Themes & UI-Effekte:** 
   - Wähle aus Themes wie *Zeitreise*, *Steampunk*, *Cyberpunk*, *Synthwave*, *Biohazard* und mehr! 
   - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
 - 💾 **100% Offline & Lokal Speichern:** 
   - Keine Datenbank! Lade deinen Charakter als `.json` Datei herunter und teile ihn mit deinem Spielleiter.
-  - **Tipp:** Lade dir den Beispiel-Charakter `dr_aris_thorne.json` (im `assets/` Ordner) in die App, um alle Features (Waffen, Themes, Status) sofort live in Aktion zu sehen!
+  - **Tipp:** Lade dir den Beispiel-Charakter `dr_aris_thorne.json` (im `assets/` Ordner) oder den neuen `test_character.json` mit coolem GIF-Portrait in die App, um alle Features (Waffen, Themes, Status) sofort live in Aktion zu sehen!
 
 ## 🚀 Nutzung
 
