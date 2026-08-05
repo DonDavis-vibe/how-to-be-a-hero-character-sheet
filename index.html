@@ -54,30 +54,30 @@
                     <div class="portrait-overlay"><i class="fa-solid fa-camera"></i></div>
                 </label>
                 <input type="file" id="portrait-upload" accept="image/*" style="display: none;" onchange="handlePortraitUpload(event)">
-                <div class="basic-info" style="flex-grow: 1; display: grid; grid-template-columns: 1.2fr 1.2fr 1fr 1.5fr 0.8fr 1fr; gap: 1rem; align-items: start;">
-                    <div class="input-group">
+                <div class="basic-info" style="flex-grow: 1; display: flex; flex-wrap: wrap; gap: 1rem; align-items: start; justify-content: flex-start;">
+                    <div class="input-group" style="flex: 1 1 120px;">
                         <label style="font-size: 0.9rem;">Vorname</label>
                         <input type="text" id="vorname" value="Angus" data-field="vorname">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 1 1 120px;">
                         <label style="font-size: 0.9rem;">Name</label>
                         <input type="text" id="name" value="MacGyver" data-field="name">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 1 1 80px;">
                         <label>Geschlecht</label>
                         <input type="text" id="geschlecht" value="M" data-field="geschlecht">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 2 1 180px;">
                         <label style="font-size: 0.9rem;">Beruf</label>
                         <input type="text" id="beruf" value="Problemlöser" data-field="beruf">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 0 1 60px;">
                         <label style="font-size: 0.75rem;">Alter</label>
                         <input type="text" id="alter" value="42" data-field="alter">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="flex: 1 1 100px;">
                         <label>Statur</label>
-                        <input type="text" id="statur" value="SpOor" data-field="statur">
+                        <input type="text" id="statur" value="Sportlich" data-field="statur">
                     </div>
                     <div class="status-section" style="grid-column: 1 / -1; margin-top: 1rem;">
                         <div class="status-tags" id="status-container" style="justify-content: flex-start; margin-bottom: 0.5rem;">

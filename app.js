@@ -798,7 +798,7 @@ function applyTheme(theme) {
     // Handle main logo visibility
     const mainLogoWrapper = document.getElementById('main-logo-wrapper');
     if (imgPaths['main-theme-logo']) {
-        if (mainLogoWrapper) mainLogoWrapper.style.display = 'block';
+        if (mainLogoWrapper) mainLogoWrapper.style.display = 'flex';
     } else {
         if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
     }
