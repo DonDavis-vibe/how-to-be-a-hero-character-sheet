@@ -434,6 +434,62 @@ function updateMaxPoints() {
 }
 
 // --- Inventory Management ---
+
+// --- Drag & Drop State ---
+let dragSourceIndex = null;
+let dragSourceType = null;
+
+function handleDragStart(e, index, type) {
+    dragSourceIndex = index;
+    dragSourceType = type;
+    e.target.closest('.inv-item').classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index);
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const item = e.target.closest('.inv-item');
+    if (item) item.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    const item = e.target.closest('.inv-item');
+    if (item) item.classList.remove('drag-over');
+}
+
+function handleDrop(e, targetIndex, type) {
+    e.preventDefault();
+    e.stopPropagation();
+    const items = document.querySelectorAll('.inv-item');
+    items.forEach(i => {
+        i.classList.remove('dragging');
+        i.classList.remove('drag-over');
+    });
+
+    if (dragSourceType !== type) return;
+    if (dragSourceIndex === null || dragSourceIndex === targetIndex) return;
+
+    const arrayName = type === 'inventory' ? 'inventory' : 'weapons';
+    const itemToMove = appData[arrayName].splice(dragSourceIndex, 1)[0];
+    appData[arrayName].splice(targetIndex, 0, itemToMove);
+    
+    saveData();
+    if (type === 'inventory') renderInventory();
+    else renderWeapons();
+    
+    dragSourceIndex = null;
+    dragSourceType = null;
+}
+
+function handleDragEnd(e) {
+    const elem = e.target.closest('.inv-item');
+    if(elem) elem.classList.remove('dragging');
+    const items = document.querySelectorAll('.inv-item');
+    items.forEach(i => i.classList.remove('drag-over'));
+}
+
 function renderInventory() {
     const listEl = document.getElementById('inventory-list');
     listEl.innerHTML = '';
@@ -441,7 +497,17 @@ function renderInventory() {
     appData.inventory.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'inv-item';
+        div.draggable = true;
+        
+        div.addEventListener('dragstart', (e) => handleDragStart(e, index, 'inventory'));
+        div.addEventListener('dragover', handleDragOver);
+        div.addEventListener('dragleave', handleDragLeave);
+        div.addEventListener('drop', (e) => handleDrop(e, index, 'inventory'));
+        div.addEventListener('dragend', handleDragEnd);
 
+        const dragHandle = document.createElement('i');
+        dragHandle.className = 'fa-solid fa-bars drag-handle';
+        
         const input = document.createElement('input');
         input.type = 'text';
         input.value = item.name;
@@ -449,7 +515,11 @@ function renderInventory() {
             item.name = e.target.value;
             saveData();
         };
-
+        
+        const toggleDescBtn = document.createElement('button');
+        toggleDescBtn.className = 'item-desc-toggle';
+        toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+        
         const amountDiv = document.createElement('div');
         amountDiv.className = 'item-amount-wrapper';
 
@@ -457,44 +527,76 @@ function renderInventory() {
         minusBtn.className = 'btn-icon-small';
         minusBtn.innerHTML = '-';
         minusBtn.onclick = () => {
-            let amt = parseInt(item.amount) || 1;
-            if (amt > 1) {
-                item.amount = amt - 1;
+            if (item.amount > 1) {
+                item.amount--;
                 saveData();
                 renderInventory();
+            } else {
+                if(confirm("Item löschen?")) {
+                    appData.inventory.splice(index, 1);
+                    saveData();
+                    renderInventory();
+                }
             }
         };
 
-        const amtSpan = document.createElement('span');
-        amtSpan.className = 'item-amount';
-        amtSpan.textContent = (item.amount !== undefined) ? item.amount : 1;
+        const amountSpan = document.createElement('span');
+        amountSpan.className = 'item-amount';
+        amountSpan.innerText = item.amount || 1;
 
         const plusBtn = document.createElement('button');
         plusBtn.className = 'btn-icon-small';
         plusBtn.innerHTML = '+';
         plusBtn.onclick = () => {
-            let amt = parseInt(item.amount) || 1;
-            item.amount = amt + 1;
+            item.amount = (item.amount || 1) + 1;
             saveData();
             renderInventory();
         };
 
         amountDiv.appendChild(minusBtn);
-        amountDiv.appendChild(amtSpan);
+        amountDiv.appendChild(amountSpan);
         amountDiv.appendChild(plusBtn);
 
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
-        delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
         delBtn.onclick = () => {
             appData.inventory.splice(index, 1);
             saveData();
             renderInventory();
         };
+        
+        const descArea = document.createElement('textarea');
+        descArea.className = 'item-description';
+        descArea.placeholder = 'Beschreibung / Effekte...';
+        descArea.value = item.description || '';
+        if (item.showDesc) descArea.classList.add('show');
+        
+        descArea.oninput = (e) => {
+            item.description = e.target.value;
+            saveData();
+        };
+        
+        toggleDescBtn.onclick = () => {
+            item.showDesc = !item.showDesc;
+            if (item.showDesc) {
+                descArea.classList.add('show');
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+            } else {
+                descArea.classList.remove('show');
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            }
+            saveData();
+        };
+        if (item.showDesc) toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
 
+        div.appendChild(dragHandle);
         div.appendChild(input);
+        div.appendChild(toggleDescBtn);
         div.appendChild(amountDiv);
         div.appendChild(delBtn);
+        div.appendChild(descArea);
+        
         listEl.appendChild(div);
     });
 }
@@ -911,19 +1013,86 @@ function updateCurrency() {
 }
 
 function renderWeapons() {
-    const list = document.getElementById('weapons-list');
-    if (!list) return;
-    list.innerHTML = '';
+    const listEl = document.getElementById('weapons-list');
+    listEl.innerHTML = '';
+    
     if (!appData.weapons) appData.weapons = [];
-    appData.weapons.forEach(w => {
-        list.innerHTML += `
-            <div class="weapon-item">
-                <span class="weapon-name">${w.name}</span>
-                <span class="weapon-dmg">${w.damage}</span>
-                <button class="btn-roll-dmg" onclick="rollWeaponDamage('${w.id}')"><i class="fa-solid fa-burst"></i> Roll</button>
-                <button onclick="removeWeapon('${w.id}')" style="background:transparent;border:none;color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        `;
+    
+    appData.weapons.forEach((weapon, index) => {
+        const div = document.createElement('div');
+        div.className = 'weapon-item inv-item';
+        div.draggable = true;
+        
+        div.addEventListener('dragstart', (e) => handleDragStart(e, index, 'weapons'));
+        div.addEventListener('dragover', handleDragOver);
+        div.addEventListener('dragleave', handleDragLeave);
+        div.addEventListener('drop', (e) => handleDrop(e, index, 'weapons'));
+        div.addEventListener('dragend', handleDragEnd);
+
+        const dragHandle = document.createElement('i');
+        dragHandle.className = 'fa-solid fa-bars drag-handle';
+        
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = weapon.name;
+        nameInput.style = "flex: 2;";
+        nameInput.oninput = (e) => {
+            weapon.name = e.target.value;
+            saveData();
+        };
+        
+        const dmgInput = document.createElement('input');
+        dmgInput.type = 'text';
+        dmgInput.value = weapon.damage;
+        dmgInput.style = "flex: 1; text-align: center;";
+        dmgInput.oninput = (e) => {
+            weapon.damage = e.target.value;
+            saveData();
+        };
+        
+        const toggleDescBtn = document.createElement('button');
+        toggleDescBtn.className = 'item-desc-toggle';
+        toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+        
+        const descArea = document.createElement('textarea');
+        descArea.className = 'item-description';
+        descArea.placeholder = 'Beschreibung / Effekte...';
+        descArea.value = weapon.description || '';
+        if (weapon.showDesc) descArea.classList.add('show');
+        
+        descArea.oninput = (e) => {
+            weapon.description = e.target.value;
+            saveData();
+        };
+        
+        toggleDescBtn.onclick = () => {
+            weapon.showDesc = !weapon.showDesc;
+            if (weapon.showDesc) {
+                descArea.classList.add('show');
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+            } else {
+                descArea.classList.remove('show');
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            }
+            saveData();
+        };
+        if (weapon.showDesc) toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+        
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-delete-icon';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.onclick = () => {
+            removeWeapon(weapon.id);
+        };
+        
+        div.appendChild(dragHandle);
+        div.appendChild(nameInput);
+        div.appendChild(dmgInput);
+        div.appendChild(toggleDescBtn);
+        div.appendChild(delBtn);
+        div.appendChild(descArea);
+        
+        listEl.appendChild(div);
     });
 }
 
