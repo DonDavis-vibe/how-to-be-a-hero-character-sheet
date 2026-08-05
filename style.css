@@ -47,14 +47,16 @@ body.theme-apocalyptic {
 }
 
 body.theme-cyberpunk {
-    --glass-bg: rgba(5, 30, 15, 0.85);
-    --glass-border: rgba(0, 255, 128, 0.4);
-    --text-primary: #e0ffe0;
-    --text-secondary: #99e6b3;
-    --color-action: #ff00ff; /* Neon Pink */
-    --color-knowledge: #00ffff; /* Neon Cyan */
-    --color-social: #00ff80; /* Neon Green */
-    --color-accent: #00cc66;
+    --bg-color: #0b0f19;
+    --glass-bg: rgba(10, 15, 30, 0.85);
+    --glass-border: rgba(0, 240, 255, 0.4);
+    --text-primary: #e0e0e0;
+    --text-secondary: #00f0ff;
+    --color-action: #ff007f;
+    --color-wissen: #00f0ff;
+    --color-soziales: #00f0ff;
+    --color-accent: #ff007f;
+    background-image: url('assets/bg_cyberpunk.jpg');
 }
 
 * {
