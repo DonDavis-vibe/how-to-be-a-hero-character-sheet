@@ -86,6 +86,11 @@
                         <div class="add-status-row" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                             <input type="text" id="new-status-name" placeholder="Status (z.B. Wahnsinn)" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; padding: 0.2rem 0.5rem; outline: none; font-size: 0.85rem; width: 140px;">
                             <input type="text" id="new-status-val" placeholder="Wert (z.B. 60%)" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; padding: 0.2rem 0.5rem; outline: none; font-size: 0.85rem; width: 100px;">
+                            <select id="new-status-type" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; padding: 0.2rem; outline: none; font-size: 0.85rem;">
+                                <option value="malus">Malus (Rot)</option>
+                                <option value="bonus">Bonus (Grün)</option>
+                                <option value="neutral">Neutral (Grau)</option>
+                            </select>
                             <button onclick="addCustomStatus()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; cursor: pointer; padding: 0.2rem 0.5rem; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="fa-solid fa-plus"></i> Hinzufügen</button>
                         </div>
                     </div>
