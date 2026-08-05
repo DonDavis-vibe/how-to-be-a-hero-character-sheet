@@ -362,11 +362,14 @@ function renderSkills(attr) {
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
         delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.style.marginLeft = '1rem';
         delBtn.onclick = () => {
-            appData[`skills_${attr}`].splice(index, 1);
-            saveData();
-            renderSkills(attr);
-            calculatePoints();
+            if (confirm(`Möchtest du den Skill "${skill.name || 'Unbenannt'}" wirklich löschen?`)) {
+                appData[`skills_${attr}`].splice(index, 1);
+                saveData();
+                renderSkills(attr);
+                calculatePoints();
+            }
         };
 
         item.appendChild(nameInput);
@@ -556,10 +559,13 @@ function renderInventory() {
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
         delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.style.marginLeft = '1rem';
         delBtn.onclick = () => {
-            appData.inventory.splice(index, 1);
-            saveData();
-            renderInventory();
+            if (confirm(`Möchtest du das Item "${item.name || 'Unbenannt'}" wirklich löschen?`)) {
+                appData.inventory.splice(index, 1);
+                saveData();
+                renderInventory();
+            }
         };
 
         headerDiv.appendChild(dragHandle);
@@ -1418,7 +1424,9 @@ function renderStatuses() {
         delIcon.style = 'margin-left: 0.5rem; opacity: 0.7; cursor: pointer; padding: 0.2rem;';
         delIcon.onclick = (e) => {
             e.stopPropagation();
-            removeStatus(statusObj.id);
+            if (confirm(`Möchtest du den Status "${statusObj.name}" wirklich löschen?`)) {
+                removeStatus(statusObj.id);
+            }
         };
         badge.appendChild(delIcon);
         
@@ -1495,8 +1503,11 @@ function renderWeapons() {
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
         delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.style.marginLeft = '1rem';
         delBtn.onclick = () => {
-            removeWeapon(weapon.id);
+            if (confirm(`Möchtest du die Waffe "${weapon.name || 'Unbenannt'}" wirklich löschen?`)) {
+                removeWeapon(weapon.id);
+            }
         };
 
         headerDiv.appendChild(dragHandle);
