@@ -13,9 +13,11 @@
 
 <hr />
 
-## 🌟 Live Demo
+## 🚀 Live Demo
 Spiele sofort los und erstelle deinen Charakter direkt im Browser:
 👉 **[Hier geht's zur Live-Demo](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/)**
+
+![App Preview](assets/preview.png)
 
 ## ✨ Features
 
