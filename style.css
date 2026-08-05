@@ -940,7 +940,8 @@ body.theme-magic {
     color: var(--text-primary);
 }
 .item-description {
-    flex-basis: 100%;
+    width: 100%;
+    box-sizing: border-box;
     margin-top: 0.5rem;
     background: rgba(0,0,0,0.2);
     border: 1px solid rgba(255,255,255,0.1);
