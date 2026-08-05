@@ -271,11 +271,22 @@ function renderSkills(attr) {
 
         const totalSpan = document.createElement('span');
         totalSpan.className = 'skill-total skill-val clickable';
-        totalSpan.title = 'Probe w�rfeln!';
+        totalSpan.title = 'Probe würfeln!';
         totalSpan.id = 'total-' + skill.id;
         let totalSkillVal = attrVal + (skill.invested || 0);
         totalSpan.textContent = '= ' + totalSkillVal;
         totalSpan.onclick = () => rollSkillCheck(skill.name, totalSkillVal);
+        
+        const minusBtn = document.createElement('button');
+        minusBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
+        minusBtn.style = 'background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.7); width: 24px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; transition: all 0.2s;';
+        minusBtn.onmouseover = () => { minusBtn.style.background = 'rgba(255,255,255,0.15)'; minusBtn.style.color = 'white'; };
+        minusBtn.onmouseout = () => { minusBtn.style.background = 'rgba(255,255,255,0.05)'; minusBtn.style.color = 'rgba(255,255,255,0.7)'; };
+        minusBtn.onclick = () => {
+            skill.invested = Math.max(0, (parseInt(skill.invested !== undefined ? skill.invested : skill.value) || 0) - 1);
+            valInput.value = skill.invested;
+            valInput.dispatchEvent(new Event('input'));
+        };
 
         const valInput = document.createElement('input');
         valInput.type = 'number';
@@ -296,6 +307,17 @@ function renderSkills(attr) {
             });
         };
 
+        const plusBtn = document.createElement('button');
+        plusBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+        plusBtn.style = 'background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.7); width: 24px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; transition: all 0.2s;';
+        plusBtn.onmouseover = () => { plusBtn.style.background = 'rgba(255,255,255,0.15)'; plusBtn.style.color = 'white'; };
+        plusBtn.onmouseout = () => { plusBtn.style.background = 'rgba(255,255,255,0.05)'; plusBtn.style.color = 'rgba(255,255,255,0.7)'; };
+        plusBtn.onclick = () => {
+            skill.invested = (parseInt(skill.invested !== undefined ? skill.invested : skill.value) || 0) + 1;
+            valInput.value = skill.invested;
+            valInput.dispatchEvent(new Event('input'));
+        };
+
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
         delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -307,7 +329,9 @@ function renderSkills(attr) {
         };
 
         item.appendChild(nameInput);
+        item.appendChild(minusBtn);
         item.appendChild(valInput);
+        item.appendChild(plusBtn);
         item.appendChild(totalSpan);
         item.appendChild(delBtn);
         listEl.appendChild(item);
