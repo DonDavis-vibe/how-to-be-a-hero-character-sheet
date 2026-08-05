@@ -819,6 +819,33 @@ function addToLog(dice, result, timestamp) {
     }
 }
 
+
+function fireFumble() {
+    // Flash overlay
+    const overlay = document.getElementById('crit-fail-overlay');
+    if(overlay) {
+        overlay.classList.add('show');
+        setTimeout(() => overlay.classList.remove('show'), 500);
+    }
+    // Shake body
+    document.body.classList.add('shake-hard-active');
+    setTimeout(() => document.body.classList.remove('shake-hard-active'), 500);
+    
+    // Fall down skulls
+    if (window.confetti) {
+        const scalar = 2;
+        const skull = window.confetti.shapeFromText({ text: '☠️', scalar });
+        window.confetti({
+            particleCount: 50,
+            spread: 100,
+            origin: { y: 0.1 },
+            shapes: [skull],
+            scalar,
+            colors: ['#ff0000', '#000000']
+        });
+    }
+}
+
 function fireConfetti() {
     if (window.confetti) {
         window.confetti({
@@ -914,6 +941,57 @@ function toggleNotes() {
 }
 
 // --- Theme Management ---
+
+// --- Theme FX Logic ---
+let fxInterval = null;
+
+function clearFx() {
+    const layer = document.getElementById('fx-layer');
+    if(layer) layer.innerHTML = '';
+    if(fxInterval) clearInterval(fxInterval);
+}
+
+function startApocalypseFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    fxInterval = setInterval(() => {
+        const particle = document.createElement('div');
+        particle.className = 'particle-ash';
+        particle.style.left = Math.random() * 100 + 'vw';
+        const duration = Math.random() * 5 + 5;
+        particle.style.animation = `floatAsh ${duration}s linear infinite`;
+        layer.appendChild(particle);
+        
+        setTimeout(() => {
+            if (particle.parentNode) particle.parentNode.removeChild(particle);
+        }, duration * 1000);
+    }, 400);
+}
+
+function startSteampunkFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    fxInterval = setInterval(() => {
+        const particle = document.createElement('div');
+        particle.className = 'particle-gear';
+        particle.style.left = Math.random() * 100 + 'vw';
+        const duration = Math.random() * 8 + 7;
+        const size = Math.random() * 20 + 15;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.animation = `floatGear ${duration}s linear infinite`;
+        layer.appendChild(particle);
+        
+        setTimeout(() => {
+            if (particle.parentNode) particle.parentNode.removeChild(particle);
+        }, duration * 1000);
+    }, 600);
+}
+
 function changeTheme() {
     const selector = document.getElementById('theme-selector');
     const theme = selector.value;
