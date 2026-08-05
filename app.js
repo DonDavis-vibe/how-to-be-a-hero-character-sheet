@@ -755,8 +755,41 @@ function changeTheme() {
 
 function applyTheme(theme) {
     document.body.className = '';
+    
+    // Default image paths
+    let imgPaths = {
+        'icon-handeln': 'assets/icon_handeln.jpg',
+        'icon-wissen': 'assets/icon_wissen.jpg',
+        'icon-soziales': 'assets/icon_soziales.jpg',
+        'icon-inventar': 'assets/icon_inventar.jpg',
+        'icon-notizen': 'assets/icon_notizen.jpg',
+        'icon-hp': 'assets/icon_hp.jpg',
+        'icon-waffen': 'assets/icon_handeln.jpg'
+    };
+
     if (theme && theme !== 'default') {
         document.body.classList.add(`theme-${theme}`);
+        // Override with theme-specific images if available
+        // Currently we only have steampunk fully generated
+        if (theme === 'steampunk') {
+            imgPaths = {
+                'icon-handeln': 'assets/icon_handeln_steampunk.jpg',
+                'icon-wissen': 'assets/icon_wissen_steampunk.jpg',
+                'icon-soziales': 'assets/icon_soziales_steampunk.jpg',
+                'icon-inventar': 'assets/icon_inventar_steampunk.jpg',
+                'icon-notizen': 'assets/icon_notizen_steampunk.jpg',
+                'icon-hp': 'assets/icon_hp_steampunk.jpg',
+                'icon-waffen': 'assets/icon_handeln_steampunk.jpg'
+            };
+        }
+    }
+
+    // Apply images to DOM
+    for (const [id, path] of Object.entries(imgPaths)) {
+        const imgEl = document.getElementById(id);
+        if (imgEl) {
+            imgEl.src = path;
+        }
     }
 }
 
