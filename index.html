@@ -18,6 +18,14 @@
             <div class="points-counter" id="points-counter">
                 Verteilte Punkte: <span id="points-total" class="pts-val">0</span> / <input type="number" id="points-max" class="pts-max-input" value="400" onchange="updateMaxPoints()">
             </div>
+            
+            <!-- Currency moved to Toolbar for compact layout -->
+            <div class="currency-badge" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(251,191,36,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; color: #fbbf24; font-weight: bold; font-size: 0.9rem;">
+                <i class="fa-solid fa-coins"></i>
+                <input type="text" id="currency-name" class="currency-name" value="Credits" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; width: 55px; outline: none; border-bottom: 1px dashed rgba(251,191,36,0.5); font-size: inherit;">
+                <input type="number" id="currency-val" class="currency-val" value="0" onchange="updateCurrency()" style="width: 50px; text-align: right; background: transparent; border: none; color: white; font-weight: bold; outline: none; font-size: inherit;">
+            </div>
+
             <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
             <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
             <button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Speichern (JSON)</button>
@@ -151,38 +159,33 @@
                 </div>
 
             </div>
-            <!-- Equipment Grid -->
-            <div class="equipment-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-                
-                <!-- Inventory Section -->
-                <div class="inventory-section glass-panel">
-                    <h2 class="cat-title"><img src="assets/icon_inventar.jpg" class="category-icon"> Inventar</h2>
-                    <div class="inventory-list" id="inventory-list">
-                        <!-- Populated by JS -->
-                    </div>
-                    <div class="add-item-row">
-                        <input type="text" id="new-item-input" placeholder="Neues Item hinzufügen..." onkeypress="handleNewItemKey(event)">
-                        <button onclick="addInventoryItem()"><i class="fa-solid fa-plus"></i></button>
-                    </div>
+            <!-- Inventory Section -->
+            <div class="inventory-section">
+                <h2 class="cat-title"><img src="assets/icon_inventar.jpg" class="category-icon"> Inventar</h2>
+                <div class="inventory-list" id="inventory-list">
+                    <!-- Populated by JS -->
                 </div>
-
-                <!-- Weapons Section -->
-                <div class="weapons-section glass-panel">
-                    <h2 class="cat-title"><img src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen</h2>
-                    <div class="weapons-list" id="weapons-list">
-                        <!-- Populated by JS -->
-                    </div>
-                    <div class="add-item-row">
-                        <input type="text" id="new-weapon-name" placeholder="Name..." style="flex: 2;">
-                        <input type="text" id="new-weapon-dmg" placeholder="Schaden (1w6+2)" style="flex: 1;">
-                        <button onclick="addWeaponItem()"><i class="fa-solid fa-plus"></i></button>
-                    </div>
+                <div class="add-item-row">
+                    <input type="text" id="new-item-input" placeholder="Neues Item hinzufügen..." onkeypress="handleNewItemKey(event)">
+                    <button onclick="addInventoryItem()"><i class="fa-solid fa-plus"></i></button>
                 </div>
+            </div>
 
+            <!-- Weapons Section -->
+            <div class="weapons-section" style="margin-top: 2rem;">
+                <h2 class="cat-title"><img src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen</h2>
+                <div class="weapons-list" id="weapons-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="add-item-row">
+                    <input type="text" id="new-weapon-name" placeholder="Name..." style="flex: 2;">
+                    <input type="text" id="new-weapon-dmg" placeholder="Schaden (1w6+2)" style="flex: 1;">
+                    <button onclick="addWeaponItem()"><i class="fa-solid fa-plus"></i></button>
+                </div>
             </div>
 
             <!-- Notes Section -->
-            <div class="notes-section glass-panel" style="margin-top: 1.5rem;">
+            <div class="notes-section glass-panel" style="margin-top: 2rem;">
                 <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="cat-title" style="margin: 0;"><img src="assets/icon_notizen.jpg" class="category-icon"> Notizen</h2>
                     <i class="fa-solid fa-chevron-down" id="notes-chevron" style="transition: transform 0.3s;"></i>
@@ -197,14 +200,6 @@
         <!-- Right Side: Tools (HP & Dice) -->
         <div class="tools-panel">
             
-            <div class="currency-widget glass-panel" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: #fbbf24; font-weight: bold; font-size: 1.1rem;">
-                    <i class="fa-solid fa-coins"></i>
-                    <input type="text" id="currency-name" class="currency-name" value="Credits" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; font-size: inherit; width: 80px; outline: none; border-bottom: 1px dashed rgba(251, 191, 36, 0.5);">
-                </div>
-                <input type="number" id="currency-val" class="currency-val" value="0" onchange="updateCurrency()" style="width: 80px; text-align: right; font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.2); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 4px; color: white; padding: 0.25rem;">
-            </div>
-
             <!-- Lebenspunkte (HP) -->
             <div class="hp-tracker glass-panel">
                 <h2 class="cat-title"><img src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
