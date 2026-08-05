@@ -770,7 +770,6 @@ function applyTheme(theme) {
     if (theme && theme !== 'default') {
         document.body.classList.add(`theme-${theme}`);
         // Override with theme-specific images if available
-        // Currently we only have steampunk fully generated
         if (theme === 'steampunk') {
             imgPaths = {
                 'icon-handeln': 'assets/icon_handeln_steampunk.jpg',
@@ -780,6 +779,16 @@ function applyTheme(theme) {
                 'icon-notizen': 'assets/icon_notizen_steampunk.jpg',
                 'icon-hp': 'assets/icon_hp_steampunk.jpg',
                 'icon-waffen': 'assets/icon_handeln_steampunk.jpg'
+            };
+        } else if (theme === 'apokalypse') {
+            imgPaths = {
+                'icon-handeln': 'assets/icon_handeln_apokalypse.jpg',
+                'icon-wissen': 'assets/icon_wissen_apokalypse.jpg',
+                'icon-soziales': 'assets/icon_soziales_apokalypse.jpg',
+                'icon-inventar': 'assets/icon_inventar_apokalypse.jpg',
+                'icon-notizen': 'assets/icon_notizen_apokalypse.jpg',
+                'icon-hp': 'assets/icon_hp_apokalypse.jpg',
+                'icon-waffen': 'assets/icon_handeln_apokalypse.jpg'
             };
         }
     }
