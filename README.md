@@ -52,9 +52,9 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
     - 🦾 **Cyberpunk** - Digitaler Neon-Regen
   - **🚧 Demnächst verfügbar (aktuell noch WIP/Platzhalter):**
     - 🚀 *Deep Space*
-    - 🦠 *Biohazard*
+    - 🦠 *Lovecraft (Cthulhu)*
     - 🔮 *Royal Magic*
-    - 🕶️ *Synthwave*
+    - 🕵️‍♂️ *1920s Mafia*
   - **FX Toggle:** Alle Animationen lassen sich mit einem Klick auf den Zauberstab (🪄) oben rechts an- und ausschalten!
   - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
 - 💾 **100% Offline & Lokal Speichern:** 
