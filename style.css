@@ -965,6 +965,7 @@ body.theme-magic {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
     gap: 1rem !important;
     margin-bottom: 1.5rem !important;
+    align-items: start !important;
 }
 
 .inv-item.card-layout {
