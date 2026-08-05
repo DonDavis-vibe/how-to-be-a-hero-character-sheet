@@ -951,6 +951,34 @@ function clearFx() {
     if(fxInterval) clearInterval(fxInterval);
 }
 
+
+function startCyberpunkFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    fxInterval = setInterval(() => {
+        const line = document.createElement('div');
+        line.style.position = 'absolute';
+        line.style.left = Math.random() * 100 + 'vw';
+        line.style.top = '-100px';
+        line.style.width = Math.random() > 0.5 ? '2px' : '1px';
+        line.style.height = Math.random() * 150 + 50 + 'px';
+        line.style.background = Math.random() > 0.5 ? '#00f0ff' : '#ff007f';
+        line.style.opacity = Math.random() * 0.5 + 0.3;
+        line.style.boxShadow = '0 0 10px ' + line.style.background;
+        
+        const duration = Math.random() * 1 + 0.5; // very fast rain
+        line.style.animation = `rainFall ${duration}s linear`;
+        
+        layer.appendChild(line);
+        
+        setTimeout(() => {
+            if (line.parentNode) line.parentNode.removeChild(line);
+        }, duration * 1000);
+    }, 50); // dense rain
+}
+
 function startApocalypseFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
