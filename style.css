@@ -376,7 +376,9 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
@@ -393,7 +395,7 @@ h2 {
 }
 
 .gbp-input {
-    width: 65px;
+    width: 45px;
     background: transparent;
     border: none;
     color: var(--text-primary);
@@ -652,4 +654,5 @@ body.theme-magic {
     --color-social: #00ffff; /* Ice Blue */
     --color-accent: #8a2be2; /* Blue Violet */
 }
+
 
