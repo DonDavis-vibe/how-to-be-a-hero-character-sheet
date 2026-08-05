@@ -36,7 +36,9 @@ Es vereint eine fehlerfreie Automatisierung (Berechnung von Basiswerten) mit ein
 ### 🎲 Smartes Würfel- & Log-System
 - **1-Klick Proben:** Klicke einfach auf das `=` neben einem Skill, um sofort darauf zu würfeln.
 - **Automatisches Log:** Jeder Wurf (Erfolg, Fehlschlag) wird live ausgewertet und im Log vermerkt.
-- **Kritische Effekte:** Bei einer absoluten 1 (Kritischer Erfolg) regnet es Konfetti. Bei einer glatten 100 (Patzer) wackelt der Bildschirm und Totenköpfe (☠️) fallen von der Decke!
+- **Kritische Effekte & Sound:** Bei einer absoluten 1 (Kritischer Erfolg) regnet es Konfetti und ein Erfolgs-Sound ertönt. Bei einer glatten 100 (Patzer) wackelt der Bildschirm, Totenköpfe (☠️) fallen von der Decke und ein düsterer Sound wird gespielt!
+- **HP-Sounds:** Auch beim Heilen oder bei Schadensnahme gibt es passendes Audio-Feedback.
+- **Sound Toggle:** Wenn du in Ruhe spielen willst, kannst du alle Sounds bequem über den Lautsprecher-Button (🔊) oben rechts stummschalten.
 - **Waffen-Schaden:** Klicke im Inventar auf das Würfel-Icon neben dem Waffenschaden (z.B. `1W6+2`), um diesen sofort automatisiert auszuwürfeln.
 - **Custom Dice:** Ein eingebauter Würfel-Generator für alle denkbaren Kombinationen (z.B. `2w10`, `3d8`).
 
