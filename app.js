@@ -954,12 +954,13 @@ function toggleNotes() {
 
 // --- Theme FX Logic ---
 let fxInterval = null;
+let fxInterval2 = null;
 
 function clearFx() {
     const layer = document.getElementById('fx-layer');
     if(layer) layer.innerHTML = '';
     if(fxInterval) clearInterval(fxInterval);
-    if(fxInterval2) clearInterval(fxInterval2);
+    if(typeof fxInterval2 !== 'undefined' && fxInterval2) clearInterval(fxInterval2);
 }
 
 
