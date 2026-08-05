@@ -1016,8 +1016,6 @@ function startLovecraftFx() {
             if (eye.parentNode) eye.parentNode.removeChild(eye);
         }, duration * 1000);
     }, 3500);
-}
-
 
     // Sanity Twitch / Glitch
     fxInterval3 = setInterval(() => {
@@ -1025,12 +1023,12 @@ function startLovecraftFx() {
         if(container) {
             const twitchType = Math.floor(Math.random() * 3);
             if (twitchType === 0) {
-                container.style.transform = \`translateX(\${Math.random() * 6 - 3}px) rotate(\${Math.random() * 2 - 1}deg)\`;
+                container.style.transform = 'translateX(' + (Math.random() * 6 - 3) + 'px) rotate(' + (Math.random() * 2 - 1) + 'deg)';
             } else if (twitchType === 1) {
-                container.style.transform = \`skewX(\${Math.random() * 2 - 1}deg)\`;
-                container.style.filter = \`blur(\${Math.random() * 2 + 1}px) sepia(1)\`;
+                container.style.transform = 'skewX(' + (Math.random() * 2 - 1) + 'deg)';
+                container.style.filter = 'blur(' + (Math.random() * 2 + 1) + 'px) sepia(1)';
             } else {
-                container.style.transform = \`translateY(\${Math.random() * 4 - 2}px) scale(1.01)\`;
+                container.style.transform = 'translateY(' + (Math.random() * 4 - 2) + 'px) scale(1.01)';
             }
             
             setTimeout(() => {
@@ -1040,8 +1038,10 @@ function startLovecraftFx() {
                 }
             }, 100 + Math.random() * 150); // very brief twitch
         }
-    }, 4000); // Try twitching roughly every 4 seconds
-\nfunction startMafiaFx() {
+    }, 25000); // Try twitching roughly every 25 seconds (much rarer now)
+}
+
+function startMafiaFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
     if(!layer) return;
@@ -1185,6 +1185,84 @@ function startSteampunkFx() {
     }, 600);
 }
 
+function startMagicFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    fxInterval = setInterval(() => {
+        const mote = document.createElement('div');
+        mote.style.position = 'absolute';
+        const size = Math.random() * 4 + 2; // 2-6px
+        mote.style.width = size + 'px';
+        mote.style.height = size + 'px';
+        mote.style.borderRadius = '50%';
+        mote.style.background = Math.random() > 0.5 ? '#eab308' : '#a855f7'; // gold or purple
+        mote.style.boxShadow = `0 0 10px ${mote.style.background}`;
+        mote.style.left = Math.random() * 100 + 'vw';
+        mote.style.bottom = '-10px';
+        mote.style.opacity = Math.random() * 0.5 + 0.5;
+        
+        const duration = Math.random() * 6 + 6; // 6-12s floating up
+        mote.style.animation = `magicFloat ${duration}s ease-in-out forwards`;
+        
+        layer.appendChild(mote);
+        
+        setTimeout(() => {
+            if (mote.parentNode) mote.parentNode.removeChild(mote);
+        }, duration * 1000);
+    }, 400); // spawn every 400ms
+}
+
+function startDeepSpaceFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    // Twinkling stars
+    fxInterval = setInterval(() => {
+        const star = document.createElement('div');
+        star.style.position = 'absolute';
+        const size = Math.random() * 3 + 1; // 1-4px
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.borderRadius = '50%';
+        star.style.background = '#ffffff';
+        star.style.boxShadow = '0 0 5px #fff';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        
+        const duration = Math.random() * 3 + 2; // 2-5s
+        star.style.animation = `starTwinkle ${duration}s ease-in-out forwards`;
+        
+        layer.appendChild(star);
+        
+        setTimeout(() => {
+            if (star.parentNode) star.parentNode.removeChild(star);
+        }, duration * 1000);
+    }, 200); // spawn rapidly
+
+    // Shooting stars
+    fxInterval2 = setInterval(() => {
+        const shooting = document.createElement('div');
+        shooting.style.position = 'absolute';
+        shooting.style.width = '100px';
+        shooting.style.height = '2px';
+        shooting.style.background = 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(56,189,248,1) 100%)';
+        shooting.style.left = (Math.random() * 80 - 20) + 'vw'; // spawn left-ish
+        shooting.style.top = (Math.random() * 50 - 30) + 'vh'; // spawn top-ish
+        shooting.style.boxShadow = '0 0 10px rgba(56, 189, 248, 0.8)';
+        
+        shooting.style.animation = `shootingStar 1.5s linear forwards`;
+        
+        layer.appendChild(shooting);
+        
+        setTimeout(() => {
+            if (shooting.parentNode) shooting.parentNode.removeChild(shooting);
+        }, 1500);
+    }, 3500); // spawn every few seconds
+}
+
 function changeTheme() {
     const selector = document.getElementById('theme-selector');
     const theme = selector.value;
@@ -1221,6 +1299,8 @@ function applyTheme(theme) {
         else if(theme === 'cyberpunk') startCyberpunkFx();
         else if(theme === 'mafia') startMafiaFx();
         else if(theme === 'lovecraft') startLovecraftFx();
+        else if(theme === 'magic') startMagicFx();
+        else if(theme === 'deepspace') startDeepSpaceFx();
     }
     
     // Default image paths

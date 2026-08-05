@@ -45,16 +45,15 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
   - Profilbild-Upload (oder GIF-Upload) für deinen Helden!
 - 🎨 **Epische Themes & Animierte UI-Effekte:** 
   - Wähle aus maßgeschneiderten Themes! Jedes Theme ändert das komplette Layout (Hintergründe, Logos, Farben und alle UI-Icons).
-  - **✅ Bereits vollständig integriert (inkl. Custom UI-Icons, Hintergrundbild & Spezial-Effekten):**
+  - **✅ Bereits vollständig integriert (inkl. Hintergrundbildern, UI-Anpassungen & Spezial-Effekten):**
     - ⏳ **Zeitreise (Standard)** - Wabernde Zeitrisse
     - ⚙️ **Steampunk** - Rotierende Zahnräder
     - ☢️ **Apokalypse** - Fliegende Aschepartikel
     - 🦾 **Cyberpunk** - Digitaler Neon-Regen
-  - **🚧 Demnächst verfügbar (aktuell noch WIP/Platzhalter):**
-    - 🚀 *Deep Space*
-    - 🦠 *Lovecraft (Cthulhu)*
-    - 🔮 *Royal Magic*
-    - 🕵️‍♂️ *1920s Mafia*
+    - 🕵️‍♂️ **1920s Mafia** - Prasselnder Regen und aufsteigender Zigarrenrauch im Noir-Look
+    - 🐙 **Lovecraft (Cthulhu)** - Grüner Eldritch-Nebel, wachende Augen und plötzliche "Sanity Twitches"
+    - 🏰 **Royal Magic** - Schwebende, leuchtende Magie-Partikel in Gold und Violett
+    - 🚀 **Deep Space** - Funkelnde Sterne und schnelle Cyan-Sternschnuppen
   - **FX Toggle:** Alle Animationen lassen sich mit einem Klick auf den Zauberstab (🪄) oben rechts an- und ausschalten!
   - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
 - 💾 **100% Offline & Lokal Speichern:** 
