@@ -496,7 +496,7 @@ function renderInventory() {
 
     appData.inventory.forEach((item, index) => {
         const div = document.createElement('div');
-        div.className = 'inv-item';
+        div.className = 'inv-item card-layout';
         div.draggable = true;
         
         div.addEventListener('dragstart', (e) => handleDragStart(e, index, 'inventory'));
@@ -505,20 +505,38 @@ function renderInventory() {
         div.addEventListener('drop', (e) => handleDrop(e, index, 'inventory'));
         div.addEventListener('dragend', handleDragEnd);
 
+        // Header
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'inv-card-header';
+
         const dragHandle = document.createElement('i');
         dragHandle.className = 'fa-solid fa-bars drag-handle';
         
         const input = document.createElement('input');
         input.type = 'text';
         input.value = item.name;
+        input.className = 'inv-item-name';
         input.oninput = (e) => {
             item.name = e.target.value;
             saveData();
         };
         
-        const toggleDescBtn = document.createElement('button');
-        toggleDescBtn.className = 'item-desc-toggle';
-        toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-delete-icon';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.onclick = () => {
+            appData.inventory.splice(index, 1);
+            saveData();
+            renderInventory();
+        };
+
+        headerDiv.appendChild(dragHandle);
+        headerDiv.appendChild(input);
+        headerDiv.appendChild(delBtn);
+
+        // Controls
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'inv-card-controls';
         
         const amountDiv = document.createElement('div');
         amountDiv.className = 'item-amount-wrapper';
@@ -557,15 +575,14 @@ function renderInventory() {
         amountDiv.appendChild(amountSpan);
         amountDiv.appendChild(plusBtn);
 
-        const delBtn = document.createElement('button');
-        delBtn.className = 'btn-delete-icon';
-        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-        delBtn.onclick = () => {
-            appData.inventory.splice(index, 1);
-            saveData();
-            renderInventory();
-        };
+        const toggleDescBtn = document.createElement('button');
+        toggleDescBtn.className = 'item-desc-toggle';
+        toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Details';
         
+        controlsDiv.appendChild(amountDiv);
+        controlsDiv.appendChild(toggleDescBtn);
+        
+        // Description
         const descArea = document.createElement('textarea');
         descArea.className = 'item-description';
         descArea.placeholder = 'Beschreibung / Effekte...';
@@ -581,20 +598,17 @@ function renderInventory() {
             item.showDesc = !item.showDesc;
             if (item.showDesc) {
                 descArea.classList.add('show');
-                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Details';
             } else {
                 descArea.classList.remove('show');
-                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Details';
             }
             saveData();
         };
-        if (item.showDesc) toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+        if (item.showDesc) toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Details';
 
-        div.appendChild(dragHandle);
-        div.appendChild(input);
-        div.appendChild(toggleDescBtn);
-        div.appendChild(amountDiv);
-        div.appendChild(delBtn);
+        div.appendChild(headerDiv);
+        div.appendChild(controlsDiv);
         div.appendChild(descArea);
         
         listEl.appendChild(div);
@@ -1020,7 +1034,7 @@ function renderWeapons() {
     
     appData.weapons.forEach((weapon, index) => {
         const div = document.createElement('div');
-        div.className = 'weapon-item inv-item';
+        div.className = 'weapon-item inv-item card-layout';
         div.draggable = true;
         
         div.addEventListener('dragstart', (e) => handleDragStart(e, index, 'weapons'));
@@ -1029,31 +1043,60 @@ function renderWeapons() {
         div.addEventListener('drop', (e) => handleDrop(e, index, 'weapons'));
         div.addEventListener('dragend', handleDragEnd);
 
+        // Header
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'inv-card-header';
+
         const dragHandle = document.createElement('i');
         dragHandle.className = 'fa-solid fa-bars drag-handle';
         
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.value = weapon.name;
-        nameInput.style = "flex: 2;";
+        nameInput.className = 'inv-item-name';
         nameInput.oninput = (e) => {
             weapon.name = e.target.value;
             saveData();
         };
         
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-delete-icon';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.onclick = () => {
+            removeWeapon(weapon.id);
+        };
+
+        headerDiv.appendChild(dragHandle);
+        headerDiv.appendChild(nameInput);
+        headerDiv.appendChild(delBtn);
+
+        // Controls
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'inv-card-controls';
+
+        const dmgDiv = document.createElement('div');
+        dmgDiv.className = 'weapon-dmg-wrapper';
+        dmgDiv.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-secondary); margin-right: 0.3rem;">Schaden</span>';
+        
         const dmgInput = document.createElement('input');
         dmgInput.type = 'text';
         dmgInput.value = weapon.damage;
-        dmgInput.style = "flex: 1; text-align: center;";
+        dmgInput.className = 'weapon-dmg-input';
+        dmgInput.placeholder = 'z.B. 1w10';
         dmgInput.oninput = (e) => {
             weapon.damage = e.target.value;
             saveData();
         };
-        
+        dmgDiv.appendChild(dmgInput);
+
         const toggleDescBtn = document.createElement('button');
         toggleDescBtn.className = 'item-desc-toggle';
-        toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+        toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Details';
         
+        controlsDiv.appendChild(dmgDiv);
+        controlsDiv.appendChild(toggleDescBtn);
+
+        // Description
         const descArea = document.createElement('textarea');
         descArea.className = 'item-description';
         descArea.placeholder = 'Beschreibung / Effekte...';
@@ -1069,27 +1112,17 @@ function renderWeapons() {
             weapon.showDesc = !weapon.showDesc;
             if (weapon.showDesc) {
                 descArea.classList.add('show');
-                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Details';
             } else {
                 descArea.classList.remove('show');
-                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+                toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Details';
             }
             saveData();
         };
-        if (weapon.showDesc) toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+        if (weapon.showDesc) toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Details';
         
-        const delBtn = document.createElement('button');
-        delBtn.className = 'btn-delete-icon';
-        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-        delBtn.onclick = () => {
-            removeWeapon(weapon.id);
-        };
-        
-        div.appendChild(dragHandle);
-        div.appendChild(nameInput);
-        div.appendChild(dmgInput);
-        div.appendChild(toggleDescBtn);
-        div.appendChild(delBtn);
+        div.appendChild(headerDiv);
+        div.appendChild(controlsDiv);
         div.appendChild(descArea);
         
         listEl.appendChild(div);
