@@ -188,9 +188,13 @@
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
-                <div class="add-item-row">
-                    <input type="text" id="new-item-input" placeholder="Neues Item hinzufügen..." onkeypress="handleNewItemKey(event)">
-                    <button onclick="addInventoryItem()"><i class="fa-solid fa-plus"></i></button>
+                                <div class="add-item-box" style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="text" id="new-item-input" placeholder="Item Name..." style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;" onkeypress="handleNewItemKey(event)">
+                        <input type="number" id="new-item-amount" value="1" min="1" style="width: 60px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; text-align: center; outline: none;">
+                    </div>
+                    <textarea id="new-item-desc" placeholder="Optionale Beschreibung / Effekte..." style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; resize: vertical; min-height: 40px; outline: none; margin-bottom: 0.5rem;"></textarea>
+                    <button onclick="addInventoryItem()" style="width: 100%; background: var(--accent-blue); color: white; border: none; border-radius: 4px; padding: 0.5rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s;"><i class="fa-solid fa-plus"></i> Hinzufügen</button>
                 </div>
             </div>
 
@@ -200,10 +204,13 @@
                 <div class="weapons-list" id="weapons-list">
                     <!-- Populated by JS -->
                 </div>
-                <div class="add-item-row">
-                    <input type="text" id="new-weapon-name" placeholder="Name..." style="flex: 2;">
-                    <input type="text" id="new-weapon-dmg" placeholder="Schaden (1w6+2)" style="flex: 1;">
-                    <button onclick="addWeaponItem()"><i class="fa-solid fa-plus"></i></button>
+                                <div class="add-item-box" style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="text" id="new-weapon-name" placeholder="Waffen Name..." style="flex: 2; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;">
+                        <input type="text" id="new-weapon-dmg" placeholder="Schaden (z.B. 1w10)" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;">
+                    </div>
+                    <textarea id="new-weapon-desc" placeholder="Optionale Beschreibung / Effekte..." style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; resize: vertical; min-height: 40px; outline: none; margin-bottom: 0.5rem;"></textarea>
+                    <button onclick="addWeaponItem()" style="width: 100%; background: var(--accent-blue); color: white; border: none; border-radius: 4px; padding: 0.5rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s;"><i class="fa-solid fa-plus"></i> Hinzufügen</button>
                 </div>
             </div>
 
