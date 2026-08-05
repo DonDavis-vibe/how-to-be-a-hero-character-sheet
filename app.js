@@ -778,9 +778,10 @@ function applyTheme(theme) {
                 'icon-inventar': 'assets/icon_inventar_steampunk.jpg',
                 'icon-notizen': 'assets/icon_notizen_steampunk.jpg',
                 'icon-hp': 'assets/icon_hp_steampunk.jpg',
-                'icon-waffen': 'assets/icon_handeln_steampunk.jpg'
+                'icon-waffen': 'assets/icon_handeln_steampunk.jpg',
+                'main-theme-logo': 'assets/logo_steampunk.jpg'
             };
-        } else if (theme === 'apokalypse') {
+        } else if (theme === 'apocalyptic') {
             imgPaths = {
                 'icon-handeln': 'assets/icon_handeln_apokalypse.jpg',
                 'icon-wissen': 'assets/icon_wissen_apokalypse.jpg',
@@ -788,9 +789,18 @@ function applyTheme(theme) {
                 'icon-inventar': 'assets/icon_inventar_apokalypse.jpg',
                 'icon-notizen': 'assets/icon_notizen_apokalypse.jpg',
                 'icon-hp': 'assets/icon_hp_apokalypse.jpg',
-                'icon-waffen': 'assets/icon_handeln_apokalypse.jpg'
+                'icon-waffen': 'assets/icon_handeln_apokalypse.jpg',
+                'main-theme-logo': 'assets/logo_apokalypse.jpg'
             };
         }
+    }
+
+    // Handle main logo visibility
+    const mainLogoWrapper = document.getElementById('main-logo-wrapper');
+    if (imgPaths['main-theme-logo']) {
+        if (mainLogoWrapper) mainLogoWrapper.style.display = 'block';
+    } else {
+        if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
     }
 
     // Apply images to DOM
