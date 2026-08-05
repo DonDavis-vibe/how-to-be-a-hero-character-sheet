@@ -841,10 +841,18 @@ function importData(event) {
 
 function resetData() {
     if (confirm("Möchtest du wirklich einen komplett neuen Charakter erstellen? Alle aktuellen Daten werden gelöscht!")) {
-        appData = JSON.parse(JSON.stringify(blankData));
-        delete appData.portrait;
+        appData = {
+            vorname: '', name: '', geschlecht: '', beruf: '', alter: '', statur: '',
+            hpCurrent: 10, hpMax: 10,
+            attr_handeln: 0, gbp_handeln: 0, skills_handeln: [],
+            attr_wissen: 0, gbp_wissen: 0, skills_wissen: [],
+            attr_soziales: 0, gbp_soziales: 0, skills_soziales: [],
+            inventory: [], weapons: [], statuses: [],
+            currency: { name: 'Credits', amount: 0 },
+            notes: '', theme: 'default', maxPoints: 400,
+            fxEnabled: true, soundEnabled: true
+        };
         document.getElementById('portrait-img').src = 'assets/giphy.gif'; // default placeholder
-        
         saveData();
         renderAll();
         calculatePoints();
