@@ -40,6 +40,13 @@ const defaultData = {
         { id: 'i2', name: 'Gaffa Tape' },
         { id: 'i3', name: 'Schweizer Taschenmesser' }
     ],
+    weapons: [
+        { id: 'w1', name: 'Taschenmesser', damage: '1W6-1' }
+    ],
+    statuses: ['Verletzt'],
+    currency: { name: 'Credits', amount: 150 },
+    notes: 'Kaugummi + Büroklammer = Bombe?',
+    theme: 'scifi',
     maxPoints: 400
 };
 
@@ -67,6 +74,9 @@ const blankData = {
     skills_soziales: [],
 
     inventory: [],
+    weapons: [],
+    statuses: [],
+    currency: { name: 'Credits', amount: 0 },
     notes: '',
     theme: 'default',
     maxPoints: 400
@@ -153,6 +163,15 @@ function renderAll() {
 
     // Inventory
     renderInventory();
+
+    renderWeapons();
+    renderStatuses();
+    if (appData.currency) {
+        const cName = document.getElementById('currency-name');
+        const cVal = document.getElementById('currency-val');
+        if(cName) cName.value = appData.currency.name || 'Credits';
+        if(cVal) cVal.value = appData.currency.amount || 0;
+    }
 
     // Theme
     if (appData.theme) {
@@ -251,9 +270,12 @@ function renderSkills(attr) {
         };
 
         const totalSpan = document.createElement('span');
-        totalSpan.className = 'skill-total';
+        totalSpan.className = 'skill-total skill-val clickable';
+        totalSpan.title = 'Probe w�rfeln!';
         totalSpan.id = 'total-' + skill.id;
-        totalSpan.textContent = '= ' + (attrVal + (skill.invested || 0));
+        let totalSkillVal = attrVal + (skill.invested || 0);
+        totalSpan.textContent = '= ' + totalSkillVal;
+        totalSpan.onclick = () => rollSkillCheck(skill.name, totalSkillVal);
 
         const valInput = document.createElement('input');
         valInput.type = 'number';
@@ -402,6 +424,15 @@ function renderInventory() {
             appData.inventory.splice(index, 1);
             saveData();
             renderInventory();
+
+    renderWeapons();
+    renderStatuses();
+    if (appData.currency) {
+        const cName = document.getElementById('currency-name');
+        const cVal = document.getElementById('currency-val');
+        if(cName) cName.value = appData.currency.name || 'Credits';
+        if(cVal) cVal.value = appData.currency.amount || 0;
+    }
         };
 
         div.appendChild(input);
@@ -418,6 +449,15 @@ function addInventoryItem() {
         input.value = '';
         saveData();
         renderInventory();
+
+    renderWeapons();
+    renderStatuses();
+    if (appData.currency) {
+        const cName = document.getElementById('currency-name');
+        const cVal = document.getElementById('currency-val');
+        if(cName) cName.value = appData.currency.name || 'Credits';
+        if(cVal) cVal.value = appData.currency.amount || 0;
+    }
     }
 }
 
@@ -684,3 +724,162 @@ function applyTheme(theme) {
 
 
 
+
+
+// ==================== UTILITY PACK FUNCTIONS ====================
+const AVAILABLE_STATUSES = ['Verletzt', 'Vergiftet', 'Bewusstlos', 'Kritisch', 'Verstrahlt', 'Gestunnt'];
+
+function renderStatuses() {
+    const container = document.getElementById('status-container');
+    if (!container) return;
+    container.innerHTML = '';
+    AVAILABLE_STATUSES.forEach(status => {
+        const isActive = appData.statuses && appData.statuses.includes(status);
+        const badge = document.createElement('span');
+        badge.className = `status-badge ${isActive ? 'active' : ''}`;
+        badge.textContent = status;
+        badge.onclick = () => toggleStatus(status);
+        container.appendChild(badge);
+    });
+}
+
+function toggleStatus(status) {
+    if (!appData.statuses) appData.statuses = [];
+    if (appData.statuses.includes(status)) {
+        appData.statuses = appData.statuses.filter(s => s !== status);
+    } else {
+        appData.statuses.push(status);
+    }
+    saveData();
+    renderStatuses();
+}
+
+function updateCurrency() {
+    appData.currency = {
+        name: document.getElementById('currency-name').value,
+        amount: parseInt(document.getElementById('currency-val').value) || 0
+    };
+    saveData();
+}
+
+function renderWeapons() {
+    const list = document.getElementById('weapons-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!appData.weapons) appData.weapons = [];
+    appData.weapons.forEach(w => {
+        list.innerHTML += `
+            <div class="weapon-item">
+                <span class="weapon-name">${w.name}</span>
+                <span class="weapon-dmg">${w.damage}</span>
+                <button class="btn-roll-dmg" onclick="rollWeaponDamage('${w.id}')"><i class="fa-solid fa-burst"></i> Roll</button>
+                <button onclick="removeWeapon('${w.id}')" style="background:transparent;border:none;color:var(--text-secondary);cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+    });
+}
+
+function addWeaponItem() {
+    const nameInput = document.getElementById('new-weapon-name');
+    const dmgInput = document.getElementById('new-weapon-dmg');
+    const name = nameInput.value.trim();
+    const dmg = dmgInput.value.trim();
+    if (name && dmg) {
+        if (!appData.weapons) appData.weapons = [];
+        appData.weapons.push({ id: 'w_' + Date.now(), name: name, damage: dmg });
+        nameInput.value = '';
+        dmgInput.value = '';
+        saveData();
+        renderWeapons();
+    }
+}
+
+function removeWeapon(id) {
+    appData.weapons = appData.weapons.filter(w => w.id !== id);
+    saveData();
+    renderWeapons();
+}
+
+function parseDiceFormula(formula) {
+    const match = formula.toLowerCase().match(/(\d+)w(\d+)([\+\-]\d+)?/);
+    if (!match) return null;
+    return {
+        count: parseInt(match[1]),
+        sides: parseInt(match[2]),
+        mod: match[3] ? parseInt(match[3]) : 0
+    };
+}
+
+function rollWeaponDamage(id) {
+    const weapon = appData.weapons.find(w => w.id === id);
+    if (!weapon) return;
+    
+    const parsed = parseDiceFormula(weapon.damage);
+    if (!parsed) {
+        alert("Schadensformat nicht erkannt. Bitte z.B. 1w6+2 verwenden.");
+        return;
+    }
+    
+    let total = 0;
+    let rolls = [];
+    for (let i = 0; i < parsed.count; i++) {
+        let r = Math.floor(Math.random() * parsed.sides) + 1;
+        rolls.push(r);
+        total += r;
+    }
+    total += parsed.mod;
+    
+    const displayRes = document.getElementById('dice-result');
+    displayRes.querySelector('.result-number').textContent = total;
+    displayRes.querySelector('.result-label').textContent = weapon.name + " Schaden";
+    displayRes.className = 'dice-result-display active damage-roll';
+    
+    setTimeout(() => {
+        displayRes.classList.remove('active');
+        displayRes.classList.remove('damage-roll');
+    }, 300);
+    
+    let rollStr = `[${rolls.join('+')}]` + (parsed.mod !== 0 ? (parsed.mod > 0 ? '+'+parsed.mod : parsed.mod) : '');
+    addToLog(`💥 ${weapon.name} Schaden: <b>${total}</b> <span style="font-size:0.75rem;opacity:0.7">(${weapon.damage} = ${rollStr})</span>`);
+}
+
+function useGBP(category) {
+    let field = 'gbp_' + category;
+    if (appData[field] > 0) {
+        appData[field]--;
+        document.getElementById('gbp-current-' + category).value = appData[field];
+        saveData();
+        addToLog(`💡 Geistesblitzpunkt für <b>${category.charAt(0).toUpperCase() + category.slice(1)}</b> eingesetzt!`);
+    }
+}
+
+function rollSkillCheck(skillName, skillValue) {
+    const result = Math.floor(Math.random() * 100) + 1;
+    let statusText = '';
+    let statusClass = '';
+    
+    if (result === 1) {
+        statusText = '🌟 Kritischer Erfolg!';
+        statusClass = 'crit-success';
+    } else if (result === 100) {
+        statusText = '💀 Patzer!';
+        statusClass = 'crit-fail';
+    } else if (result <= skillValue) {
+        statusText = '✅ Erfolg';
+        statusClass = 'success';
+    } else {
+        statusText = '❌ Fehlschlag';
+        statusClass = 'fail';
+    }
+
+    const displayRes = document.getElementById('dice-result');
+    displayRes.querySelector('.result-number').textContent = result;
+    displayRes.querySelector('.result-label').textContent = skillName + " Probe";
+    
+    displayRes.className = 'dice-result-display active ' + statusClass;
+    setTimeout(() => {
+        displayRes.className = 'dice-result-display';
+    }, 500);
+
+    addToLog(`🎲 ${skillName}-Probe (Wert: ${skillValue}): gewürfelt <b>${result}</b> ➔ <span style="color:var(--accent)">${statusText}</span>`);
+}

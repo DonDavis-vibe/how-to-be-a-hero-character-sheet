@@ -72,7 +72,11 @@
                         <input type="text" id="statur" value="SpOor" data-field="statur">
                     </div>
                 </div>
-            </header>
+                <div class="status-tags" id="status-container">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </header>
 
             <!-- Attributes Section -->
             <div class="attributes-grid">
@@ -85,10 +89,13 @@
                     </div>
                     <div class="attr-gbp">
                         <label>Geistesblitzpunkte</label>
-                        <div class="gbp-counter">
-                            <input type="number" id="gbp-current-handeln" value="0" data-field="gbp_handeln" class="gbp-input" min="0">
-                            <span class="gbp-separator">/</span>
-                            <span id="gbp-max-handeln" class="gbp-max">0</span>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="gbp-use-btn" onclick="useGBP('handeln')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
+                            <div class="gbp-counter">
+                                <input type="number" id="gbp-current-handeln" value="0" data-field="gbp_handeln" class="gbp-input" min="0">
+                                <span class="gbp-separator">/</span>
+                                <span id="gbp-max-handeln" class="gbp-max">0</span>
+                            </div>
                         </div>
                     </div>
                     <div class="skills-list" id="skills-handeln">
@@ -105,10 +112,13 @@
                     </div>
                     <div class="attr-gbp">
                         <label>Geistesblitzpunkte</label>
-                        <div class="gbp-counter">
-                            <input type="number" id="gbp-current-wissen" value="0" data-field="gbp_wissen" class="gbp-input" min="0">
-                            <span class="gbp-separator">/</span>
-                            <span id="gbp-max-wissen" class="gbp-max">0</span>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="gbp-use-btn" onclick="useGBP('wissen')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
+                            <div class="gbp-counter">
+                                <input type="number" id="gbp-current-wissen" value="0" data-field="gbp_wissen" class="gbp-input" min="0">
+                                <span class="gbp-separator">/</span>
+                                <span id="gbp-max-wissen" class="gbp-max">0</span>
+                            </div>
                         </div>
                     </div>
                     <div class="skills-list" id="skills-wissen">
@@ -125,10 +135,13 @@
                     </div>
                     <div class="attr-gbp">
                         <label>Geistesblitzpunkte</label>
-                        <div class="gbp-counter">
-                            <input type="number" id="gbp-current-soziales" value="0" data-field="gbp_soziales" class="gbp-input" min="0">
-                            <span class="gbp-separator">/</span>
-                            <span id="gbp-max-soziales" class="gbp-max">0</span>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="gbp-use-btn" onclick="useGBP('soziales')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
+                            <div class="gbp-counter">
+                                <input type="number" id="gbp-current-soziales" value="0" data-field="gbp_soziales" class="gbp-input" min="0">
+                                <span class="gbp-separator">/</span>
+                                <span id="gbp-max-soziales" class="gbp-max">0</span>
+                            </div>
                         </div>
                     </div>
                     <div class="skills-list" id="skills-soziales">
@@ -151,7 +164,18 @@
                 </div>
             </div>
 
-            <!-- Notes Section -->
+            <div class="weapons-section glass-panel" style="margin-top: 1rem;">
+                <h2 class="cat-title"><img src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen</h2>
+                <div class="weapons-list" id="weapons-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="add-item-row">
+                    <input type="text" id="new-weapon-name" placeholder="Name..." style="flex: 2;">
+                    <input type="text" id="new-weapon-dmg" placeholder="Schaden (1w6+2)" style="flex: 1;">
+                    <button onclick="addWeaponItem()"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
             <div class="notes-section glass-panel" style="margin-top: 1rem;">
                 <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="cat-title" style="margin: 0;"><img src="assets/icon_notizen.jpg" class="category-icon"> Notizen</h2>
@@ -167,6 +191,12 @@
         <!-- Right Side: Tools (HP & Dice) -->
         <div class="tools-panel">
             
+            <div class="currency-widget">
+                <i class="fa-solid fa-coins" style="color: #fbbf24;"></i>
+                <input type="text" id="currency-name" class="currency-name" value="Credits" onchange="updateCurrency()">
+                <input type="number" id="currency-val" class="currency-val" value="0" onchange="updateCurrency()">
+            </div>
+
             <!-- Lebenspunkte (HP) -->
             <div class="hp-tracker glass-panel">
                 <h2 class="cat-title"><img src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
