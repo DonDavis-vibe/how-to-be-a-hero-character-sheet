@@ -1119,3 +1119,8 @@ input[type="number"] { -moz-appearance: textfield; }
     0% { transform: translateY(0); }
     100% { transform: translateY(120vh); }
 }
+
+@keyframes timeRipple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+}
