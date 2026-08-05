@@ -662,6 +662,8 @@ body.theme-magic {
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 1rem;
+    align-items: flex-start;
+    align-content: flex-start;
 }
 .status-badge {
     padding: 0.2rem 0.6rem;
@@ -770,3 +772,4 @@ body.theme-magic {
     color: #fff;
     transform: scale(1.1);
 }
+
