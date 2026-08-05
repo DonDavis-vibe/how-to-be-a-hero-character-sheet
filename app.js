@@ -1188,6 +1188,101 @@ function startDeepSpaceFx() {
     }, 3500); // spawn every few seconds
 }
 
+function startWildWestFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    fxInterval = setInterval(() => {
+        const tumbleweed = document.createElement('div');
+        tumbleweed.style.position = 'absolute';
+        const size = Math.random() * 40 + 30; // 30-70px
+        tumbleweed.style.width = size + 'px';
+        tumbleweed.style.height = size + 'px';
+        tumbleweed.style.borderRadius = '50%';
+        tumbleweed.style.background = `url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 30 Q50 10 80 30 T80 70 T20 70 T20 30" fill="none" stroke="%23a0522d" stroke-width="3"/><path d="M30 20 Q10 50 30 80 T70 80 T70 20 T30 20" fill="none" stroke="%23cd853f" stroke-width="2"/><path d="M10 50 Q50 90 90 50 T50 10 T10 50" fill="none" stroke="%238b4513" stroke-width="4"/><path d="M40 10 Q80 50 40 90 T10 50 T40 10" fill="none" stroke="%23d2b48c" stroke-width="2"/><circle cx="50" cy="50" r="45" fill="none" stroke="%238b4513" stroke-width="2" stroke-dasharray="5,5"/></svg>') center/contain no-repeat`;
+        tumbleweed.style.border = 'none';
+        tumbleweed.style.left = '100vw'; // Start off-screen right
+        tumbleweed.style.bottom = (Math.random() * 20 + 5) + 'vh'; // Roll along the bottom
+        tumbleweed.style.opacity = '0.8';
+        
+        const duration = Math.random() * 5 + 4; // 4-9s rolling across
+        tumbleweed.style.animation = `tumbleweedRoll ${duration}s linear forwards`;
+        
+        layer.appendChild(tumbleweed);
+        
+        setTimeout(() => {
+            if (tumbleweed.parentNode) tumbleweed.parentNode.removeChild(tumbleweed);
+        }, duration * 1000);
+    }, 4500); // spawn every few seconds
+}
+
+function startPiratesFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    // Create multiple waves for depth
+    for(let i=0; i<3; i++) {
+        const wave = document.createElement('div');
+        wave.style.position = 'absolute';
+        wave.style.bottom = '0';
+        wave.style.left = '0';
+        wave.style.width = '100vw'; 
+        wave.style.height = (80 + i*30) + 'px'; // staggered heights
+        
+        // A nice curve for the wave using SVG
+        const opacity = 0.2 + (i*0.1);
+        const svg = `<svg viewBox="0 0 1000 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 C250,100 250,0 500,50 C750,100 750,0 1000,50 L1000,100 L0,100 Z" fill="rgba(10, 60, 80, ${opacity})"/></svg>`;
+        
+        // Encode the SVG properly
+        const encodedSvg = svg.replace(/</g, '%3C').replace(/>/g, '%3E').replace(/#/g, '%23').replace(/"/g, "'");
+        
+        wave.style.background = `url("data:image/svg+xml;utf8,${encodedSvg}") repeat-x`;
+        wave.style.backgroundSize = '1000px 100%';
+        wave.style.backgroundPosition = 'bottom';
+        wave.style.animation = `waveRoll ${8 + i*4}s linear infinite`;
+        wave.style.pointerEvents = 'none';
+        
+        // Reverse direction for middle wave to make it look turbulent
+        if (i === 1) {
+            wave.style.animationDirection = 'reverse';
+        }
+        
+        layer.appendChild(wave);
+    }
+    
+    // Kraken tentacles!
+    const spawnTentacle = () => {
+        const tentacle = document.createElement('div');
+        tentacle.style.position = 'absolute';
+        tentacle.style.bottom = '-300px'; // Start below the screen
+        tentacle.style.left = (Math.random() * 80 + 10) + 'vw'; // Random horizontal position
+        tentacle.style.width = '150px';
+        tentacle.style.height = '300px';
+        
+        // Detailed SVG Kraken tentacle (no newlines)
+        const tentacleSvg = `<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><g fill="#e25d6b" stroke="#2d132c" stroke-width="2"><circle cx="27" cy="120" r="8"/><circle cx="21" cy="95" r="7"/><circle cx="21" cy="70" r="6"/><circle cx="26" cy="45" r="5"/><circle cx="34" cy="25" r="4"/><circle cx="44" cy="10" r="3"/></g><g fill="#801336"><circle cx="26" cy="120" r="3"/><circle cx="20" cy="95" r="3"/><circle cx="20" cy="70" r="2"/><circle cx="25" cy="45" r="2"/><circle cx="33" cy="25" r="1.5"/><circle cx="43" cy="10" r="1"/></g><path d="M35,200 Q10,120 20,70 Q25,40 45,10 Q50,0 55,5 Q60,10 40,40 Q30,70 45,120 Q55,160 65,200 Z" fill="#2d132c"/><path d="M40,200 Q15,120 25,70 Q30,40 48,10" fill="none" stroke="#801336" stroke-width="4" stroke-linecap="round"/></svg>`;
+        const encodedTentacle = tentacleSvg.replace(/</g, '%3C').replace(/>/g, '%3E').replace(/#/g, '%23').replace(/"/g, "'");
+        
+        tentacle.style.background = `url("data:image/svg+xml;utf8,${encodedTentacle}") no-repeat bottom center`;
+        tentacle.style.backgroundSize = 'contain';
+        tentacle.style.animation = 'tentacleRise 4s ease-in-out forwards';
+        tentacle.style.transformOrigin = 'bottom center';
+        
+        layer.appendChild(tentacle);
+        
+        setTimeout(() => {
+            if (tentacle.parentNode) tentacle.parentNode.removeChild(tentacle);
+        }, 4000);
+    };
+
+    // Spawn one immediately for the wow factor, then every 20 seconds
+    setTimeout(spawnTentacle, 500);
+    
+    fxInterval = setInterval(spawnTentacle, 20000);
+}
+
 function changeTheme() {
     const selector = document.getElementById('theme-selector');
     const theme = selector.value;
@@ -1226,6 +1321,8 @@ function applyTheme(theme) {
         else if(theme === 'lovecraft') startLovecraftFx();
         else if(theme === 'magic') startMagicFx();
         else if(theme === 'deepspace') startDeepSpaceFx();
+        else if(theme === 'wildwest') startWildWestFx();
+        else if(theme === 'pirates') startPiratesFx();
     }
     
     // Default image paths
@@ -1274,6 +1371,28 @@ function applyTheme(theme) {
                 'icon-hp': 'assets/icon_hp_cyberpunk.jpg',
                 'icon-waffen': 'assets/icon_handeln_cyberpunk.jpg',
                 'main-theme-logo': 'assets/logo_cyberpunk.jpg'
+            };
+        } else if (theme === 'wildwest') {
+            imgPaths = {
+                'icon-handeln': 'assets/icon_handeln_wildwest.jpg',
+                'icon-wissen': 'assets/icon_wissen_wildwest.jpg',
+                'icon-soziales': 'assets/icon_soziales_wildwest.jpg',
+                'icon-inventar': 'assets/icon_inventar_wildwest.jpg',
+                'icon-notizen': 'assets/icon_notizen_wildwest.jpg',
+                'icon-hp': 'assets/icon_hp_wildwest.jpg',
+                'icon-waffen': 'assets/icon_handeln_wildwest.jpg',
+                'main-theme-logo': 'assets/logo_wildwest.jpg'
+            };
+        } else if (theme === 'pirates') {
+            imgPaths = {
+                'icon-handeln': 'assets/icon_handeln_pirates.jpg',
+                'icon-wissen': 'assets/icon_wissen_pirates.jpg',
+                'icon-soziales': 'assets/icon_soziales_pirates.jpg',
+                'icon-inventar': 'assets/icon_inventar_pirates.jpg',
+                'icon-notizen': 'assets/icon_notizen_pirates.jpg',
+                'icon-hp': 'assets/icon_hp_pirates.jpg',
+                'icon-waffen': 'assets/icon_handeln_pirates.jpg',
+                'main-theme-logo': 'assets/logo_pirates.jpg'
             };
         }
     }
