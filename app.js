@@ -988,6 +988,35 @@ function startCyberpunkFx() {
     }, 200); // sparse rain
 }
 
+
+function startTimeTravelFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    fxInterval = setInterval(() => {
+        const ripple = document.createElement('div');
+        ripple.style.position = 'absolute';
+        const size = Math.random() * 100 + 50; 
+        ripple.style.width = size + 'px';
+        ripple.style.height = size + 'px';
+        ripple.style.border = '2px solid rgba(150, 200, 255, 0.4)';
+        ripple.style.borderRadius = '50%';
+        ripple.style.left = Math.random() * 100 + 'vw';
+        ripple.style.top = Math.random() * 100 + 'vh';
+        ripple.style.boxShadow = '0 0 15px rgba(150, 200, 255, 0.2)';
+        
+        const duration = Math.random() * 3 + 3; // 3s to 6s
+        ripple.style.animation = `timeRipple ${duration}s ease-out forwards`;
+        
+        layer.appendChild(ripple);
+        
+        setTimeout(() => {
+            if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
+        }, duration * 1000);
+    }, 1200); 
+}
+
 function startApocalypseFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
@@ -1059,7 +1088,8 @@ function applyTheme(theme) {
     
     clearFx();
     if (fxEnabled) {
-        if(theme === 'apocalyptic') startApocalypseFx();
+        if(theme === 'default') startTimeTravelFx();
+        else if(theme === 'apocalyptic') startApocalypseFx();
         else if(theme === 'steampunk') startSteampunkFx();
         else if(theme === 'cyberpunk') startCyberpunkFx();
     }
