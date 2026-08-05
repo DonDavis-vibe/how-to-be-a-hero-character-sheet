@@ -441,6 +441,39 @@ function renderInventory() {
             saveData();
         };
 
+        const amountDiv = document.createElement('div');
+        amountDiv.className = 'item-amount-wrapper';
+
+        const minusBtn = document.createElement('button');
+        minusBtn.className = 'btn-icon-small';
+        minusBtn.innerHTML = '-';
+        minusBtn.onclick = () => {
+            let amt = parseInt(item.amount) || 1;
+            if (amt > 1) {
+                item.amount = amt - 1;
+                saveData();
+                renderInventory();
+            }
+        };
+
+        const amtSpan = document.createElement('span');
+        amtSpan.className = 'item-amount';
+        amtSpan.textContent = (item.amount !== undefined) ? item.amount : 1;
+
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'btn-icon-small';
+        plusBtn.innerHTML = '+';
+        plusBtn.onclick = () => {
+            let amt = parseInt(item.amount) || 1;
+            item.amount = amt + 1;
+            saveData();
+            renderInventory();
+        };
+
+        amountDiv.appendChild(minusBtn);
+        amountDiv.appendChild(amtSpan);
+        amountDiv.appendChild(plusBtn);
+
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
         delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
@@ -448,18 +481,10 @@ function renderInventory() {
             appData.inventory.splice(index, 1);
             saveData();
             renderInventory();
-
-    renderWeapons();
-    renderStatuses();
-    if (appData.currency) {
-        const cName = document.getElementById('currency-name');
-        const cVal = document.getElementById('currency-val');
-        if(cName) cName.value = appData.currency.name || 'Credits';
-        if(cVal) cVal.value = appData.currency.amount || 0;
-    }
         };
 
         div.appendChild(input);
+        div.appendChild(amountDiv);
         div.appendChild(delBtn);
         listEl.appendChild(div);
     });
@@ -469,19 +494,10 @@ function addInventoryItem() {
     const input = document.getElementById('new-item-input');
     const val = input.value.trim();
     if (val) {
-        appData.inventory.push({ id: 'i' + Date.now(), name: val });
+        appData.inventory.push({ id: 'i' + Date.now(), name: val, amount: 1 });
         input.value = '';
         saveData();
         renderInventory();
-
-    renderWeapons();
-    renderStatuses();
-    if (appData.currency) {
-        const cName = document.getElementById('currency-name');
-        const cVal = document.getElementById('currency-val');
-        if(cName) cName.value = appData.currency.name || 'Credits';
-        if(cVal) cVal.value = appData.currency.amount || 0;
-    }
     }
 }
 
