@@ -742,10 +742,36 @@ function renderStatuses() {
     appData.statuses.forEach(statusObj => {
         const badge = document.createElement('span');
         badge.className = 'status-badge active';
-        let text = statusObj.name;
-        if (statusObj.value) text += `: ${statusObj.value}`;
-        badge.innerHTML = `${text} <i class="fa-solid fa-times" style="margin-left: 0.3rem; opacity: 0.7;"></i>`;
-        badge.onclick = () => removeStatus(statusObj.id);
+        badge.style.display = 'inline-flex';
+        badge.style.alignItems = 'center';
+        badge.style.cursor = 'default';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = statusObj.name;
+        badge.appendChild(nameSpan);
+
+        if (statusObj.value !== undefined && statusObj.value !== '') {
+            badge.appendChild(document.createTextNode(': '));
+            const valInput = document.createElement('input');
+            valInput.type = 'text';
+            valInput.value = statusObj.value;
+            valInput.style = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: inherit; width: 45px; font-family: inherit; font-size: inherit; outline: none; text-align: center; margin-left: 4px; padding: 0 2px;';
+            valInput.onchange = (e) => {
+                statusObj.value = e.target.value;
+                saveData();
+            };
+            badge.appendChild(valInput);
+        }
+
+        const delIcon = document.createElement('i');
+        delIcon.className = 'fa-solid fa-times';
+        delIcon.style = 'margin-left: 0.5rem; opacity: 0.7; cursor: pointer; padding: 0.2rem;';
+        delIcon.onclick = (e) => {
+            e.stopPropagation();
+            removeStatus(statusObj.id);
+        };
+        badge.appendChild(delIcon);
+        
         container.appendChild(badge);
     });
 }
