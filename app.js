@@ -1067,6 +1067,17 @@ function applyTheme(theme) {
                 'icon-waffen': 'assets/icon_handeln_apokalypse.jpg',
                 'main-theme-logo': 'assets/logo_apokalypse.jpg'
             };
+        } else if (theme === 'cyberpunk') {
+            imgPaths = {
+                'icon-handeln': 'assets/icon_handeln_cyberpunk.jpg',
+                'icon-wissen': 'assets/icon_wissen_cyberpunk.jpg',
+                'icon-soziales': 'assets/icon_soziales_cyberpunk.jpg',
+                'icon-inventar': 'assets/icon_inventar_cyberpunk.jpg',
+                'icon-notizen': 'assets/icon_notizen_cyberpunk.jpg',
+                'icon-hp': 'assets/icon_hp_cyberpunk.jpg',
+                'icon-waffen': 'assets/icon_handeln_cyberpunk.jpg',
+                'main-theme-logo': 'assets/logo_cyberpunk.jpg'
+            };
         }
     }
 
