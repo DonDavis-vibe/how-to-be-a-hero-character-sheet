@@ -33,7 +33,10 @@
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
                 <input type="file" id="import-upload" accept=".json" style="display:none" onchange="importData(event)">
             </label>
-            <select id="theme-selector" class="tool-btn" onchange="changeTheme()" style="cursor: pointer; background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--panel-border);">
+            <div class="tool-btn theme-wrapper" style="padding: 0; display: flex; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);">
+              <i class="fa-solid fa-palette" style="padding-left: 0.8rem; pointer-events: none; opacity: 0.8;"></i>
+              <select id="theme-selector" onchange="changeTheme()" style="cursor: pointer; background: transparent; color: white; border: none; padding: 0.5rem 0.5rem; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; font-size: 0.9rem; font-family: inherit;">
+
                 <option value="default">Vibe: Zeitreise</option>
                 <option value="steampunk">Vibe: Steampunk</option>
                 <option value="apocalyptic">Vibe: Apokalypse</option>
@@ -42,7 +45,9 @@
                 <option value="deepspace">Vibe: Deep Space</option>
                 <option value="biohazard">Vibe: Biohazard</option>
                 <option value="magic">Vibe: Royal Magic</option>
-            </select>
+                          </select>
+              <i class="fa-solid fa-chevron-down" style="padding-right: 0.8rem; pointer-events: none; opacity: 0.6; font-size: 0.8rem;"></i>
+          </div>
         </div>
 
         <!-- Left Side: Character Sheet -->
