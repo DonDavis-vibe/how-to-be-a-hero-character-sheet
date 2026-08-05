@@ -241,6 +241,15 @@ function updateHpMax() {
     saveData();
 }
 
+function adjustHpMax(amount) {
+    let el = document.getElementById('hp-max');
+    let val = parseInt(el.value) || 1;
+    val = Math.max(1, val + amount);
+    el.value = val;
+    updateHpMax();
+}
+
+
 // --- Skills Management ---
 function renderSkills(attr) {
     const listEl = document.getElementById(`skills-${attr}`);
