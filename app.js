@@ -1211,6 +1211,15 @@ function renderWeapons() {
         };
         dmgDiv.appendChild(dmgInput);
 
+        const rollBtn = document.createElement('button');
+        rollBtn.className = 'btn-icon-small weapon-damage-btn';
+        rollBtn.innerHTML = '<i class="fa-solid fa-dice"></i>';
+        rollBtn.title = 'Schaden würfeln';
+        rollBtn.onclick = () => {
+            rollWeaponDamage(weapon.damage, weapon.name);
+        };
+        dmgDiv.appendChild(rollBtn);
+
         const toggleDescBtn = document.createElement('button');
         toggleDescBtn.className = 'item-desc-toggle';
         toggleDescBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Details';
