@@ -23,6 +23,7 @@
 
 /* Themes */
 body.theme-steampunk {
+    background-image: url('assets/bg_steampunk.jpg');
     --glass-bg: rgba(40, 25, 10, 0.7);
     --glass-border: rgba(212, 175, 55, 0.3);
     --text-primary: #fcf1d7;
@@ -34,6 +35,7 @@ body.theme-steampunk {
 }
 
 body.theme-apocalyptic {
+    background-image: url('assets/bg_apokalypse.jpg');
     --glass-bg: rgba(40, 10, 10, 0.7);
     --glass-border: rgba(255, 60, 60, 0.3);
     --text-primary: #ffeaea;
