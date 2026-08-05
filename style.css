@@ -140,7 +140,7 @@ body::after {
     gap: 2rem;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 768px) {
     .app-container { 
         grid-template-columns: 1fr;
         grid-template-areas: "toolbar" "left" "right";
@@ -153,6 +153,7 @@ body::after {
     justify-content: flex-end;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap;
     margin-bottom: -1rem;
 }
 
