@@ -44,8 +44,17 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
   - Einklappbares **Notizen**-System mit coolen 3D-Icons (perfekt für Lore, Quests oder Geheimnisse).
   - Profilbild-Upload (oder GIF-Upload) für deinen Helden!
 - 🎨 **Epische Themes & Animierte UI-Effekte:** 
-  - Wähle aus maßgeschneiderten Themes wie *Zeitreise*, *Steampunk*, *Cyberpunk* und *Apokalypse*! Jedes Theme ändert das komplette Layout (Hintergründe, Logos, Farben und alle UI-Icons).
-  - **Dynamische Hintergrund-Animationen:** Fliegende Asche in der Apokalypse, tickende Zahnräder beim Steampunk, Neon-Regen im Cyberpunk oder wabernde Zeitrisse. 
+  - Wähle aus maßgeschneiderten Themes! Jedes Theme ändert das komplette Layout (Hintergründe, Logos, Farben und alle UI-Icons).
+  - **✅ Bereits vollständig integriert (inkl. Custom UI-Icons, Hintergrundbild & Spezial-Effekten):**
+    - ⏳ **Zeitreise (Standard)** - Wabernde Zeitrisse
+    - ⚙️ **Steampunk** - Rotierende Zahnräder
+    - ☢️ **Apokalypse** - Fliegende Aschepartikel
+    - 🦾 **Cyberpunk** - Digitaler Neon-Regen
+  - **🚧 Demnächst verfügbar (aktuell noch WIP/Platzhalter):**
+    - 🚀 *Deep Space*
+    - 🦠 *Biohazard*
+    - 🔮 *Royal Magic*
+    - 🕶️ *Synthwave*
   - **FX Toggle:** Alle Animationen lassen sich mit einem Klick auf den Zauberstab (🪄) oben rechts an- und ausschalten!
   - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
 - 💾 **100% Offline & Lokal Speichern:** 
