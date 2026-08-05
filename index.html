@@ -223,7 +223,11 @@
                 <div class="hp-display">
                     <input type="number" id="hp-current" value="100" onchange="updateHp()">
                     <span class="hp-divider">/</span>
-                    <input type="number" id="hp-max" value="100" onchange="updateHpMax()">
+                    <div style="display: flex; align-items: center; gap: 0.3rem;">
+                        <button class="hp-max-adjust" onclick="adjustHpMax(-1)">-</button>
+                        <input type="number" id="hp-max" value="100" onchange="updateHpMax()" style="width: 70px;">
+                        <button class="hp-max-adjust" onclick="adjustHpMax(1)">+</button>
+                    </div>
                 </div>
                 
                 <!-- Health Bar Visual -->
