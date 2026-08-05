@@ -103,7 +103,7 @@
                 <!-- Handeln -->
                 <div class="attribute-card" style="--accent: var(--color-action);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img src="assets/icon_handeln.jpg" class="category-icon"> Handeln</h2>
+                        <h2 class="cat-title"><img id="icon-handeln" src="assets/icon_handeln.jpg" class="category-icon"> Handeln</h2>
                         <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly>
                     </div>
                     <div class="attr-gbp">
@@ -126,7 +126,7 @@
                 <!-- Wissen -->
                 <div class="attribute-card" style="--accent: var(--color-knowledge);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img src="assets/icon_wissen.jpg" class="category-icon"> Wissen</h2>
+                        <h2 class="cat-title"><img id="icon-wissen" src="assets/icon_wissen.jpg" class="category-icon"> Wissen</h2>
                         <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly>
                     </div>
                     <div class="attr-gbp">
@@ -149,7 +149,7 @@
                 <!-- Soziales -->
                 <div class="attribute-card" style="--accent: var(--color-social);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img src="assets/icon_soziales.jpg" class="category-icon"> Soziales</h2>
+                        <h2 class="cat-title"><img id="icon-soziales" src="assets/icon_soziales.jpg" class="category-icon"> Soziales</h2>
                         <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly>
                     </div>
                     <div class="attr-gbp">
@@ -172,7 +172,7 @@
             </div>
             <!-- Inventory Section -->
             <div class="inventory-section">
-                <h2 class="cat-title"><img src="assets/icon_inventar.jpg" class="category-icon"> Inventar</h2>
+                <h2 class="cat-title"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon"> Inventar</h2>
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
@@ -184,7 +184,7 @@
 
             <!-- Weapons Section -->
             <div class="weapons-section" style="margin-top: 2rem;">
-                <h2 class="cat-title"><img src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen</h2>
+                <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen</h2>
                 <div class="weapons-list" id="weapons-list">
                     <!-- Populated by JS -->
                 </div>
@@ -198,7 +198,7 @@
             <!-- Notes Section -->
             <div class="notes-section glass-panel" style="margin-top: 2rem;">
                 <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                    <h2 class="cat-title" style="margin: 0;"><img src="assets/icon_notizen.jpg" class="category-icon"> Notizen</h2>
+                    <h2 class="cat-title" style="margin: 0;"><img id="icon-notizen" src="assets/icon_notizen.jpg" class="category-icon"> Notizen</h2>
                     <i class="fa-solid fa-chevron-down" id="notes-chevron" style="transition: transform 0.3s;"></i>
                 </div>
                 <div class="notes-content" id="notes-content" style="display: none; margin-top: 1rem;">
@@ -213,7 +213,7 @@
             
             <!-- Lebenspunkte (HP) -->
             <div class="hp-tracker glass-panel">
-                <h2 class="cat-title"><img src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
+                <h2 class="cat-title"><img id="icon-hp" src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
                 <div class="hp-display">
                     <input type="number" id="hp-current" value="100" onchange="updateHp()">
                     <span class="hp-divider">/</span>

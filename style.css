@@ -365,12 +365,20 @@ h2 {
 
 .attr-header h2 { margin: 0; color: var(--accent); }
 .attr-val {
-    width: 75px;
-    padding-right: 15px !important;
+    width: 60px;
     font-size: 1.5rem;
     font-weight: 800;
     text-align: center;
     border-color: var(--accent) !important;
+    appearance: none;
+    -moz-appearance: textfield;
+    pointer-events: none;
+    cursor: default;
+}
+.attr-val::-webkit-inner-spin-button,
+.attr-val::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .attr-gbp {
