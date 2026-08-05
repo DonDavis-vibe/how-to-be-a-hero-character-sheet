@@ -959,8 +959,58 @@ function clearFx() {
     const layer = document.getElementById('fx-layer');
     if(layer) layer.innerHTML = '';
     if(fxInterval) clearInterval(fxInterval);
+    if(fxInterval2) clearInterval(fxInterval2);
 }
 
+
+
+function startMafiaFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+
+    // Heavy Noir Rain
+    fxInterval = setInterval(() => {
+        const drop = document.createElement('div');
+        drop.style.position = 'absolute';
+        drop.style.width = '2px';
+        drop.style.height = Math.random() * 50 + 50 + 'px';
+        drop.style.background = 'rgba(200, 200, 200, 0.3)';
+        drop.style.left = (Math.random() * 120) + 'vw';
+        drop.style.top = '-10vh';
+        
+        const duration = Math.random() * 0.4 + 0.4; // Very fast rain
+        drop.style.animation = `mafiaRain ${duration}s linear forwards`;
+        
+        layer.appendChild(drop);
+        
+        setTimeout(() => {
+            if (drop.parentNode) drop.parentNode.removeChild(drop);
+        }, duration * 1000);
+    }, 30); 
+
+    // Ground Smoke/Fog
+    fxInterval2 = setInterval(() => {
+        const smoke = document.createElement('div');
+        smoke.style.position = 'absolute';
+        smoke.style.width = '200px';
+        smoke.style.height = '200px';
+        smoke.style.borderRadius = '50%';
+        smoke.style.background = 'radial-gradient(circle, rgba(180,180,180,0.15) 0%, transparent 70%)';
+        smoke.style.left = Math.random() * 100 + 'vw';
+        smoke.style.bottom = '-10vh';
+        smoke.style.filter = 'blur(15px)';
+        
+        const duration = Math.random() * 10 + 10; 
+        smoke.style.animation = `mafiaSmoke ${duration}s ease-in forwards`;
+        
+        layer.appendChild(smoke);
+        
+        setTimeout(() => {
+            if (smoke.parentNode) smoke.parentNode.removeChild(smoke);
+        }, duration * 1000);
+    }, 1500);
+}
 
 function startCyberpunkFx() {
     clearFx();
@@ -1092,6 +1142,7 @@ function applyTheme(theme) {
         else if(theme === 'apocalyptic') startApocalypseFx();
         else if(theme === 'steampunk') startSteampunkFx();
         else if(theme === 'cyberpunk') startCyberpunkFx();
+        else if(theme === 'mafia') startMafiaFx();
     }
     
     // Default image paths

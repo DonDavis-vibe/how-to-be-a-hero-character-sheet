@@ -1124,3 +1124,51 @@ input[type="number"] { -moz-appearance: textfield; }
     0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
     100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
 }
+
+/* Mafia / 1920s Noir Theme */
+body.theme-mafia {
+    --bg-color: #111111;
+    --glass-bg: rgba(25, 25, 25, 0.9);
+    --glass-border: rgba(180, 160, 120, 0.4);
+    --text-primary: #e6dfcc;
+    --text-secondary: #b3a890;
+    --color-action: #c2a15f;
+    --color-wissen: #b3a890;
+    --color-soziales: #d1c8b4;
+    --color-accent: #c2a15f;
+    background-image: url('assets/bg_mafia.jpg'); 
+}
+
+body.theme-mafia .app-container {
+    box-shadow: 0 0 50px rgba(194, 161, 95, 0.1);
+}
+
+body.theme-mafia .card-layout {
+    background: linear-gradient(135deg, rgba(20,20,20,0.9), rgba(30,25,20,0.9));
+    border: 1px solid rgba(194, 161, 95, 0.3);
+}
+
+body.theme-mafia .btn-primary {
+    background: #2a2a2a;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+}
+
+body.theme-mafia .btn-primary:hover {
+    background: var(--color-accent);
+    color: #111;
+    box-shadow: 0 0 15px rgba(194, 161, 95, 0.5);
+}
+
+@keyframes mafiaRain {
+    0% { transform: translateY(-5vh) translateX(0) rotate(15deg); opacity: 0; }
+    20% { opacity: 0.6; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(105vh) translateX(-20vw) rotate(15deg); opacity: 0; }
+}
+
+@keyframes mafiaSmoke {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    50% { opacity: 0.2; }
+    100% { transform: translateY(-30vh) scale(3); opacity: 0; }
+}
