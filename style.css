@@ -138,15 +138,21 @@ body::after {
     margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
-    grid-template-areas: "toolbar toolbar" "left right";
+    grid-template-areas: "logo logo" "toolbar toolbar" "left right";
     gap: 2rem;
 }
 
 @media (max-width: 768px) {
     .app-container { 
         grid-template-columns: 1fr;
-        grid-template-areas: "toolbar" "left" "right";
+        grid-template-areas: "logo" "toolbar" "left" "right";
     }
+}
+
+.main-logo-container {
+    grid-area: logo;
+    text-align: center;
+    margin-bottom: -1rem;
 }
 
 .toolbar {
