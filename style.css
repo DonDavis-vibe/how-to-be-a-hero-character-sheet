@@ -344,7 +344,7 @@ h2 {
 /* Attributes Grid */
 .attributes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
@@ -432,7 +432,7 @@ h2 {
 
 .skill-item {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.25rem;
     align-items: center;
 }
 
@@ -442,7 +442,7 @@ h2 {
     background: rgba(15, 23, 42, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
-    padding: 0.3rem 0.4rem;
+    padding: 0.2rem 0.3rem;
     border-radius: 6px;
     font-size: 0.85rem;
     line-height: 1.2;
@@ -461,7 +461,18 @@ h2 {
     color: rgba(255,255,255,0.3);
 }
 
-.skill-item input[type="number"] { width: 60px; text-align: center; padding-right: 15px !important; flex-shrink: 0; }
+.skill-item input[type="number"] {
+    width: 40px;
+    text-align: center;
+    padding: 0 !important;
+    flex-shrink: 0;
+    -moz-appearance: textfield;
+}
+.skill-item input[type="number"]::-webkit-inner-spin-button, 
+.skill-item input[type="number"]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
 .skill-total {
     font-weight: 700;
     min-width: 35px;
