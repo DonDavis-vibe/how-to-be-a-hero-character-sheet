@@ -54,6 +54,9 @@
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
                 <input type="file" id="import-upload" accept=".json" style="display:none" onchange="importData(event)">
             </label>
+            <button id="toggle-sound-btn" class="tool-btn" onclick="toggleSound()" title="Sound-Effekte an/aus" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; margin-right: 0.5rem; cursor: pointer;">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
             <button id="toggle-fx-btn" class="tool-btn" onclick="toggleFx()" title="Hintergrund-Effekte an/aus" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; margin-right: 0.5rem; cursor: pointer;">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
               </button>
@@ -336,6 +339,8 @@
     <canvas id="confetti-canvas"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="data.js"></script>
+    <script src="audio.js"></script>
     <script src="app.js"></script>
 <div class="footer-disclaimer">Dies ist ein inoffizielles Fan-Projekt und steht in keiner Verbindung zu Rocket Beans Entertainment GmbH.<br>Das Pen & Paper Regelsystem "How to be a Hero" unterliegt der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank">howtobeahero.de</a>.</div>
 <div id="crit-fail-overlay"></div>
