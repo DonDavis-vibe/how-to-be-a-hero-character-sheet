@@ -127,7 +127,14 @@
             
                 <!-- Theme Main Logo -->
                 <div class="main-logo-container" style="flex-shrink: 0; display: none; align-items: center; justify-content: center; width: 120px; height: 120px;" id="main-logo-wrapper">
-                    <img id="main-theme-logo" src="" alt="Theme Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2px solid var(--glass-border, rgba(255,255,255,0.2));">
+                    <label class="portrait-container" for="theme-logo-upload" style="width: 100%; height: 100%; margin: 0; position: relative; border-radius: 50%;">
+                        <img id="main-theme-logo" src="" alt="Theme Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border: 2px solid var(--glass-border, rgba(255,255,255,0.2));">
+                        <div class="portrait-overlay" style="border-radius: 50%;"><i class="fa-solid fa-camera"></i></div>
+                        <button id="btn-remove-custom-logo" class="btn-delete-icon" style="position: absolute; top: 0; right: 0; display: none; background: rgba(0,0,0,0.7); z-index: 10;" onclick="removeCustomLogo(event)" title="Eigenes Logo entfernen">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </label>
+                    <input type="file" id="theme-logo-upload" accept="image/*" style="display: none;" onchange="handleThemeLogoUpload(event)">
                 </div>
             </header>
 

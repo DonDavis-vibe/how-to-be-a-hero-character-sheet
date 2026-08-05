@@ -1361,14 +1361,27 @@ function applyTheme(theme) {
 
     // Handle main logo visibility
     const mainLogoWrapper = document.getElementById('main-logo-wrapper');
-    if (imgPaths['main-theme-logo']) {
+    const mainLogoImg = document.getElementById('main-theme-logo');
+    const removeBtn = document.getElementById('btn-remove-custom-logo');
+    
+    let logoSrc = null;
+    if (appData.customThemeLogo) {
+        logoSrc = appData.customThemeLogo;
+    } else if (imgPaths['main-theme-logo']) {
+        logoSrc = imgPaths['main-theme-logo'];
+    }
+
+    if (logoSrc) {
         if (mainLogoWrapper) mainLogoWrapper.style.display = 'flex';
+        if (mainLogoImg) mainLogoImg.src = logoSrc;
+        if (removeBtn) removeBtn.style.display = appData.customThemeLogo ? 'flex' : 'none';
     } else {
         if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
     }
 
     // Apply images to DOM
     for (const [id, path] of Object.entries(imgPaths)) {
+        if (id === 'main-theme-logo') continue; // Handled above
         const imgEl = document.getElementById(id);
         if (imgEl) {
             imgEl.src = path;

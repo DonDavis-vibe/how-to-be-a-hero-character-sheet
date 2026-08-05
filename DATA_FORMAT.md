@@ -103,6 +103,7 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `type` (String): Defines the badge color. Supported: `malus` (red), `bonus` (green), `neutral` (gray).
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
 - `theme` (String): The UI theme selected by the user. Supported values: `default`, `steampunk`, `cyberpunk`, `apocalyptic`, `mafia`, `lovecraft`, `magic`, `deepspace`.
+- `customThemeLogo` (String, Optional): Base64 Data URI of a custom faction/team logo that overrides the default theme logo.
 
 ## Importing Rules
 
