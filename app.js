@@ -197,9 +197,14 @@ function renderAll() {
 
     // Theme
     if (appData.theme) {
-        document.getElementById('theme-selector').value = appData.theme;
-        applyTheme(appData.theme);
-    } else {
+            const selector = document.getElementById('theme-selector');
+            if (selector) selector.value = appData.theme;
+        }
+        if (appData.fxEnabled !== undefined) {
+            fxEnabled = appData.fxEnabled;
+            const btn = document.getElementById('toggle-fx-btn');
+            if (btn) btn.style.opacity = fxEnabled ? '1' : '0.5';
+        } else {
         document.getElementById('theme-selector').value = 'default';
         applyTheme('default');
     }
@@ -962,13 +967,12 @@ function startCyberpunkFx() {
         line.style.position = 'absolute';
         line.style.left = Math.random() * 100 + 'vw';
         line.style.top = '-100px';
-        line.style.width = Math.random() > 0.5 ? '2px' : '1px';
-        line.style.height = Math.random() * 150 + 50 + 'px';
-        line.style.background = Math.random() > 0.5 ? '#00f0ff' : '#ff007f';
-        line.style.opacity = Math.random() * 0.5 + 0.3;
-        line.style.boxShadow = '0 0 10px ' + line.style.background;
+        line.style.width = '1px';
+        line.style.height = Math.random() * 80 + 20 + 'px';
+        line.style.background = Math.random() > 0.5 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(255, 0, 127, 0.4)';
+        line.style.opacity = Math.random() * 0.3 + 0.1;
         
-        const duration = Math.random() * 1 + 0.5; // very fast rain
+        const duration = Math.random() * 2 + 1.5; // much slower rain
         line.style.animation = `rainFall ${duration}s linear`;
         
         layer.appendChild(line);
@@ -976,7 +980,7 @@ function startCyberpunkFx() {
         setTimeout(() => {
             if (line.parentNode) line.parentNode.removeChild(line);
         }, duration * 1000);
-    }, 50); // dense rain
+    }, 200); // sparse rain
 }
 
 function startApocalypseFx() {
@@ -1028,13 +1032,32 @@ function changeTheme() {
     applyTheme(theme);
 }
 
+
+function toggleFx() {
+    fxEnabled = !fxEnabled;
+    appData.fxEnabled = fxEnabled;
+    saveData();
+    const btn = document.getElementById('toggle-fx-btn');
+    if (btn) {
+        btn.style.opacity = fxEnabled ? '1' : '0.5';
+    }
+    if (fxEnabled) {
+        const selector = document.getElementById('theme-selector');
+        applyTheme(selector ? selector.value : 'default');
+    } else {
+        clearFx();
+    }
+}
+
 function applyTheme(theme) {
     document.body.className = '';
     
     clearFx();
-    if(theme === 'apocalyptic') startApocalypseFx();
-    else if(theme === 'steampunk') startSteampunkFx();
-    else if(theme === 'cyberpunk') startCyberpunkFx();
+    if (fxEnabled) {
+        if(theme === 'apocalyptic') startApocalypseFx();
+        else if(theme === 'steampunk') startSteampunkFx();
+        else if(theme === 'cyberpunk') startCyberpunkFx();
+    }
     
     // Default image paths
     let imgPaths = {
