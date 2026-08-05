@@ -3,7 +3,8 @@
   <h1>🎲 How to be a Hero - Digital Character Sheet 🎲</h1>
 
   <p>
-    <strong>A highly customizable, responsive, and beautiful digital character sheet for the "How to be a Hero" Pen & Paper roleplaying system.</strong>
+    <strong>A highly customizable, responsive, and beautiful digital character sheet for the "How to be a Hero" Pen & Paper roleplaying system.</strong><br>
+    <em>Von der Community, für die Community gebaut!</em>
   </p>
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -19,65 +20,65 @@ Spiele sofort los und erstelle deinen Charakter direkt im Browser:
 
 ![App Preview](assets/preview.png)
 
-## ✨ Features
+## 📖 Über dieses Tool
+Dieses Projekt wurde ins Leben gerufen, um Spielern von **How to be a Hero** eine moderne, digitale Alternative zu klassischen Excel-Tabellen und statischen PDFs zu bieten. 
+Es vereint eine fehlerfreie Automatisierung (Berechnung von Basiswerten) mit einem absolut immersiven Erlebnis durch interaktive Themes, Sound-Effekte und Partikel-Animationen. Das Tool läuft zu 100% lokal in deinem Browser – es gibt keine Accounts, keine Datenbanken und deine Daten gehören nur dir!
 
-- ⚙️ **Offizielle Regelwerks-Kalkulation:** 
-  - Basiswerte (Handeln, Wissen, Soziales) werden **automatisch berechnet** (Summe / 10, kaufmännisch gerundet).
-  - Maximale **Geistesblitzpunkte (GBP)** werden absolut regelkonform abgeleitet.
-- 🎲 **Smartes Würfel- & Log-System:**
-  - **1-Klick Proben:** Klicke einfach auf das '=' neben einem Skill, um sofort auf den Wert zu würfeln. Das Ergebnis (Erfolg, Fehlschlag, Krit) wird live ausgewertet und im Log vermerkt!
-  - **Waffen-Schaden:** Klicke im Inventar auf das Waffen-Icon, um direkt den Waffenschaden (z.B. W6+2) auszuwürfeln.
-  - **Custom Dice Generator:** Standard W6 & W100 Würfel sowie flexible Eingabe (z.B. `2w10`, `3d8`) mit dynamischem Würfel-Log und visuellen Konfetti/Totenkopf-Effekten bei kritischen Erfolgen und Patzern!
-- 🧬 **Dynamische Status-Effekte:**
-  - Lege beliebig viele eigene Status-Effekte an (z.B. "Wahnsinn", "Verstrahlt").
-  - Weise ihnen bei Bedarf einen Wert (z.B. "60%") zu. Alle Werte lassen sich per Klick live editieren.
-  - Klassifiziere sie als **Malus (Rot)**, **Bonus (Grün)** oder **Neutral (Grau)** für maximale Übersicht.
-- 💡 **Interaktives GBP-Tracking:**
-  - Behalte den Überblick über deine Geistesblitzpunkte mit einem interaktiven Widget in der Werkzeugleiste.
-  - Verbrauche GBP per Klick, was sofort dokumentiert wird.
-- 🎒 **Dynamisches Inventar & Waffen-Management:**
-  - Modernes, kachelbasiertes Grid-Design für Gegenstände und Waffen.
-  - **Drag & Drop** Funktionalität zum Sortieren deines Equipments.
-  - Jedes Item und jede Waffe hat **einklappbare Details/Beschreibungen**, die den Platz optimal ausnutzen.
-- 🛠️ **Erweitertes Charakter-Management:**
-  - Überall im Tool kommen schicke, eigene **[+] / [-] Buttons** zum Einsatz (für Skills, Items, HP, GBP) statt der hässlichen Standard-Pfeile des Browsers.
-  - Einklappbares **Notizen**-System mit coolen 3D-Icons (perfekt für Lore, Quests oder Geheimnisse).
-  - Profilbild-Upload (oder GIF-Upload) für deinen Helden!
-- 🎨 **Epische Themes & Animierte UI-Effekte:** 
-  - Wähle aus maßgeschneiderten Themes! Jedes Theme ändert das komplette Layout (Hintergründe, Logos, Farben und alle UI-Icons).
-  - **✅ Bereits vollständig integriert (inkl. Hintergrundbildern, UI-Anpassungen & Spezial-Effekten):**
-    - ⏳ **Zeitreise (Standard)** - Wabernde Zeitrisse
-    - ⚙️ **Steampunk** - Rotierende Zahnräder
-    - ☢️ **Apokalypse** - Fliegende Aschepartikel
-    - 🦾 **Cyberpunk** - Digitaler Neon-Regen
-    - 🕵️‍♂️ **1920s Mafia** - Prasselnder Regen und aufsteigender Zigarrenrauch im Noir-Look
-    - 🐙 **Lovecraft (Cthulhu)** - Grüner Eldritch-Nebel, wachende Augen und plötzliche "Sanity Twitches"
-    - 🏰 **Royal Magic** - Schwebende, leuchtende Magie-Partikel in Gold und Violett
-    - 🚀 **Deep Space** - Funkelnde Sterne und schnelle Cyan-Sternschnuppen
-  - **FX Toggle:** Alle Animationen lassen sich mit einem Klick auf den Zauberstab (🪄) oben rechts an- und ausschalten!
-  - Inklusive dynamischem Mouse-Spotlight-Effekt (das Licht folgt deiner Maus über das moderne Glassmorphism-UI).
-- 💾 **100% Offline & Lokal Speichern:** 
-  - Keine Datenbank! Lade deinen Charakter als `.json` Datei herunter und teile ihn mit deinem Spielleiter.
-  - **Tipp:** Lade dir den Beispiel-Charakter `dr_aris_thorne.json` (im `assets/` Ordner) oder den neuen `test_character.json` mit coolem GIF-Portrait in die App, um alle Features (Waffen, Themes, Status) sofort live in Aktion zu sehen!
+## ✨ Core Features
 
-## 🚀 Nutzung
+### 🛠️ Charakter-Verwaltung & Automatisierung
+- **Offizielle Regelwerks-Kalkulation:** Basiswerte (Handeln, Wissen, Soziales) werden **automatisch berechnet** (Summe / 10, kaufmännisch gerundet).
+- **GBP-Tracking:** Maximale Geistesblitzpunkte (GBP) werden regelkonform abgeleitet. Ein interaktives Widget in der Werkzeugleiste hilft beim Verbrauchen und Tracken.
+- **Dynamische Status-Effekte:** Lege eigene Status-Effekte an (z.B. "Wahnsinn", "Verstrahlt"), weise ihnen Werte zu und klassifiziere sie als Malus (Rot), Bonus (Grün) oder Neutral (Grau). 
+- **Notizen & Details:** Ein modernes, einklappbares Notizen-System bietet perfekten Platz für Lore, Quests oder Geheimnisse.
+- **Profilbild:** Lade ein Bild oder sogar ein GIF als Avatar für deinen Helden hoch!
 
-1. Öffne das Tool über den Link zur **Live Demo**.
-2. **Daten eintragen:** Fülle deinen Namen, Beruf und die Skills aus. Die Punkteverteilung wird oben in Echtzeit (z.B. `400 / 400`) mitgetrackt.
-3. **Speichern:** Klicke oben rechts auf "Speichern (JSON)".
-4. **Laden:** Beim nächsten Mal klickst du auf "Laden (JSON)" und wählst deine Datei wieder aus. Alle Punkte, Themes und Notizen sind sofort wieder da!
+### 🎲 Smartes Würfel- & Log-System
+- **1-Klick Proben:** Klicke einfach auf das `=` neben einem Skill, um sofort darauf zu würfeln.
+- **Automatisches Log:** Jeder Wurf (Erfolg, Fehlschlag) wird live ausgewertet und im Log vermerkt.
+- **Kritische Effekte:** Bei einer absoluten 1 (Kritischer Erfolg) regnet es Konfetti. Bei einer glatten 100 (Patzer) wackelt der Bildschirm und Totenköpfe (☠️) fallen von der Decke!
+- **Waffen-Schaden:** Klicke im Inventar auf das Würfel-Icon neben dem Waffenschaden (z.B. `1W6+2`), um diesen sofort automatisiert auszuwürfeln.
+- **Custom Dice:** Ein eingebauter Würfel-Generator für alle denkbaren Kombinationen (z.B. `2w10`, `3d8`).
 
-## 💻 Für Entwickler
+### 🎒 Interaktives Inventar
+- **Kachel-Design:** Modernes Grid-Design für Gegenstände und Waffen.
+- **Drag & Drop:** Sortiere dein komplettes Equipment einfach per Drag & Drop!
+- **Aufklappbare Beschreibungen:** Jedes Item und jede Waffe hat einklappbare Details, damit dein Inventar übersichtlich bleibt.
+- **Sicherheits-Check:** Ein Lösch-Schutz verhindert, dass du aus Versehen Items, Waffen, Skills oder Status-Effekte löschst.
 
-👉 **Willst du die JSON-Dateien auslesen oder für deine eigene App generieren?** Schau dir die [JSON Datenstruktur & Export Regeln (DATA_FORMAT.md)](DATA_FORMAT.md) an!
+## 🎨 Epische Themes & Animationen (Highlight)
+Warum sollte ein Charakterbogen langweilig aussehen? Wähle aus 8 völlig unterschiedlichen, animierten Themes, die das komplette Interface (Hintergründe, Farben, UI-Icons, Layout) verändern! Alle Animationen lassen sich mit einem Klick auf den Zauberstab (🪄) oben rechts an- und ausschalten.
+
+- ⏳ **Zeitreise (Standard)** - Wabernde Zeitrisse.
+- ⚙️ **Steampunk** - Langsam rotierende, schwebende Zahnräder im Hintergrund.
+- ☢️ **Apokalypse** - Leuchtend grüne Strahlungs-Asche weht quer über den Bildschirm.
+- 🦾 **Cyberpunk** - Vertikaler digitaler Matrix-Regen im Neon-Look.
+- 🕵️‍♂️ **1920s Mafia** - Prasselnder Regen und aufsteigender Zigarrenrauch im Film Noir-Stil.
+- 🐙 **Lovecraft (Cthulhu)** - Grüner Eldritch-Nebel, beobachtende Augen und seltene "Sanity Twitches" (Bildschirmverzerrungen).
+- 🏰 **Royal Magic** - Schwebende, leuchtende Magie-Partikel in Gold und Violett, wie verzauberte Glühwürmchen.
+- 🚀 **Deep Space** - Funkelnde Sterne im Hintergrund und blitzschnelle, leuchtend blaue Sternschnuppen.
+
+## 🚀 Quick Start / Nutzung
+
+1. **Öffnen:** Besuche die **[Live Demo](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/)**.
+2. **Befüllen:** Trage Name, Beruf und deine Skills ein. Die Punkteverteilung wird oben in Echtzeit (z.B. `400 / 400`) mitgetrackt.
+3. **Spielen:** Wähle dein Lieblings-Theme und würfle direkt aus dem Bogen heraus.
+4. **Speichern:** Klicke oben rechts auf "Speichern (JSON)".
+5. **Laden:** Beim nächsten Spiel klickst du auf "Laden (JSON)" und wählst deine Datei wieder aus. Alles ist sofort wieder da!
+
+*Tipp:* Lade dir den Beispiel-Charakter `test_character.json` (im `assets/` Ordner) in die App, um alle Features (Waffen, Themes, Status) sofort live in Aktion zu sehen!
+
+## 💻 Für Entwickler & Contribution
 
 Da dieses Tool komplett clientseitig (nur HTML, CSS und pures JavaScript) gebaut ist, kannst du es dir extrem einfach lokal anpassen:
-\`\`\`bash
+```bash
 # Repo klonen
 git clone https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet.git
 
-# In den Ordner wechseln und einfach die index.html im Browser öffnen!
-\`\`\`
+# In den Ordner wechseln und einfach die index.html in deinem Browser öffnen!
+```
+
+👉 **Willst du die JSON-Dateien auslesen oder für deine eigene App generieren?** Schau dir die [JSON Datenstruktur & Export Regeln (DATA_FORMAT.md)](DATA_FORMAT.md) an!
 
 ## 📜 Lizenz
 
