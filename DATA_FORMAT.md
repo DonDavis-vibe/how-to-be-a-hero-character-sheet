@@ -39,12 +39,21 @@ The root object of the JSON file represents a single character's state.
   ],
   
   "inventory": [
-    { "id": "i1", "name": "Kaugummi" },
+    { "id": "i1", "name": "Kaugummi", "description": "Schmeckt nach Pfefferminz", "showDesc": true },
     { "id": "i2", "name": "Gaffa Tape" }
   ],
   
+  "weapons": [
+    { "id": "w1", "name": "Rostiger Revolver", "damage": "1w10+2", "description": "Ladehemmung bei einer 1", "showDesc": true }
+  ],
+
+  "statuses": [
+    { "id": "st_1", "name": "Verstrahlt", "value": "60%", "type": "malus" },
+    { "id": "st_2", "name": "Fokussiert", "value": "", "type": "bonus" }
+  ],
+  
   "notes": "Hat Höhenangst...",
-  "theme": "synthwave",
+  "theme": "mafia",
   "maxPoints": 400,
   "portrait": "data:image/jpeg;base64,/9j/4AAQSk..."
 }
@@ -79,8 +88,21 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
 - `inventory` (Array of Objects): The character's inventory list.
   - `id` (String): Unique identifier.
   - `name` (String): Name of the item.
+  - `description` (String, Optional): Detailed text/effect description of the item.
+  - `showDesc` (Boolean, Optional): UI state determining if the description is expanded.
+- `weapons` (Array of Objects): The character's weapons list.
+  - `id` (String): Unique identifier.
+  - `name` (String): Name of the weapon.
+  - `damage` (String): Dice formula (e.g. `1w10+2`) for the 1-click roll feature.
+  - `description` (String, Optional): Detailed text/effect description of the weapon.
+  - `showDesc` (Boolean, Optional): UI state determining if the description is expanded.
+- `statuses` (Array of Objects): The active status effects/conditions.
+  - `id` (String): Unique identifier.
+  - `name` (String): Name of the status (e.g. "Wahnsinn").
+  - `value` (String, Optional): Intensity or duration (e.g. "60%").
+  - `type` (String): Defines the badge color. Supported: `malus` (red), `bonus` (green), `neutral` (gray).
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
-- `theme` (String): The UI theme selected by the user. Supported values: `default`, `steampunk`, `cyberpunk`, `synthwave`, `deepspace`, `biohazard`, `magic`, `apokalypse`, `timetravel`.
+- `theme` (String): The UI theme selected by the user. Supported values: `default`, `steampunk`, `cyberpunk`, `apocalyptic`, `mafia`, `lovecraft`, `magic`, `deepspace`.
 
 ## Importing Rules
 
