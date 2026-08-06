@@ -52,6 +52,10 @@ The root object of the JSON file represents a single character's state.
     { "id": "st_2", "name": "Fokussiert", "value": "", "type": "bonus" }
   ],
   
+  "activityLog": [
+    { "time": "15:23", "cssClass": "activity-good", "iconHtml": "<i class=\"fa-solid fa-heart\"></i>", "message": "Heilung um 4 HP" }
+  ],
+  
   "notes": "Hat Höhenangst...",
   "theme": "mafia",
   "maxPoints": 400,
@@ -101,6 +105,11 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `name` (String): Name of the status (e.g. "Wahnsinn").
   - `value` (String, Optional): Intensity or duration (e.g. "60%").
   - `type` (String): Defines the badge color. Supported: `malus` (red), `bonus` (green), `neutral` (gray).
+- `activityLog` (Array of Objects, Optional): The persistent action history of the character.
+  - `time` (String): The timestamp (HH:MM).
+  - `cssClass` (String): The visual color class (`activity-good`, `activity-bad`, `activity-neutral`).
+  - `iconHtml` (String): The raw HTML string for the FontAwesome icon.
+  - `message` (String): The log text.
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
 - `theme` (String): The UI theme selected by the user. Supported values: `default`, `steampunk`, `cyberpunk`, `apocalyptic`, `mafia`, `lovecraft`, `magic`, `deepspace`.
 - `customThemeLogo` (String, Optional): Base64 Data URI of a custom faction/team logo that overrides the default theme logo.

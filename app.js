@@ -83,6 +83,7 @@ function renderAll() {
 
     renderWeapons();
     renderStatuses();
+    renderActivityLog();
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');
@@ -765,20 +766,41 @@ function addToLog(dice, result, timestamp) {
 }
 
 function addActivityLog(message, cssClass, iconHtml) {
+    if (!appData.activityLog) appData.activityLog = [];
+    const timeStr = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'});
+    
+    appData.activityLog.unshift({
+        time: timeStr,
+        cssClass: cssClass,
+        iconHtml: iconHtml,
+        message: message
+    });
+    
+    if (appData.activityLog.length > 30) {
+        appData.activityLog.pop();
+    }
+    
+    saveData();
+    renderActivityLog();
+}
+
+function renderActivityLog() {
     const logList = document.getElementById('activity-log');
     if (!logList) return;
-    const li = document.createElement('li');
-    li.className = 'activity-entry';
-    const timeStr = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'});
-    li.innerHTML = `
-        <div class="activity-time">${timeStr}</div>
-        <div class="activity-icon ${cssClass}">${iconHtml}</div>
-        <div class="activity-content">${message}</div>
-    `;
-    logList.prepend(li);
-    if (logList.children.length > 30) {
-        logList.removeChild(logList.lastChild);
-    }
+    logList.innerHTML = '';
+    
+    if (!appData.activityLog) appData.activityLog = [];
+    
+    appData.activityLog.forEach(entry => {
+        const li = document.createElement('li');
+        li.className = 'activity-entry';
+        li.innerHTML = `
+            <div class="activity-time">${entry.time}</div>
+            <div class="activity-icon ${entry.cssClass}">${entry.iconHtml}</div>
+            <div class="activity-content">${entry.message}</div>
+        `;
+        logList.appendChild(li);
+    });
 }
 
 
