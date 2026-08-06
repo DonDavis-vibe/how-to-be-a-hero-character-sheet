@@ -622,6 +622,27 @@ function handleNewItemKey(e) {
 }
 
 // --- Dice Roller ---
+function consumeModifier() {
+    const modInput = document.getElementById('roll-modifier');
+    let mod = 0;
+    let str = '';
+    if (modInput && modInput.value !== '' && modInput.value !== '0') {
+        mod = parseInt(modInput.value);
+        if (!isNaN(mod)) {
+            str = mod > 0 ? ` (+${mod})` : ` (${mod})`;
+            if (mod > 0) {
+                addActivityLog(`SL-Bonus: +${mod} auf Probe`, 'activity-good', '<i class="fa-solid fa-wand-magic-sparkles"></i>');
+            } else if (mod < 0) {
+                addActivityLog(`SL-Malus: ${mod} auf Probe`, 'activity-bad', '<i class="fa-solid fa-wand-magic-sparkles"></i>');
+            }
+        } else {
+            mod = 0;
+        }
+        modInput.value = '';
+    }
+    return { mod, str };
+}
+
 function rollDice(sides) {
     // Add shake animation to the button
     const btn = document.querySelector(`.dice-btn.w${sides}`);
@@ -630,12 +651,14 @@ function rollDice(sides) {
 
     // Generate random number
     const result = Math.floor(Math.random() * sides) + 1;
+    const modifier = consumeModifier();
+    const finalResult = result + modifier.mod;
     
     // Update display
     const displayNum = document.querySelector('.result-number');
     const displayLabel = document.querySelector('.result-label');
     
-    displayNum.textContent = result;
+    displayNum.textContent = finalResult;
     displayLabel.textContent = `Gewürfelt: 1W${sides}`;
     
     // Animate display text
@@ -646,7 +669,7 @@ function rollDice(sides) {
     updateLiveTimers();
 
     // Add to log
-    addToLog(`1W${sides}`, result, lastRollTimestamp);
+    addToLog(`1W${sides}`, modifier.mod === 0 ? finalResult : `${result}${modifier.str} = <b>${finalResult}</b>`, lastRollTimestamp);
 
     // Confetti on 1 (Critical Success in HTBAH)
     if (result === 1) {
@@ -685,11 +708,13 @@ function rollCustomDice() {
         results.push(r);
         sum += r;
     }
+    const modifier = consumeModifier();
+    const finalResult = sum + modifier.mod;
     
     const displayNum = document.querySelector('.result-number');
     const displayLabel = document.querySelector('.result-label');
     
-    displayNum.textContent = sum;
+    displayNum.textContent = finalResult;
     displayLabel.textContent = `Gewürfelt: ${count}W${sides} ${count > 1 ? '(' + results.join(', ') + ')' : ''}`;
     
     displayNum.classList.add('shake');
@@ -698,7 +723,11 @@ function rollCustomDice() {
     lastRollTimestamp = Date.now();
     updateLiveTimers();
 
-    addToLog(`${count}W${sides}`, sum, lastRollTimestamp);
+    let logDetail = results.length > 1 ? `[${results.join(', ')}] = ${sum}` : `${sum}`;
+    if (modifier.mod !== 0) {
+        logDetail += `${modifier.str} = <b>${finalResult}</b>`;
+    }
+    addToLog(`${count}W${sides}`, logDetail, lastRollTimestamp);
 
     if (sum === count) { // All 1s is a critical success in some variations, or just standard check
         fireConfetti();
@@ -1794,9 +1823,10 @@ function useGBP(category) {
 function rollInitiative() {
     const handlnAttr = parseInt(appData['attr_handeln']) || 0;
     const w10Result = Math.floor(Math.random() * 10) + 1;
-    const total = w10Result + handlnAttr;
+    const modifier = consumeModifier();
+    const total = w10Result + handlnAttr + modifier.mod;
     
-    addToLog(`<i class="fa-solid fa-bolt"></i> Initiative`, `1W10 (${w10Result}) + Handeln (${handlnAttr}) = <b>${total}</b>`);
+    addToLog(`<i class="fa-solid fa-bolt"></i> Initiative`, `1W10 (${w10Result}) + Handeln (${handlnAttr})${modifier.str} = <b>${total}</b>`);
     
     const displayRes = document.getElementById('dice-result');
     if(displayRes) {
@@ -1812,6 +1842,12 @@ function rollInitiative() {
 }
 
 function rollSkillCheck(skillName, skillValue) {
+    const modifier = consumeModifier();
+    if (modifier.mod !== 0) {
+        modifier.str = modifier.mod > 0 ? ` (inkl. +${modifier.mod} Bonus)` : ` (inkl. ${modifier.mod} Malus)`;
+    }
+    skillValue += modifier.mod;
+    
     const result = Math.floor(Math.random() * 100) + 1;
     let statusText = '';
     let statusClass = '';
@@ -1846,7 +1882,7 @@ function rollSkillCheck(skillName, skillValue) {
         displayRes.className = 'dice-result-display';
     }, 500);
 
-    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>`);
+    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>`);
 }
 
 function handleThemeLogoUpload(event) {
