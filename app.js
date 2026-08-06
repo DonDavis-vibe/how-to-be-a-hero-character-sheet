@@ -1686,6 +1686,23 @@ function rollWeaponDamage(damageString, weaponName) {
     }
 }
 
+function adjustGbp(category, amount) {
+    let field = 'gbp_' + category;
+    let baseAttrField = 'attr_' + category;
+    let maxGbp = Math.round(appData[baseAttrField] / 10);
+    
+    let newVal = (parseInt(appData[field]) || 0) + amount;
+    if (newVal < 0) newVal = 0;
+    if (newVal > maxGbp) newVal = maxGbp;
+    
+    appData[field] = newVal;
+    
+    const inputEl = document.getElementById('gbp-current-' + category);
+    if (inputEl) inputEl.value = newVal;
+    
+    saveData();
+}
+
 function useGBP(category) {
     let field = 'gbp_' + category;
     if (appData[field] > 0) {
