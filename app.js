@@ -125,6 +125,17 @@ function updateHpBarVisual() {
     const bar = document.getElementById('hp-bar');
     bar.style.width = perc + '%';
 
+    const hpContainer = document.querySelector('.hp-bar-container');
+    const hpInput = document.getElementById('hp-current');
+
+    if (appData.hpCurrent <= 10) {
+        if(hpContainer) hpContainer.classList.add('low-hp-warning');
+        if(hpInput) hpInput.classList.add('hp-text-danger');
+    } else {
+        if(hpContainer) hpContainer.classList.remove('low-hp-warning');
+        if(hpInput) hpInput.classList.remove('hp-text-danger');
+    }
+
     if (perc > 50) {
         bar.style.backgroundColor = 'var(--color-heal)';
     } else if (perc > 20) {
@@ -1713,17 +1724,40 @@ function useGBP(category) {
     }
 }
 
+function rollInitiative() {
+    const handlnAttr = parseInt(appData['attr_handeln']) || 0;
+    const w10Result = Math.floor(Math.random() * 10) + 1;
+    const total = w10Result + handlnAttr;
+    
+    addToLog(`<i class="fa-solid fa-bolt"></i> Initiative`, `1W10 (${w10Result}) + Handeln (${handlnAttr}) = <b>${total}</b>`);
+    
+    const displayRes = document.getElementById('dice-result');
+    if(displayRes) {
+        displayRes.querySelector('.result-number').textContent = total;
+        displayRes.querySelector('.result-label').textContent = "Initiative";
+        displayRes.className = 'dice-result-display active success';
+        if (typeof AudioController !== 'undefined') AudioController.play('dice');
+        
+        setTimeout(() => {
+            displayRes.className = 'dice-result-display';
+        }, 3000);
+    }
+}
+
 function rollSkillCheck(skillName, skillValue) {
     const result = Math.floor(Math.random() * 100) + 1;
     let statusText = '';
     let statusClass = '';
     
-    if (result === 1) {
+    const critSuccessMax = Math.max(1, Math.round(skillValue / 10));
+    const critFailMin = 90 + Math.round(skillValue / 10);
+    
+    if (result <= critSuccessMax) {
         statusText = '🌟 Kritischer Erfolg!';
         statusClass = 'crit-success';
         fireConfetti();
         if (typeof AudioController !== 'undefined') AudioController.play('crit');
-    } else if (result === 100) {
+    } else if (result >= critFailMin) {
         statusText = '💀 Patzer!';
         statusClass = 'crit-fail';
         fireFumble();

@@ -1601,3 +1601,18 @@ body.theme-pirates .btn-primary:hover {
     80% { opacity: 1; transform: translateY(-160px) rotate(10deg); }
     100% { transform: translateY(50px) rotate(15deg); opacity: 0; }
 }
+
+@keyframes pulseLowHp {
+    0% { background-color: rgba(255, 50, 50, 0.2); box-shadow: 0 0 10px rgba(255, 50, 50, 0.5); }
+    50% { background-color: rgba(255, 50, 50, 0.5); box-shadow: 0 0 20px rgba(255, 50, 50, 0.8); }
+    100% { background-color: rgba(255, 50, 50, 0.2); box-shadow: 0 0 10px rgba(255, 50, 50, 0.5); }
+}
+.low-hp-warning {
+    animation: pulseLowHp 1.5s infinite;
+    border: 1px solid red !important;
+}
+.hp-text-danger {
+    color: #ff4444 !important;
+    font-weight: bold;
+}
+
