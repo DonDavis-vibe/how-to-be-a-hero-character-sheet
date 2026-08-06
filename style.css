@@ -375,10 +375,14 @@ h2 {
     font-weight: 800;
     text-align: center;
     border-color: var(--accent) !important;
-    appearance: none;
-    -moz-appearance: textfield;
-    pointer-events: none;
-    cursor: default;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.attr-val:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--accent);
 }
 .attr-val::-webkit-inner-spin-button,
 .attr-val::-webkit-outer-spin-button {
