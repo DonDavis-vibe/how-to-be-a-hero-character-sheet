@@ -1,10 +1,10 @@
 <div align="center">
   <img src="https://howtobeahero.de/skins/wiki.png" alt="How to be a Hero Logo" width="200" />
-  <h1>🎲 HTBAH - Digital Character Sheet 🎲</h1>
+  <h1>🎲 How to be a Hero - Digital Character Sheet 🎲</h1>
 
   <p>
-    <strong>Dein interaktiver, regelkonformer und animierter Charakterbogen für "How to be a Hero".</strong><br>
-    <em>Läuft 100% lokal im Browser. Ohne Account. Ohne Datenbank.</em>
+    <strong>Ein interaktiver, regelkonformer und animierter Charakterbogen für das "How to be a Hero" Pen & Paper Rollenspielsystem.</strong><br>
+    <em>Ein Community-Projekt für die fantastische Rocket Beans und HTBAH Community! ❤️</em>
   </p>
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,39 +14,57 @@
 
 <hr />
 
-## 🚀 Live Demo & Start
-👉 **[Spiele direkt los!](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/)**
+## 📖 Über dieses Tool & Community Gruß
+Moin Moin an alle Bohnen und Pen & Paper Fans! 🚀
 
-1. Eintragen & Spielen.
-2. Oben rechts als `.json` speichern.
-3. Beim nächsten Mal wieder laden!
+Dieses Projekt ist aus reiner Leidenschaft für das *How to be a Hero* Regelwerk entstanden. Das Ziel war es, eine moderne, digitale Alternative zu statischen PDFs oder reinen Excel-Tabellen zu schaffen, die nicht nur rechnet, sondern auch beim Spielen richtig Spaß macht und für Immersion sorgt. 
+Es ist zu 100% lokal (alles bleibt in deinem Browser, keine Accounts nötig) und absolut Open-Source. Fühlt euch frei, es für eure Runden zu nutzen, zu forken und zu erweitern!
 
-*(Tipp: Nutze unsere `test_character.json` aus dem Repo zum Ausprobieren aller Features.)*
+## 🚀 Live Demo
+👉 **[Hier geht's direkt zur App (Live-Demo)](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/)**
+
+![App Preview](assets/preview.png)
+
+**Kurzanleitung:**
+1. Trage deine Werte ein, das Tool übernimmt alle Hintergrundberechnungen.
+2. Wenn du aufhören möchtest, speichere deinen Charakter oben rechts als `.json`-Datei lokal auf deinem Rechner.
+3. Beim nächsten Mal lädst du diese `.json` einfach wieder ein und bist sofort startklar!
+
+*(Tipp: Nutze die `test_character.json` aus dem Repository, um direkt alle Features live auszuprobieren!)*
 
 ## ✨ Core Features (Regelkonform)
-- **Vollautomatisierung:** Basiswerte (durch 10), Geistesblitzpunkte (GBP) und Skill-Boni werden automatisch kaufmännisch gerundet und verrechnet.
-- **1-Klick Proben & Initiative:** Würfle Skills, Waffen oder deine **Initiative** (`1W10 + Handeln`) direkt per Klick aus dem Bogen.
-- **Dynamische Krits:** Kritische Erfolge (die ersten 10% des Skillwerts) und Patzer (die oberen 10%) werden **exakt** nach den offiziellen HTBAH-Regeln dynamisch berechnet! (Mit Konfetti & Audio).
-- **HP & Status:** Modernes Inventar-System (Drag & Drop), Custom-Status-Effekte und eine dramatische **visuelle HP-Warnung**, wenn du ≤ 10 Lebenspunkte (Bewusstlosigkeit) fällst.
-- **Smartes Würfel-Log:** Speichert alle Würfe live mit. Integrierter "Custom Dice" Roller (`xWy`).
-- **Geistesblitze:** Nutze GBP über einen simplen Button (verrechnet sich sofort & loggt mit).
+Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach dem offiziellen Regelwerk abzubilden:
+- **Vollautomatisierung:** Basiswerte (Handeln, Wissen, Soziales), Geistesblitzpunkte (GBP) und Skill-Boni werden automatisch kaufmännisch gerundet und verrechnet.
+- **1-Klick Proben & Initiative:** Klicke auf deine Skills oder drücke den **Initiative-Button** (`1W10 + Handeln`), um blitzschnell zu würfeln.
+- **Dynamische Krits:** Kritische Erfolge (die ersten 10% des Skillwerts) und Patzer (die oberen 10%) werden dynamisch anhand deines genauen Werts berechnet (inkl. Konfetti & Sounds!).
+- **HP & Status:** Modernes Drag & Drop Inventar, flexibel anpassbare Status-Effekte und eine dramatische **visuelle HP-Warnung**, sobald dein Charakter auf ≤ 10 Lebenspunkte fällt.
+- **Smartes Würfel-Log:** Jeder Wurf wird übersichtlich in einer Leiste dokumentiert. Brauchst du was Spezielles? Nutze den Custom-Dice Roller (z.B. `3w8`).
+- **Geistesblitze (GBP):** Ein dedizierter Button lässt dich deine verdienten Punkte taktisch einsetzen und trackt sie mit.
 
 ## 🎨 10 Epische Themes
-Gestalte deinen Bogen passend zu deinem Abenteuer. Voll animiert mit CSS & JS (jederzeit ausschaltbar 🪄):
-* ⏳ **Zeitreise** (Wabernde Risse) | ⚙️ **Steampunk** (Zahnräder)
-* ☢️ **Apokalypse** (Grüne Asche) | 🦾 **Cyberpunk** (Neon-Matrix)
-* 🕵️‍♂️ **1920s Mafia** (Regen & Rauch) | 🐙 **Lovecraft** (Nebel & Sanity Twitches)
-* 🏰 **Magic** (Leuchtpartikel) | 🚀 **Deep Space** (Sternschnuppen)
-* 🤠 **Wild West** (Tumbleweed) | 🏴‍☠️ **Piraten** (Meereswellen & Kraken)
+Warum sollte ein Bogen wie ein Steuerformular aussehen? Wechsle das Design deines Charakterbogens passend zur Kampagne. Alle Themes verändern das Layout, die Farben, die Icons und bringen coole CSS/JS-Animationen mit (welche man für schwächere Geräte auch per Klick auf den 🪄 ausschalten kann):
 
-## 💻 Für Entwickler
-Das Tool ist zu 100% Vanilla (HTML, CSS, JS). Keine Frameworks, kein Build-Step!
+* ⏳ **Zeitreise (Standard)** - Wabernde Risse im Raum-Zeit-Kontinuum.
+* ⚙️ **Steampunk** - Langsam drehende, schwebende Zahnräder.
+* ☢️ **Apokalypse** - Leuchtend grüne Strahlungsasche weht über den Screen.
+* 🦾 **Cyberpunk** - Vertikaler digitaler Neon-Matrix-Regen.
+* 🕵️‍♂️ **1920s Mafia** - Prasselnder Regen und mysteriöser Zigarrenrauch.
+* 🐙 **Lovecraft (Cthulhu)** - Eldritch-Nebel, wachende Augen und "Sanity Twitches".
+* 🏰 **Royal Magic** - Schwebende, leuchtende Magie-Partikel.
+* 🚀 **Deep Space** - Funkelnde Sterne und schnelle Sternschnuppen.
+* 🤠 **Wilder Westen** - Trockene Wüste mit rollendem Tumbleweed.
+* 🏴‍☠️ **Piraten** - Sanft rollende Ozeanwellen und riesige Kraken-Tentakel.
+
+## 💻 Für Entwickler & Contribution
+Da dieses Tool komplett clientseitig (nur HTML, CSS und pures JavaScript) gebaut ist, kannst du es dir extrem einfach lokal anpassen oder erweitern. Kein npm, kein webpack, keine Node-Abhängigkeiten!
 ```bash
+# Repo klonen
 git clone https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet.git
-# Einfach die index.html in deinem Browser öffnen!
+
+# Einfach in den Ordner wechseln und die index.html im Browser öffnen!
 ```
-Siehe auch: [JSON Datenstruktur](DATA_FORMAT.md).
+Für Infos zur internen Datenstruktur: [DATA_FORMAT.md](DATA_FORMAT.md).
 
 ## 📜 Lizenzen
-- **Code:** [MIT License](LICENSE)
-- **HTBAH-Regelwerk:** **CC BY-NC-SA 4.0** (Siehe [howtobeahero.de](https://howtobeahero.de/))
+- **Code:** Der Quellcode dieses Tools steht unter der [MIT License](LICENSE).
+- **Regelwerk:** Das P&P Regelsystem "How to be a Hero" der *Rocket Beans* Community steht unter der **CC BY-NC-SA 4.0** Lizenz. (Siehe [howtobeahero.de](https://howtobeahero.de/))
