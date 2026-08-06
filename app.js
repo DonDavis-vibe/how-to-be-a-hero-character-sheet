@@ -1325,77 +1325,23 @@ function applyTheme(theme) {
         else if(theme === 'pirates') startPiratesFx();
     }
     
-    // Default image paths
+    const themeKey = theme === 'apocalyptic' ? 'apokalypse' : theme;
+    const suffix = (theme && theme !== 'default') ? '_' + themeKey : '';
+    
     let imgPaths = {
-        'icon-handeln': 'assets/icon_handeln.jpg',
-        'icon-wissen': 'assets/icon_wissen.jpg',
-        'icon-soziales': 'assets/icon_soziales.jpg',
-        'icon-inventar': 'assets/icon_inventar.jpg',
-        'icon-notizen': 'assets/icon_notizen.jpg',
-        'icon-hp': 'assets/icon_hp.jpg',
-        'icon-waffen': 'assets/icon_handeln.jpg'
+        'icon-handeln': `assets/icon_handeln${suffix}.jpg`,
+        'icon-wissen': `assets/icon_wissen${suffix}.jpg`,
+        'icon-soziales': `assets/icon_soziales${suffix}.jpg`,
+        'icon-inventar': `assets/icon_inventar${suffix}.jpg`,
+        'icon-notizen': `assets/icon_notizen${suffix}.jpg`,
+        'icon-hp': `assets/icon_hp${suffix}.jpg`,
+        'icon-waffen': `assets/icon_handeln${suffix}.jpg`
     };
 
     if (theme && theme !== 'default') {
         document.body.classList.add(`theme-${theme}`);
-        // Override with theme-specific images if available
-        if (theme === 'steampunk') {
-            imgPaths = {
-                'icon-handeln': 'assets/icon_handeln_steampunk.jpg',
-                'icon-wissen': 'assets/icon_wissen_steampunk.jpg',
-                'icon-soziales': 'assets/icon_soziales_steampunk.jpg',
-                'icon-inventar': 'assets/icon_inventar_steampunk.jpg',
-                'icon-notizen': 'assets/icon_notizen_steampunk.jpg',
-                'icon-hp': 'assets/icon_hp_steampunk.jpg',
-                'icon-waffen': 'assets/icon_handeln_steampunk.jpg',
-                'main-theme-logo': 'assets/logo_steampunk.jpg'
-            };
-        } else if (theme === 'apocalyptic') {
-            imgPaths = {
-                'icon-handeln': 'assets/icon_handeln_apokalypse.jpg',
-                'icon-wissen': 'assets/icon_wissen_apokalypse.jpg',
-                'icon-soziales': 'assets/icon_soziales_apokalypse.jpg',
-                'icon-inventar': 'assets/icon_inventar_apokalypse.jpg',
-                'icon-notizen': 'assets/icon_notizen_apokalypse.jpg',
-                'icon-hp': 'assets/icon_hp_apokalypse.jpg',
-                'icon-waffen': 'assets/icon_handeln_apokalypse.jpg',
-                'main-theme-logo': 'assets/logo_apokalypse.jpg'
-            };
-        } else if (theme === 'cyberpunk') {
-            imgPaths = {
-                'icon-handeln': 'assets/icon_handeln_cyberpunk.jpg',
-                'icon-wissen': 'assets/icon_wissen_cyberpunk.jpg',
-                'icon-soziales': 'assets/icon_soziales_cyberpunk.jpg',
-                'icon-inventar': 'assets/icon_inventar_cyberpunk.jpg',
-                'icon-notizen': 'assets/icon_notizen_cyberpunk.jpg',
-                'icon-hp': 'assets/icon_hp_cyberpunk.jpg',
-                'icon-waffen': 'assets/icon_handeln_cyberpunk.jpg',
-                'main-theme-logo': 'assets/logo_cyberpunk.jpg'
-            };
-        } else if (theme === 'wildwest') {
-            imgPaths = {
-                'icon-handeln': 'assets/icon_handeln_wildwest.jpg',
-                'icon-wissen': 'assets/icon_wissen_wildwest.jpg',
-                'icon-soziales': 'assets/icon_soziales_wildwest.jpg',
-                'icon-inventar': 'assets/icon_inventar_wildwest.jpg',
-                'icon-notizen': 'assets/icon_notizen_wildwest.jpg',
-                'icon-hp': 'assets/icon_hp_wildwest.jpg',
-                'icon-waffen': 'assets/icon_handeln_wildwest.jpg',
-                'main-theme-logo': 'assets/logo_wildwest.jpg'
-            };
-        } else if (theme === 'pirates') {
-            imgPaths = {
-                'icon-handeln': 'assets/icon_handeln_pirates.jpg',
-                'icon-wissen': 'assets/icon_wissen_pirates.jpg',
-                'icon-soziales': 'assets/icon_soziales_pirates.jpg',
-                'icon-inventar': 'assets/icon_inventar_pirates.jpg',
-                'icon-notizen': 'assets/icon_notizen_pirates.jpg',
-                'icon-hp': 'assets/icon_hp_pirates.jpg',
-                'icon-waffen': 'assets/icon_handeln_pirates.jpg',
-                'main-theme-logo': 'assets/logo_pirates.jpg'
-            };
-        }
     }
+    imgPaths['main-theme-logo'] = `assets/logo_${themeKey}.jpg`;
 
     // Handle main logo visibility
     const mainLogoWrapper = document.getElementById('main-logo-wrapper');
@@ -1410,8 +1356,16 @@ function applyTheme(theme) {
     }
 
     if (logoSrc) {
-        if (mainLogoWrapper) mainLogoWrapper.style.display = 'flex';
-        if (mainLogoImg) mainLogoImg.src = logoSrc;
+        if (mainLogoImg) {
+            mainLogoImg.onerror = function() {
+                if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
+                this.onerror = null;
+            };
+            mainLogoImg.onload = function() {
+                if (mainLogoWrapper) mainLogoWrapper.style.display = 'flex';
+            };
+            mainLogoImg.src = logoSrc;
+        }
         if (removeBtn) removeBtn.style.display = appData.customThemeLogo ? 'flex' : 'none';
     } else {
         if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
@@ -1422,6 +1376,11 @@ function applyTheme(theme) {
         if (id === 'main-theme-logo') continue; // Handled above
         const imgEl = document.getElementById(id);
         if (imgEl) {
+            imgEl.onerror = function() {
+                const defaultBase = id === 'icon-waffen' ? 'icon_handeln' : id.replace('-', '_');
+                this.src = `assets/${defaultBase}.jpg`;
+                this.onerror = null;
+            };
             imgEl.src = path;
         }
     }
