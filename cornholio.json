@@ -1,0 +1,100 @@
+{
+  "vorname": "Der große",
+  "name": "Cornholio",
+  "geschlecht": "Männlich",
+  "beruf": "TP-Sucher",
+  "alter": "15",
+  "statur": "Schlaksig, hyperaktiv",
+  "hpCurrent": 100,
+  "hpMax": 100,
+  "attr_handeln": 18,
+  "gbp_handeln": 1,
+  "skills_handeln": [
+    {
+      "id": 1,
+      "name": "T-Shirt über Kopf ziehen",
+      "invested": 72
+    },
+    {
+      "id": 2,
+      "name": "Wegrennen (schnell)",
+      "invested": 60
+    },
+    {
+      "id": 3,
+      "name": "Sinnlose Zerstörung",
+      "invested": 50
+    }
+  ],
+  "attr_wissen": 5,
+  "gbp_wissen": 0,
+  "skills_wissen": [
+    {
+      "id": 4,
+      "name": "Wo es TP gibt",
+      "invested": 30
+    },
+    {
+      "id": 5,
+      "name": "Fernsehen gucken",
+      "invested": 20
+    }
+  ],
+  "attr_soziales": 17,
+  "gbp_soziales": 1,
+  "skills_soziales": [
+    {
+      "id": 6,
+      "name": "Bedrohen (I need TP!)",
+      "invested": 73
+    },
+    {
+      "id": 7,
+      "name": "Spanischer Akzent",
+      "invested": 60
+    },
+    {
+      "id": 8,
+      "name": "Leute extrem nerven",
+      "invested": 40
+    }
+  ],
+  "inventory": [
+    {
+      "id": 1,
+      "name": "Klopapier (TP)",
+      "description": "Für sein Bunghole.",
+      "isWeapon": false
+    },
+    {
+      "id": 2,
+      "name": "Kaffee / Zucker",
+      "description": "Auslöser der Verwandlung",
+      "isWeapon": false
+    }
+  ],
+  "weapons": [],
+  "statuses": [
+    {
+      "id": "st1",
+      "name": "Zuckerrausch",
+      "value": 10,
+      "type": "status-bonus"
+    },
+    {
+      "id": "st2",
+      "name": "Entzug (kein TP)",
+      "value": 15,
+      "type": "status-negative"
+    }
+  ],
+  "currency": {
+    "name": "Dollar",
+    "amount": 0
+  },
+  "notes": "I am the Great Cornholio! I need TP for my bunghole! \n\nSymptome: Extremer Koffein- oder Zuckerrausch führt zur Verwandlung. Spricht mit spanischem Akzent. Hebt die Arme in die Luft.",
+  "theme": "default",
+  "maxPoints": 400,
+  "portrait": "",
+  "customThemeLogo": ""
+}

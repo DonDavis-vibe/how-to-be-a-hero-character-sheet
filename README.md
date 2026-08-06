@@ -39,6 +39,7 @@ Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach 
 - **Dynamische Krits:** Kritische Erfolge (die ersten 10% des Skillwerts) und Patzer (die oberen 10%) werden dynamisch anhand deines genauen Werts berechnet (inkl. Konfetti & Sounds!).
 - **HP & Status:** Modernes Drag & Drop Inventar, flexibel anpassbare Status-Effekte und eine dramatische **visuelle HP-Warnung**, sobald dein Charakter auf ≤ 10 Lebenspunkte fällt.
 - **Smartes Würfel-Log:** Jeder Wurf wird übersichtlich in einer Leiste dokumentiert. Brauchst du was Spezielles? Nutze den Custom-Dice Roller (z.B. `3w8`).
+- **Aktions-Logbuch:** Ein eigenes, aufklappbares Logbuch dokumentiert automatisch chronologisch alle Änderungen an HP, Währung, Inventar, Waffen, Status-Effekten und Geistesblitzen. Nie wieder vergessen, ob man den Trank jetzt benutzt hat oder nicht!
 - **Geistesblitze (GBP):** Ein dedizierter Button lässt dich deine verdienten Punkte taktisch einsetzen und trackt sie mit.
 
 ## 🎨 10 Epische Themes
