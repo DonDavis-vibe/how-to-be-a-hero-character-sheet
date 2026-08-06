@@ -56,8 +56,11 @@ The root object of the JSON file represents a single character's state.
     { "time": "15:23", "cssClass": "activity-good", "iconHtml": "<i class=\"fa-solid fa-heart\"></i>", "message": "Heilung um 4 HP" }
   ],
   
+  "currency": { "name": "Credits", "amount": 150 },
   "notes": "Hat Höhenangst...",
   "theme": "mafia",
+  "fxEnabled": true,
+  "soundEnabled": true,
   "maxPoints": 400,
   "portrait": "data:image/jpeg;base64,/9j/4AAQSk..."
 }
@@ -110,8 +113,13 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `cssClass` (String): The visual color class (`activity-good`, `activity-bad`, `activity-neutral`).
   - `iconHtml` (String): The raw HTML string for the FontAwesome icon.
   - `message` (String): The log text.
+- `currency` (Object, Optional): The character's primary currency.
+  - `name` (String): The name of the currency (e.g. "Credits").
+  - `amount` (Number): The current amount.
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
 - `theme` (String): The UI theme selected by the user. Supported values: `default`, `steampunk`, `cyberpunk`, `apocalyptic`, `mafia`, `lovecraft`, `magic`, `deepspace`.
+- `fxEnabled` (Boolean, Optional): Whether visual CSS/JS effects are enabled for the theme (default `true`).
+- `soundEnabled` (Boolean, Optional): Whether UI sound effects are enabled (default `true`).
 - `customThemeLogo` (String, Optional): Base64 Data URI of a custom faction/team logo that overrides the default theme logo.
 
 ## Importing Rules
