@@ -159,8 +159,12 @@ function setupEventListeners() {
 
 // --- HP Management ---
 function adjustHp(amount) {
+    const oldHp = appData.hpCurrent;
     appData.hpCurrent += amount;
     if (appData.hpCurrent > appData.hpMax) appData.hpCurrent = appData.hpMax;
+    const diff = appData.hpCurrent - oldHp;
+    if (diff > 0) addActivityLog(`Heilung um ${diff} HP`, 'activity-good', '<i class="fa-solid fa-heart"></i>');
+    else if (diff < 0) addActivityLog(`Schaden erlitten: ${Math.abs(diff)} HP`, 'activity-bad', '<i class="fa-solid fa-heart-crack"></i>');
     
     document.getElementById('hp-current').value = appData.hpCurrent;
     updateHpBarVisual();
@@ -481,7 +485,8 @@ function renderInventory() {
         delBtn.style.marginLeft = '1rem';
         delBtn.onclick = () => {
             if (confirm(`Möchtest du das Item "${item.name || 'Unbenannt'}" wirklich löschen?`)) {
-                appData.inventory.splice(index, 1);
+                    addActivityLog(`Verloren/Verbraucht: ${item.name || 'Item'}`, 'activity-bad', '<i class="fa-solid fa-trash"></i>');
+                    appData.inventory.splice(index, 1);
                 saveData();
                 renderInventory();
             }
@@ -504,10 +509,12 @@ function renderInventory() {
         minusBtn.onclick = () => {
             if (item.amount > 1) {
                 item.amount--;
+                addActivityLog(`Verbraucht: 1x ${item.name || 'Item'}`, 'activity-bad', '<i class="fa-solid fa-minus"></i>');
                 saveData();
                 renderInventory();
             } else {
                 if(confirm("Item löschen?")) {
+                    addActivityLog(`Verloren/Verbraucht: ${item.name || 'Item'}`, 'activity-bad', '<i class="fa-solid fa-trash"></i>');
                     appData.inventory.splice(index, 1);
                     saveData();
                     renderInventory();
@@ -524,6 +531,7 @@ function renderInventory() {
         plusBtn.innerHTML = '+';
         plusBtn.onclick = () => {
             item.amount = (item.amount || 1) + 1;
+            addActivityLog(`Gefunden: 1x ${item.name || 'Item'}`, 'activity-good', '<i class="fa-solid fa-plus"></i>');
             saveData();
             renderInventory();
         };
@@ -595,6 +603,7 @@ function addInventoryItem() {
             description: desc,
             showDesc: !!desc // auto-expand if description was added
         });
+        addActivityLog(`Erhalten: ${amount}x ${name}`, 'activity-good', '<i class="fa-solid fa-box"></i>');
         
         nameInput.value = '';
         if(amountInput) amountInput.value = '1';
@@ -751,6 +760,23 @@ function addToLog(dice, result, timestamp) {
     
     // Keep log max 10 entries
     if (logList.children.length > 10) {
+        logList.removeChild(logList.lastChild);
+    }
+}
+
+function addActivityLog(message, cssClass, iconHtml) {
+    const logList = document.getElementById('activity-log');
+    if (!logList) return;
+    const li = document.createElement('li');
+    li.className = 'activity-entry';
+    const timeStr = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'});
+    li.innerHTML = `
+        <div class="activity-time">${timeStr}</div>
+        <div class="activity-icon ${cssClass}">${iconHtml}</div>
+        <div class="activity-content">${message}</div>
+    `;
+    logList.prepend(li);
+    if (logList.children.length > 30) {
         logList.removeChild(logList.lastChild);
     }
 }
@@ -1457,6 +1483,13 @@ function renderStatuses() {
 
 function removeStatus(id) {
     if (!appData.statuses) return;
+    const st = appData.statuses.find(s => s.id === id);
+    if(st) {
+        let logClass = 'activity-neutral';
+        if (st.type === 'malus') logClass = 'activity-good';
+        else if (st.type === 'bonus') logClass = 'activity-bad';
+        addActivityLog(`Status entfernt: ${st.name}`, logClass, '<i class="fa-solid fa-heart-circle-check"></i>');
+    }
     appData.statuses = appData.statuses.filter(s => s.id !== id);
     saveData();
     renderStatuses();
@@ -1473,6 +1506,8 @@ function addCustomStatus() {
         const typeInput = document.getElementById('new-status-type');
         const statusType = typeInput ? typeInput.value : 'malus';
         appData.statuses.push({ id: 'st_' + Date.now(), name: name, value: val, type: statusType });
+        const cssMap = { 'bonus': 'activity-good', 'malus': 'activity-bad', 'neutral': 'activity-neutral' };
+        addActivityLog(`Neuer Status: ${name}`, cssMap[statusType] || 'activity-neutral', '<i class="fa-solid fa-masks-theater"></i>');
         nameInput.value = '';
         if (valInput) valInput.value = '';
         saveData();
@@ -1481,10 +1516,16 @@ function addCustomStatus() {
 }
 
 function updateCurrency() {
+    const oldAmt = appData.currency ? appData.currency.amount : 0;
+    const newAmt = parseInt(document.getElementById('currency-val').value) || 0;
+    const name = document.getElementById('currency-name').value;
     appData.currency = {
-        name: document.getElementById('currency-name').value,
-        amount: parseInt(document.getElementById('currency-val').value) || 0
+        name: name,
+        amount: newAmt
     };
+    const diff = newAmt - oldAmt;
+    if(diff > 0) addActivityLog(`+${diff} ${name}`, 'activity-good', '<i class="fa-solid fa-coins"></i>');
+    else if(diff < 0) addActivityLog(`${diff} ${name}`, 'activity-bad', '<i class="fa-solid fa-coins"></i>');
     saveData();
 }
 
@@ -1624,6 +1665,7 @@ function addWeaponItem() {
             description: desc,
             showDesc: !!desc
         });
+        addActivityLog(`Neue Waffe: ${name}`, 'activity-good', '<i class="fa-solid fa-khanda"></i>');
         
         nameInput.value = '';
         dmgInput.value = '';
@@ -1635,6 +1677,8 @@ function addWeaponItem() {
 }
 
 function removeWeapon(id) {
+    const wp = appData.weapons.find(w => w.id === id);
+    if (wp) addActivityLog(`Waffe entfernt: ${wp.name}`, 'activity-bad', '<i class="fa-solid fa-trash"></i>');
     appData.weapons = appData.weapons.filter(w => w.id !== id);
     saveData();
     renderWeapons();
@@ -1719,6 +1763,7 @@ function useGBP(category) {
     if (appData[field] > 0) {
         appData[field]--;
         document.getElementById('gbp-current-' + category).value = appData[field];
+        addActivityLog(`Geistesblitz genutzt (${category})`, 'activity-neutral', '<i class="fa-solid fa-lightbulb"></i>');
         saveData();
         addToLog(`<i class="fa-solid fa-lightbulb"></i> Geistesblitzpunkt`, `für ${category.charAt(0).toUpperCase() + category.slice(1)} eingesetzt`);
     }
