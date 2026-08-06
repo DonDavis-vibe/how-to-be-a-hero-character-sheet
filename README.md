@@ -30,8 +30,6 @@ Es ist zu 100% lokal (alles bleibt in deinem Browser, keine Accounts nötig) und
 2. Wenn du aufhören möchtest, speichere deinen Charakter oben rechts als `.json`-Datei lokal auf deinem Rechner.
 3. Beim nächsten Mal lädst du diese `.json` einfach wieder ein und bist sofort startklar!
 
-*(Tipp: Nutze die `test_character.json` aus dem Repository, um direkt alle Features live auszuprobieren!)*
-
 ## ✨ Core Features (Regelkonform)
 Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach dem offiziellen Regelwerk abzubilden:
 - **Vollautomatisierung:** Basiswerte (Handeln, Wissen, Soziales), Geistesblitzpunkte (GBP) und Skill-Boni werden automatisch kaufmännisch gerundet und verrechnet.
