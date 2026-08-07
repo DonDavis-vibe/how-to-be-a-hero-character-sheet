@@ -1366,9 +1366,53 @@ function startPiratesFx() {
     };
 
     // Spawn one immediately for the wow factor, then every 20 seconds
-    setTimeout(spawnTentacle, 500);
-    
+    spawnTentacle();
     fxInterval = setInterval(spawnTentacle, 20000);
+}
+
+function startSuperheroFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    const words = ["BAM!", "POW!", "ZAP!", "BOOM!", "SMASH!", "WHAM!"];
+    const colors = ["#ffcc00", "#ff003c", "#00d2ff"];
+    
+    const spawnBubble = () => {
+        const bubble = document.createElement('div');
+        const text = words[Math.floor(Math.random() * words.length)];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        bubble.textContent = text;
+        bubble.style.position = 'absolute';
+        bubble.style.left = (Math.random() * 80 + 10) + 'vw';
+        bubble.style.top = (Math.random() * 80 + 10) + 'vh';
+        bubble.style.color = '#fff';
+        bubble.style.fontSize = (Math.random() * 3 + 3) + 'rem';
+        bubble.style.fontFamily = "'Bangers', 'Comic Sans MS', sans-serif";
+        bubble.style.fontWeight = 'bold';
+        bubble.style.textShadow = `4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0px 4px 15px ${color}`;
+        bubble.style.webkitTextStroke = '2px #000';
+        bubble.style.transform = 'scale(0) rotate(0deg)';
+        bubble.style.opacity = '0';
+        bubble.style.pointerEvents = 'none';
+        bubble.style.animation = 'comicPop 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+        
+        layer.appendChild(bubble);
+        
+        setTimeout(() => {
+            if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
+        }, 1500);
+    };
+    
+    // Spawn every 1.5 to 4 seconds randomly
+    const loopSpawn = () => {
+        if (!document.getElementById('fx-layer')) return;
+        spawnBubble();
+        fxInterval = setTimeout(loopSpawn, Math.random() * 2500 + 1500);
+    };
+    
+    loopSpawn();
 }
 
 function changeTheme() {
@@ -1411,6 +1455,7 @@ function applyTheme(theme) {
         else if(theme === 'deepspace') startDeepSpaceFx();
         else if(theme === 'wildwest') startWildWestFx();
         else if(theme === 'pirates') startPiratesFx();
+        else if(theme === 'superhero') startSuperheroFx();
     }
     
     const themeKey = theme === 'apocalyptic' ? 'apokalypse' : theme;

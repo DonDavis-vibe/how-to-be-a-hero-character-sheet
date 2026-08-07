@@ -1174,7 +1174,7 @@ body.theme-mafia {
     --color-wissen: #b3a890;
     --color-soziales: #d1c8b4;
     --color-accent: #c2a15f;
-    background-image: url('assets/bg_mafia.png'); 
+    background-image: url('assets/bg_mafia.jpg'); 
 }
 
 body.theme-mafia .app-container {
@@ -1222,7 +1222,7 @@ body.theme-lovecraft {
     --color-wissen: #38bdf8;
     --color-soziales: #c084fc;
     --color-accent: #4ade80;
-    background-image: url('assets/bg_lovecraft.png'); 
+    background-image: url('assets/bg_lovecraft.jpg'); 
 }
 
 body.theme-lovecraft .app-container {
@@ -1270,7 +1270,7 @@ body.theme-magic {
     --color-wissen: #38bdf8;
     --color-soziales: #a855f7; 
     --color-accent: #eab308;
-    background-image: url('assets/bg_magic.png'); 
+    background-image: url('assets/bg_magic.jpg'); 
 }
 
 body.theme-magic .app-container {
@@ -1369,7 +1369,7 @@ body.theme-mafia {
     --color-wissen: #b3a890;
     --color-soziales: #d1c8b4;
     --color-accent: #c2a15f;
-    background-image: url('assets/bg_mafia.png'); 
+    background-image: url('assets/bg_mafia.jpg'); 
 }
 
 body.theme-mafia .app-container {
@@ -1417,7 +1417,7 @@ body.theme-lovecraft {
     --color-wissen: #38bdf8;
     --color-soziales: #c084fc;
     --color-accent: #4ade80;
-    background-image: url('assets/bg_lovecraft.png'); 
+    background-image: url('assets/bg_lovecraft.jpg'); 
 }
 
 body.theme-lovecraft .app-container {
@@ -1465,7 +1465,7 @@ body.theme-magic {
     --color-wissen: #38bdf8;
     --color-soziales: #a855f7; 
     --color-accent: #eab308;
-    background-image: url('assets/bg_magic.png'); 
+    background-image: url('assets/bg_magic.jpg'); 
 }
 
 body.theme-magic .app-container {
@@ -1507,7 +1507,7 @@ body.theme-deepspace {
     --color-wissen: #38bdf8;
     --color-soziales: #818cf8; 
     --color-accent: #38bdf8;
-    background-image: url('assets/bg_deepspace.png'); 
+    background-image: url('assets/bg_deepspace.jpg'); 
 }
 
 body.theme-deepspace .app-container {
@@ -1553,7 +1553,7 @@ body.theme-wildwest {
     --color-wissen: #8b4513;
     --color-soziales: #c19a6b; 
     --color-accent: #b87333;
-    background-image: url('assets/bg_wildwest.png'); 
+    background-image: url('assets/bg_wildwest.jpg'); 
 }
 
 body.theme-wildwest .app-container {
@@ -1602,7 +1602,7 @@ body.theme-pirates {
     --color-wissen: #20b2aa; /* Light Sea Green */
     --color-soziales: #daa520; /* Goldenrod */
     --color-accent: #d4af37; /* Metallic Gold */
-    background-image: url('assets/bg_pirates.png'); 
+    background-image: url('assets/bg_pirates.jpg'); 
 }
 
 body.theme-pirates .app-container {
@@ -1631,25 +1631,24 @@ body.theme-pirates .btn-primary:hover {
     100% { background-position-x: -1000px; }
 }
 
-@keyframes tentacleRise {
-    0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-    20% { opacity: 1; transform: translateY(-160px) rotate(5deg); }
-    50% { transform: translateY(-200px) rotate(-5deg); }
-    80% { opacity: 1; transform: translateY(-160px) rotate(10deg); }
-    100% { transform: translateY(50px) rotate(15deg); opacity: 0; }
+body.theme-superhero {
+    --bg-color: #0b1121;
+    --glass-bg: rgba(15, 23, 42, 0.85);
+    --glass-border: rgba(250, 204, 21, 0.4);
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --color-action: #ef4444;
+    --color-wissen: #3b82f6;
+    --color-soziales: #facc15;
+    --color-accent: #06b6d4;
+    background-image: url('assets/bg_superhero.jpg');
 }
 
-@keyframes pulseLowHp {
-    0% { background-color: rgba(255, 50, 50, 0.2); box-shadow: 0 0 10px rgba(255, 50, 50, 0.5); }
-    50% { background-color: rgba(255, 50, 50, 0.5); box-shadow: 0 0 20px rgba(255, 50, 50, 0.8); }
-    100% { background-color: rgba(255, 50, 50, 0.2); box-shadow: 0 0 10px rgba(255, 50, 50, 0.5); }
-}
-.low-hp-warning {
-    animation: pulseLowHp 1.5s infinite;
-    border: 1px solid red !important;
-}
-.hp-text-danger {
-    color: #ff4444 !important;
-    font-weight: bold;
+@keyframes comicPop {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  15% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+  30% { transform: scale(1) rotate(0deg); opacity: 1; }
+  70% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.5) rotate(0deg); opacity: 0; }
 }
 
