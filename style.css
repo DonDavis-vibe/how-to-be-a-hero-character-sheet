@@ -1652,3 +1652,34 @@ body.theme-superhero {
   100% { transform: scale(1.5) rotate(0deg); opacity: 0; }
 }
 
+
+/* Footer Styling */
+.footer-disclaimer {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    padding: 20px;
+    margin-top: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    line-height: 1.5;
+    position: relative;
+    z-index: 10;
+    backdrop-filter: blur(3px);
+}
+
+.footer-disclaimer strong {
+    color: #ffffff;
+}
+
+.footer-disclaimer a {
+    color: #66b3ff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+
+.footer-disclaimer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
