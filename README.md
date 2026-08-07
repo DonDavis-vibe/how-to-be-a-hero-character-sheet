@@ -14,7 +14,7 @@
 
 <hr />
 
-## 📖 Über dieses Tool & Community Gruß
+## 📖 Projektübersicht
 Moin Moin an alle Bohnen und Pen & Paper Fans! 🚀
 
 Dieses Projekt ist aus reiner Leidenschaft für das *How to be a Hero* Regelwerk entstanden. Das Ziel war es, eine moderne, digitale Alternative zu statischen PDFs oder reinen Excel-Tabellen zu schaffen, die nicht nur rechnet, sondern auch beim Spielen richtig Spaß macht und für Immersion sorgt. 
@@ -40,19 +40,20 @@ Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach 
 - **Aktions-Logbuch:** Ein eigenes, aufklappbares Logbuch dokumentiert automatisch chronologisch alle Änderungen an HP, Währung, Inventar, Waffen, Status-Effekten und Geistesblitzen. Nie wieder vergessen, ob man den Trank jetzt benutzt hat oder nicht!
 - **Geistesblitze (GBP):** Ein dedizierter Button lässt dich deine verdienten Punkte taktisch einsetzen und trackt sie mit.
 
-## 🎨 10 Epische Themes
+## 🎨 11 Epische Themes
 Warum sollte ein Bogen wie ein Steuerformular aussehen? Wechsle das Design deines Charakterbogens passend zur Kampagne. Alle Themes verändern das Layout, die Farben, die Icons und bringen coole CSS/JS-Animationen mit (welche man für schwächere Geräte auch per Klick auf den 🪄 ausschalten kann):
 
 * ⏳ **Zeitreise (Standard)** - Wabernde Risse im Raum-Zeit-Kontinuum.
 * ⚙️ **Steampunk** - Langsam drehende, schwebende Zahnräder.
 * ☢️ **Apokalypse** - Leuchtend grüne Strahlungsasche weht über den Screen.
-* 🦾 **Cyberpunk** - Vertikaler digitaler Neon-Matrix-Regen.
+* 💾 **Cyberpunk** - Vertikaler digitaler Neon-Matrix-Regen.
 * 🕵️‍♂️ **1920s Mafia** - Prasselnder Regen und mysteriöser Zigarrenrauch.
 * 🐙 **Lovecraft (Cthulhu)** - Eldritch-Nebel, wachende Augen und "Sanity Twitches".
-* 🏰 **Royal Magic** - Schwebende, leuchtende Magie-Partikel.
-* 🚀 **Deep Space** - Funkelnde Sterne und schnelle Sternschnuppen.
-* 🤠 **Wilder Westen** - Trockene Wüste mit rollendem Tumbleweed.
+* 🪄 **Royal Magic** - Schwebende, leuchtende Magie-Partikel.
+* 🌌 **Deep Space** - Funkelnde Sterne und schnelle Sternschnuppen.
+* 🏜️ **Wilder Westen** - Trockene Wüste mit rollendem Tumbleweed.
 * 🏴‍☠️ **Piraten** - Sanft rollende Ozeanwellen und riesige Kraken-Tentakel.
+* 🦸‍♂️ **Superhelden** - Knallige Comic-Farben und dynamische Halftone-Schatten.
 
 ## 🤝 Kompatible Tools & Integrationen
 Dieses Charakterbogen-Tool ist voll kompatibel mit dem **[PnPMaster](https://github.com/Rec0iL/PnPMaster)** – einem umfangreichen Spielleiter-Tool (GM Tool), entwickelt von **[@Rec0iL](https://github.com/Rec0iL)**. 
