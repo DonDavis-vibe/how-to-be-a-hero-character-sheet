@@ -54,6 +54,10 @@ Warum sollte ein Bogen wie ein Steuerformular aussehen? Wechsle das Design deine
 * 🤠 **Wilder Westen** - Trockene Wüste mit rollendem Tumbleweed.
 * 🏴‍☠️ **Piraten** - Sanft rollende Ozeanwellen und riesige Kraken-Tentakel.
 
+## 🤝 Kompatible Tools & Integrationen
+Dieses Charakterbogen-Tool ist voll kompatibel mit dem **[PnPMaster](https://github.com/Rec0iL/PnPMaster)** – einem umfangreichen Spielleiter-Tool (GM Tool), entwickelt von **[@Rec0iL](https://github.com/Rec0iL)**. 
+Du kannst deine hier erstellten Charaktere (via `.json` Export) direkt in PnPMaster einlesen, als Spielleiter zentral verwalten und bei Bedarf jederzeit wieder für dieses Charakter-Tool exportieren!
+
 ## 💻 Für Entwickler & Contribution
 Da dieses Tool komplett clientseitig (nur HTML, CSS und pures JavaScript) gebaut ist, kannst du es dir extrem einfach lokal anpassen oder erweitern. Kein npm, kein webpack, keine Node-Abhängigkeiten!
 ```bash
