@@ -1905,3 +1905,29 @@ body.theme-medieval {
   50% { transform: translateY(-10vh) scale(1.2) rotate(-35deg); opacity: 0.7; }
   100% { transform: translateY(-25vh) scale(0.2) rotate(-55deg); opacity: 0; }
 }
+
+/* Ultracore Theme */
+body.theme-ultracore {
+    --bg-color: #0b1a20;
+    --glass-bg: rgba(10, 25, 30, 0.85);
+    --glass-border: rgba(56, 189, 248, 0.5); /* Glowing blue */
+    --text-primary: #e0f2fe;
+    --text-secondary: #7dd3fc;
+    --color-action: #a855f7; /* Magitek purple */
+    --color-wissen: #38bdf8; /* Energy blue */
+    --color-soziales: #f472b6; /* Pink/Purple */
+    --color-accent: #0284c7; /* Deep blue */
+    background-image: url('assets/bg_ultracore.jpg');
+}
+
+@keyframes coreNodePulse {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; box-shadow: 0 0 0px transparent; }
+    20% { opacity: 0.6; box-shadow: 0 0 20px var(--node-color); }
+    80% { opacity: 0.6; box-shadow: 0 0 20px var(--node-color); }
+    100% { transform: scale(1.2) rotate(180deg); opacity: 0; box-shadow: 0 0 0px transparent; }
+}
+@keyframes coreNodeInner {
+    0% { transform: scale(0) rotate(0deg); }
+    50% { transform: scale(1) rotate(-90deg); }
+    100% { transform: scale(0) rotate(-180deg); }
+}
