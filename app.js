@@ -1472,6 +1472,57 @@ function startMedievalFx() {
     fxInterval = setInterval(spawnParticle, 100); // Spawn faster for dense fire
 }
 
+function startUltracoreFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    // Spawn static "Magitek Data Nodes" that boot up and fade out
+    const spawnNode = () => {
+        const node = document.createElement('div');
+        node.style.position = 'absolute';
+        node.style.left = Math.random() * 90 + 5 + 'vw';
+        node.style.top = Math.random() * 90 + 5 + 'vh';
+        const size = Math.random() * 60 + 30; // 30px to 90px
+        node.style.width = size + 'px';
+        node.style.height = size + 'px';
+        
+        // Magitek colors (cyan, purple, blue)
+        const colors = ['#38bdf8', '#a855f7', '#818cf8'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        node.style.setProperty('--node-color', color);
+        
+        // Outer mechanical ring
+        node.style.border = `2px solid ${color}`;
+        node.style.borderRadius = Math.random() > 0.5 ? '50%' : '15%'; // mix of rings and rounded squares
+        node.style.pointerEvents = 'none';
+        node.style.display = 'flex';
+        node.style.justifyContent = 'center';
+        node.style.alignItems = 'center';
+        
+        const duration = Math.random() * 4 + 4; // 4-8 seconds
+        node.style.animation = `coreNodePulse ${duration}s ease-in-out forwards`;
+        
+        // Inner geometric core
+        const inner = document.createElement('div');
+        inner.style.width = '35%';
+        inner.style.height = '35%';
+        inner.style.background = color;
+        inner.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        inner.style.animation = `coreNodeInner ${duration}s ease-in-out forwards`;
+        node.appendChild(inner);
+        
+        layer.appendChild(node);
+        setTimeout(() => { if (node.parentNode) node.parentNode.removeChild(node); }, duration * 1000);
+    };
+    
+    // Initial burst of nodes waking up
+    for(let i=0; i<6; i++) setTimeout(spawnNode, Math.random() * 2000);
+    
+    // Slower spawn rate for a more subtle effect
+    fxInterval = setInterval(spawnNode, 2000);
+}
+
 function changeTheme() {
     const selector = document.getElementById('theme-selector');
     const theme = selector.value;
@@ -1514,6 +1565,7 @@ function applyTheme(theme) {
         else if(theme === 'pirates') startPiratesFx();
         else if(theme === 'superhero') startSuperheroFx();
         else if(theme === 'medieval') startMedievalFx();
+        else if(theme === 'ultracore') startUltracoreFx();
     }
     
     const themeKey = theme === 'apocalyptic' ? 'apokalypse' : theme;
