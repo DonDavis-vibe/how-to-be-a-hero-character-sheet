@@ -1415,6 +1415,63 @@ function startSuperheroFx() {
     loopSpawn();
 }
 
+function startMedievalFx() {
+    clearFx();
+    const layer = document.getElementById('fx-layer');
+    if(!layer) return;
+    
+    const spawnParticle = () => {
+        const isFlame = Math.random() > 0.6; // 40% chance for a flame
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.bottom = '-20px';
+        
+        if (isFlame) {
+            // Flame particle (larger, fast, stays lower)
+            particle.style.width = Math.random() * 15 + 10 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.background = Math.random() > 0.5 ? '#ff4500' : '#ff8c00';
+            particle.style.borderRadius = '50% 0 50% 50%'; // Teardrop fire shape
+            particle.style.boxShadow = `0 0 20px ${particle.style.background}`;
+            particle.style.opacity = '0';
+            particle.style.pointerEvents = 'none';
+            particle.style.filter = 'blur(3px)';
+            
+            const duration = Math.random() * 1.5 + 1; // 1-2.5 seconds
+            particle.style.animation = `flameFlicker ${duration}s ease-in forwards`;
+            
+            layer.appendChild(particle);
+            setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, duration * 1000);
+        } else {
+            // Ember particle (small, rises high)
+            particle.style.width = Math.random() * 4 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            const colors = ['#ff4500', '#ff8c00', '#ffd700'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.borderRadius = '50%';
+            particle.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+            particle.style.opacity = '0';
+            particle.style.pointerEvents = 'none';
+            
+            const duration = Math.random() * 4 + 3; // 3-7 seconds
+            particle.style.animation = `emberRise ${duration}s ease-in forwards`;
+            
+            const sway = (Math.random() - 0.5) * 100;
+            particle.style.setProperty('--sway-amount', `${sway}px`);
+            
+            layer.appendChild(particle);
+            setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, duration * 1000);
+        }
+    };
+    
+    // Initial burst
+    for(let i=0; i<30; i++) setTimeout(spawnParticle, Math.random() * 1500);
+    
+    fxInterval = setInterval(spawnParticle, 100); // Spawn faster for dense fire
+}
+
 function changeTheme() {
     const selector = document.getElementById('theme-selector');
     const theme = selector.value;
@@ -1456,6 +1513,7 @@ function applyTheme(theme) {
         else if(theme === 'wildwest') startWildWestFx();
         else if(theme === 'pirates') startPiratesFx();
         else if(theme === 'superhero') startSuperheroFx();
+        else if(theme === 'medieval') startMedievalFx();
     }
     
     const themeKey = theme === 'apocalyptic' ? 'apokalypse' : theme;
