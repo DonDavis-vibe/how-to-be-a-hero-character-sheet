@@ -38,6 +38,7 @@ Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach 
 - **HP & Status:** Modernes Drag & Drop Inventar, flexibel anpassbare Status-Effekte und eine dramatische **visuelle HP-Warnung**, sobald dein Charakter auf ≤ 10 Lebenspunkte fällt.
 - **Smartes Würfel-Tool & SL-Boni:** Jeder Wurf wird dokumentiert. Trage im Würfel-Tool schnell einen **Spielleiter-Bonus/Malus** ein, der völlig automatisch in deinen nächsten Wurf (inkl. Krit-Berechnung) eingerechnet wird! Für Spezielles gibt es den Custom-Dice Roller (z.B. `3w8`).
 - **Aktions-Logbuch:** Ein eigenes, aufklappbares Logbuch dokumentiert automatisch chronologisch alle Änderungen an HP, Währung, Inventar, Waffen, Status-Effekten und Geistesblitzen. Nie wieder vergessen, ob man den Trank jetzt benutzt hat oder nicht!
+- **Flexibles Layout:** Mit einem Klick auf den Layout-Button in den Notizen verwandelst du die App auf großen Bildschirmen blitzschnell von einem 2-Spalten- in ein übersichtliches 3-Spalten-Layout (Notizen docken sich automatisch links an!).
 - **Geistesblitze (GBP):** Ein dedizierter Button lässt dich deine verdienten Punkte taktisch einsetzen und trackt sie mit.
 
 ## 🎨 13 Epische Themes
