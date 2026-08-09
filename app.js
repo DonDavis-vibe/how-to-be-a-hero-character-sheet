@@ -794,6 +794,18 @@ function addToLog(dice, result, timestamp) {
         <span class="log-val">${result}</span>
     `;
 
+    li.setAttribute('draggable', 'true');
+    li.style.cursor = 'grab';
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = `${dice}: ${result}`;
+    const plainText = tempDiv.textContent || tempDiv.innerText || "";
+    const dragText = `[Wurf] ${plainText.trim().replace(/\s+/g, ' ')}`;
+    
+    li.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', dragText);
+    });
+
     logList.prepend(li);
     
     // Keep log max 10 entries
@@ -836,6 +848,19 @@ function renderActivityLog() {
             <div class="activity-icon ${entry.cssClass}">${entry.iconHtml}</div>
             <div class="activity-content">${entry.message}</div>
         `;
+        
+        li.setAttribute('draggable', 'true');
+        li.style.cursor = 'grab';
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = entry.message;
+        const plainMsg = tempDiv.textContent || tempDiv.innerText || "";
+        const dragText = `[Log] ${entry.time} - ${plainMsg.trim().replace(/\s+/g, ' ')}`;
+        
+        li.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', dragText);
+        });
+
         logList.appendChild(li);
     });
 }
@@ -1755,6 +1780,27 @@ function toggleLayout() {
         document.getElementById('notes-content').style.display = 'block';
         document.getElementById('notes-chevron').style.transform = 'rotate(180deg)';
     }
+}
+
+// --- Help System ---
+function showHelp(key) {
+    if (!helpData || !helpData[key]) return;
+    const modal = document.getElementById('help-modal-overlay');
+    const content = document.getElementById('help-modal-content');
+    content.innerHTML = helpData[key];
+    modal.style.display = 'flex';
+    // Small delay to allow display:flex to apply before adding class for transition
+    setTimeout(() => {
+        modal.classList.add('active');
+    }, 10);
+}
+
+function closeHelp() {
+    const modal = document.getElementById('help-modal-overlay');
+    modal.classList.remove('active');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300); // Wait for transition
 }
 
 function renderWeapons() {

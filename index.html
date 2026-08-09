@@ -124,6 +124,7 @@
                         <input type="text" id="statur" value="Sportlich" data-field="statur">
                     </div>
                     <div class="status-section" style="grid-column: 1 / -1; margin-top: 1rem;">
+                        <label style="font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-light); font-weight: 500;">Status-Effekte <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('status')" title="Hilfe zu Status-Effekten"></i></label>
                         <div class="status-tags" id="status-container" style="justify-content: flex-start; margin-bottom: 0.5rem;">
                             <!-- Populated by JS -->
                         </div>
@@ -160,14 +161,14 @@
                 <!-- Handeln -->
                 <div class="attribute-card" style="--accent: var(--color-action);">
                     <div class="attr-header" style="align-items: flex-start;">
-                        <h2 class="cat-title" style="display: flex; align-items: center; margin: 0;"><img id="icon-handeln" src="assets/icon_handeln.jpg" class="category-icon"> Handeln</h2>
+                        <h2 class="cat-title" style="display: flex; align-items: center; margin: 0;"><img id="icon-handeln" src="assets/icon_handeln.jpg" class="category-icon"> Handeln <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('skills')" title="Hilfe zu Würfeln"></i></h2>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly onclick="rollSkillCheck('Basiswert: Handeln', parseInt(this.value))" title="Auf Basiswert Handeln würfeln">
                             <button class="tool-btn" onclick="rollInitiative()" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;" title="1W10 + Handeln"><i class="fa-solid fa-bolt"></i> Initiative</button>
                         </div>
                     </div>
                     <div class="attr-gbp">
-                        <label>Geistesblitzpunkte</label>
+                        <label>Geistesblitzpunkte <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('gbp')" title="Hilfe zu GBP"></i></label>
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <button class="gbp-use-btn" onclick="useGBP('handeln')" title="Geistesblitzpunkt einsetzen"><i class="fa-solid fa-lightbulb"></i></button>
                             <div class="gbp-counter" style="gap: 0.3rem;">
@@ -238,7 +239,7 @@
             </div>
             <!-- Inventory Section -->
             <div class="inventory-section">
-                <h2 class="cat-title"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon"> Inventar</h2>
+                <h2 class="cat-title"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon"> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
@@ -258,7 +259,7 @@
 
             <!-- Weapons Section -->
             <div class="weapons-section" style="margin-top: 2rem;">
-                <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen</h2>
+                <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                 <div class="weapons-list" id="weapons-list">
                     <!-- Populated by JS -->
                 </div>
@@ -277,7 +278,7 @@
         <!-- Notes Section (Movable) -->
         <div class="notes-section glass-panel" id="notes-panel">
             <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                <h2 class="cat-title" style="margin: 0;"><img id="icon-notizen" src="assets/icon_notizen.jpg" class="category-icon"> Notizen</h2>
+                <h2 class="cat-title" style="margin: 0;"><img id="icon-notizen" src="assets/icon_notizen.jpg" class="category-icon"> Notizen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('logs')" title="Hilfe zum Logbuch Drag & Drop"></i></h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <button class="tool-btn" onclick="event.stopPropagation(); toggleLayout()" title="Notizen anheften (Links / Unten)" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fa-solid fa-table-columns"></i> <span style="font-size: 0.8rem;">Layout</span>
@@ -323,7 +324,7 @@
 
             <!-- Dice Roller -->
             <div class="dice-roller glass-panel">
-                <h2><i class="fa-solid fa-dice-d20"></i> Würfel Tool</h2>
+                <h2><i class="fa-solid fa-dice-d20"></i> Würfel Tool <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('dice')" title="Hilfe zu Custom Dice & Bonus"></i></h2>
                 
                 <div class="dice-buttons">
                     <button class="dice-btn w6" onclick="rollDice(6)">
@@ -361,7 +362,7 @@
             <div class="glass-panel" style="margin-top: 1rem;">
                 <details class="activity-log-container" open>
                     <summary class="logbuch-summary" style="display: flex; justify-content: space-between; align-items: center; outline: none; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
-                        <h3 style="margin:0;"><i class="fa-solid fa-book"></i> Logbuch</h3>
+                        <h3 style="margin:0;"><i class="fa-solid fa-book"></i> Logbuch <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('logs')" title="Hilfe zum Logbuch Drag & Drop"></i></h3>
                         <i class="fa-solid fa-chevron-down toggle-icon" style="transition: transform 0.3s; color: rgba(255,255,255,0.5);"></i>
                     </summary>
                     <ul id="activity-log" style="margin-top: 1rem;">
@@ -380,9 +381,18 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="data.js"></script>
     <script src="audio.js"></script>
+    <script src="helpData.js"></script>
     <script src="app.js"></script>
 <div class="footer-disclaimer">Dies ist ein inoffizielles Fan-Projekt von <strong>Dortmunder Redneck Engineering</strong> und steht in keiner Verbindung zu Rocket Beans Entertainment GmbH.<br>Entwickelt von <a href="https://github.com/DonDavis-vibe" target="_blank">DonDavis</a>, <a href="https://github.com/Rec0iL" target="_blank">R3c0il</a> & <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Antigravity AI</a> | <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Update History & Repository auf GitHub</a><br>Das Pen & Paper Regelsystem "How to be a Hero" unterliegt der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank">howtobeahero.de</a>.</div>
 <div id="crit-fail-overlay"></div>
+
+    <!-- Help Modal -->
+    <div id="help-modal-overlay" class="help-modal-overlay" onclick="closeHelp()">
+        <div class="help-modal-box" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeHelp()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="help-modal-content"></div>
+        </div>
+    </div>
 </body>
 </html>
 
