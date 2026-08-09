@@ -153,14 +153,34 @@ body::after {
     margin: 0 auto;
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
-    grid-template-areas: "toolbar toolbar" "left right";
-    gap: 2rem;
+    grid-template-areas: 
+        "toolbar toolbar" 
+        "left right"
+        "notes right";
+    gap: 1.5rem;
+    transition: all 0.3s ease;
 }
 
 @media (max-width: 768px) {
     .app-container { 
         grid-template-columns: 1fr;
-        grid-template-areas: "toolbar" "left" "right";
+        grid-template-areas: "toolbar" "left" "notes" "right";
+    }
+}
+
+/* 3-Column Layout */
+@media (min-width: 1300px) {
+    .app-container.layout-3col {
+        max-width: 1800px;
+        grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr) minmax(300px, 1fr);
+        grid-template-areas: 
+            "toolbar toolbar toolbar" 
+            "notes left right";
+    }
+    
+    .app-container.layout-3col .notes-section {
+        margin-top: 0 !important;
+        height: 100%;
     }
 }
 
@@ -604,6 +624,7 @@ h2 {
 
 /* Right Panel / Tools */
 .character-sheet { grid-area: left; }
+.notes-section { grid-area: notes; }
 .tools-panel {
     grid-area: right;
     display: flex;
@@ -679,10 +700,10 @@ h2 {
 .btn-heal { background: var(--color-heal); }
 
 /* Dice Roller */
-.dice-buttons { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+.dice-buttons { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; }
 .dice-btn {
-    flex: 1; padding: 1rem; border: none; border-radius: 12px;
-    font-size: 1.2rem; font-weight: 700; color: white; cursor: pointer;
+    flex: 1; padding: 0.6rem; border: none; border-radius: 8px;
+    font-size: 1rem; font-weight: 700; color: white; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -703,12 +724,12 @@ h2 {
 }
 
 .dice-result-display {
-    background: rgba(0,0,0,0.3); border-radius: 12px; padding: 1.5rem;
-    text-align: center; margin-bottom: 1.5rem;
+    background: rgba(0,0,0,0.3); border-radius: 12px; padding: 1rem;
+    text-align: center; margin-bottom: 0.8rem; margin-top: 0.8rem;
     border: 1px solid rgba(255,255,255,0.05);
 }
 .result-number {
-    display: block; font-size: 3rem; font-weight: 800;
+    display: block; font-size: 2.2rem; font-weight: 800;
     font-family: var(--font-mono); color: #fbbf24;
     text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
 }
