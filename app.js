@@ -1952,16 +1952,25 @@ function adjustGbp(category, amount) {
     let baseAttrField = 'attr_' + category;
     let maxGbp = Math.round(appData[baseAttrField] / 10);
     
-    let newVal = (parseInt(appData[field]) || 0) + amount;
+    let oldVal = parseInt(appData[field]) || 0;
+    let newVal = oldVal + amount;
     if (newVal < 0) newVal = 0;
     if (newVal > maxGbp) newVal = maxGbp;
     
-    appData[field] = newVal;
-    
-    const inputEl = document.getElementById('gbp-current-' + category);
-    if (inputEl) inputEl.value = newVal;
-    
-    saveData();
+    if (oldVal !== newVal) {
+        appData[field] = newVal;
+        
+        const inputEl = document.getElementById('gbp-current-' + category);
+        if (inputEl) inputEl.value = newVal;
+        
+        if (newVal > oldVal) {
+            addActivityLog(`Geistesblitz aufgefüllt (${category})`, 'activity-positive', '<i class="fa-solid fa-lightbulb"></i>');
+        } else {
+            addActivityLog(`Geistesblitz entfernt (${category})`, 'activity-negative', '<i class="fa-solid fa-lightbulb"></i>');
+        }
+        
+        saveData();
+    }
 }
 
 function useGBP(category) {
