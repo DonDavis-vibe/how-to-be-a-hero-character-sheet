@@ -97,6 +97,7 @@ const blankData = {
         {id: 'st2', name: 'Rausch', value: 5, type: 'status-bonus'}
     ],
     currency: { name: 'Kronkorken', amount: 125 },
+    layout3Col: false,
     notes: 'Ein fertig gebauter Charakter zum sofortigen Losspielen! 400 Punkte sind komplett verteilt (150 Handeln, 150 Wissen, 100 Soziales).',
     theme: 'apocalyptic',
     maxPoints: 400,

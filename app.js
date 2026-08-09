@@ -48,6 +48,14 @@ function showSaveIndicator() {
 
 // Rendering
 function renderAll() {
+    // Layout Mode
+    const container = document.querySelector('.app-container');
+    if (appData.layout3Col) {
+        container.classList.add('layout-3col');
+    } else {
+        container.classList.remove('layout-3col');
+    }
+
     // Basic Info fields
     document.querySelectorAll('[data-field]').forEach(el => {
         const field = el.getAttribute('data-field');
@@ -937,6 +945,7 @@ function resetData() {
             attr_soziales: 0, gbp_soziales: 0, skills_soziales: [],
             inventory: [], weapons: [], statuses: [],
             currency: { name: 'Credits', amount: 0 },
+            layout3Col: false,
             notes: '', theme: 'default', maxPoints: 400,
             fxEnabled: true, soundEnabled: true
         };
@@ -1733,6 +1742,19 @@ function updateCurrency() {
     if(diff > 0) addActivityLog(`+${diff} ${name}`, 'activity-good', '<i class="fa-solid fa-coins"></i>');
     else if(diff < 0) addActivityLog(`${diff} ${name}`, 'activity-bad', '<i class="fa-solid fa-coins"></i>');
     saveData();
+}
+
+function toggleLayout() {
+    appData.layout3Col = !appData.layout3Col;
+    renderAll();
+    saveData();
+    const statusText = appData.layout3Col ? 'Notizen links angeheftet' : 'Notizen unten platziert';
+    addActivityLog(`Layout geändert: ${statusText}`, 'activity-good', '<i class="fa-solid fa-table-columns"></i>');
+    
+    if (appData.layout3Col) {
+        document.getElementById('notes-content').style.display = 'block';
+        document.getElementById('notes-chevron').style.transform = 'rotate(180deg)';
+    }
 }
 
 function renderWeapons() {
