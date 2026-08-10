@@ -30,7 +30,10 @@ function setupMouseSpotlight() {
     });
 }
 
+let isDirty = false;
+
 function saveData() {
+    isDirty = true;
     // Auto-save to cache is disabled per user request.
     // Data is kept in memory until the user clicks "Speichern (JSON)".
 }
@@ -48,6 +51,12 @@ function showSaveIndicator() {
 
 // Rendering
 function renderAll() {
+    if (appData.name) {
+        document.title = `${appData.name} - Charakterbogen (HTBAH)`;
+    } else {
+        document.title = "Charakterbogen (HTBAH)";
+    }
+    
     // Layout Mode
     const container = document.querySelector('.app-container');
     if (appData.layout3Col) {
@@ -921,6 +930,7 @@ function handlePortraitUpload(event) {
 
 // --- Import / Export ---
 function exportData() {
+    isDirty = false;
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
@@ -948,6 +958,7 @@ function importData(event) {
             const imported = JSON.parse(e.target.result);
             appData = Object.assign(appData, imported);
             saveData();
+            isDirty = false;
             renderAll();
             calculatePoints();
             
@@ -959,6 +970,13 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
+
+window.addEventListener('beforeunload', function (e) {
+    if (isDirty) {
+        e.preventDefault();
+        e.returnValue = ''; // Standard behavior to show prompt in modern browsers
+    }
+});
 
 function resetData() {
     if (confirm("Möchtest du wirklich einen komplett neuen Charakter erstellen? Alle aktuellen Daten werden gelöscht!")) {
@@ -1003,6 +1021,7 @@ function toggleNotes() {
 let fxInterval = null;
 let fxInterval2 = null;
 let fxInterval3 = null;
+let superheroClickHandler = null;
 
 function clearFx() {
     const layer = document.getElementById('fx-layer');
@@ -1010,6 +1029,11 @@ function clearFx() {
     if(fxInterval) clearInterval(fxInterval);
     if(typeof fxInterval2 !== 'undefined' && fxInterval2) clearInterval(fxInterval2);
     if(typeof fxInterval3 !== 'undefined' && fxInterval3) clearInterval(fxInterval3);
+    
+    if (superheroClickHandler) {
+        document.removeEventListener('click', superheroClickHandler);
+        superheroClickHandler = null;
+    }
 }
 
 
@@ -1439,14 +1463,15 @@ function startSuperheroFx() {
         }, 1500);
     };
     
-    // Spawn every 1.5 to 4 seconds randomly
-    const loopSpawn = () => {
+    superheroClickHandler = (e) => {
         if (!document.getElementById('fx-layer')) return;
-        spawnBubble();
-        fxInterval = setTimeout(loopSpawn, Math.random() * 2500 + 1500);
+        // Trigger only if a button or a clickable input/icon is clicked
+        if (e.target.closest('button') || e.target.closest('.attr-val') || e.target.closest('.skill-val') || e.target.closest('.category-icon') || e.target.closest('.dice-btn')) {
+            spawnBubble();
+        }
     };
     
-    loopSpawn();
+    document.addEventListener('click', superheroClickHandler);
 }
 
 function startMedievalFx() {
