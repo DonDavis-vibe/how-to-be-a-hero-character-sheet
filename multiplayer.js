@@ -179,6 +179,25 @@ function renderGmDashboard() {
     const gridCol = document.getElementById('gm-players-grid');
     if (!gridCol) return;
     
+    // Capture currently open details sections
+    const openStates = {};
+    gridCol.querySelectorAll('details').forEach(el => {
+        if (el.open && el.dataset.peerId && el.dataset.detailsType) {
+            openStates[`${el.dataset.peerId}_${el.dataset.detailsType}`] = true;
+        }
+    });
+
+    // Capture focus to prevent interrupting GM typing
+    const activeEl = document.activeElement;
+    let focusedCharName = null;
+    let cursorStart = null;
+    let cursorEnd = null;
+    if (activeEl && activeEl.classList.contains('gm-note-textarea')) {
+        focusedCharName = activeEl.dataset.charname;
+        cursorStart = activeEl.selectionStart;
+        cursorEnd = activeEl.selectionEnd;
+    }
+    
     gridCol.innerHTML = '';
     
     Object.keys(connectedPlayersData).forEach(peerId => {
@@ -276,6 +295,11 @@ function renderGmDashboard() {
         const currencyName = (pData.currency && pData.currency.name) ? pData.currency.name : 'Credits';
         const currencyAmount = (pData.currency && pData.currency.amount !== undefined) ? pData.currency.amount : 0;
         
+        // Check open states
+        const skillsOpen = openStates[`${peerId}_skills`] ? 'open' : '';
+        const invOpen = openStates[`${peerId}_inventory`] ? 'open' : '';
+        const wpnOpen = openStates[`${peerId}_weapons`] ? 'open' : '';
+
         // Character info
         const beruf = pData.beruf || '';
         const alter = pData.alter || '';
@@ -296,7 +320,7 @@ function renderGmDashboard() {
                         <span style="font-size: 0.9rem; color: #fbbf24;"><i class="fa-solid fa-lightbulb"></i> GBP: ${pData.gbp_handeln + pData.gbp_wissen + pData.gbp_soziales}</span>
                     </div>
                     <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem;">
-                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' · ')}
+                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' • ')}
                     </div>
                     <div style="font-size: 0.8rem; color: ${ptsColor}; text-align: right;">
                         Verteilte Punkte: <strong>${totalPoints}</strong> / 400
@@ -326,7 +350,7 @@ function renderGmDashboard() {
                 </div>
             </div>
             
-            <details style="margin-top: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+            <details data-peer-id="${peerId}" data-details-type="skills" ${skillsOpen} style="margin-top: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                 <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;">Skills anzeigen</summary>
                 <div style="margin-top: 0.5rem;">
                     ${skillsHtml || '<i>Keine Skills</i>'}
@@ -334,14 +358,14 @@ function renderGmDashboard() {
             </details>
             
             <div style="display: flex; gap: 0.5rem;">
-                <details style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                <details data-peer-id="${peerId}" data-details-type="inventory" ${invOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                     <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-box-open" style="color: #fbbf24;"></i> Inventar</summary>
                     <div style="margin-top: 0.5rem;">
                         ${invHtml || '<i>Leer</i>'}
                     </div>
                 </details>
                 
-                <details style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                <details data-peer-id="${peerId}" data-details-type="weapons" ${wpnOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                     <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-khanda" style="color: #ed4245;"></i> Waffen</summary>
                     <div style="margin-top: 0.5rem;">
                         ${wpnsHtml || '<i>Keine</i>'}
@@ -369,6 +393,15 @@ function renderGmDashboard() {
         
         gridCol.appendChild(card);
     });
+
+    // Restore focus if a textarea was active
+    if (focusedCharName) {
+        const textarea = document.querySelector(`.gm-note-textarea[data-charname="${focusedCharName}"]`);
+        if (textarea) {
+            textarea.focus();
+            textarea.setSelectionRange(cursorStart, cursorEnd);
+        }
+    }
 }
 
 let gmLogHistory = [];
