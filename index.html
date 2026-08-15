@@ -69,6 +69,9 @@
             <button class="tool-btn" onclick="openDiscordModal()" title="Discord Webhook Sync" style="background: rgba(88, 101, 242, 0.2); border: 1px solid #5865F2; color: white; cursor: pointer;">
                 <i class="fa-brands fa-discord"></i>
             </button>
+            <button class="tool-btn" onclick="openMultiplayerModal()" title="Live-Sync (Multiplayer)" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: white; cursor: pointer;">
+                <i class="fa-solid fa-satellite-dish"></i>
+            </button>
 
             <div class="tool-btn theme-wrapper" style="padding: 0; display: flex; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);">
             <i class="fa-solid fa-palette" style="padding-left: 0.8rem; pointer-events: none; opacity: 0.8;"></i>
@@ -382,11 +385,11 @@
     <canvas id="confetti-canvas"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="helpData.js"></script>
     <script src="data.js"></script>
     <script src="audio.js"></script>
-    <script src="helpData.js"></script>
+    <script src="multiplayer.js"></script>
     <script src="app.js"></script>
-<div class="footer-disclaimer">Dies ist ein inoffizielles Fan-Projekt von <strong>German Redneck Engineering</strong> und steht in keiner Verbindung zu Rocket Beans Entertainment GmbH.<br>Entwickelt von <a href="https://github.com/DonDavis-vibe" target="_blank">DonDavis</a>, <a href="https://github.com/Rec0iL" target="_blank">R3c0il</a> & <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Antigravity AI</a> | <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Update History & Repository auf GitHub</a><br>Das Pen & Paper Regelsystem "How to be a Hero" unterliegt der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank">howtobeahero.de</a>.</div>
 <div id="crit-fail-overlay"></div>
 
     <!-- Discord Modal -->
@@ -420,6 +423,21 @@
         </div>
     </div>
 
+    <!-- GM Notes Archive Modal -->
+    <div id="gm-notes-archive-modal" class="help-modal-overlay" onclick="closeGmNotesArchive()">
+        <div class="help-modal-box" onclick="event.stopPropagation()" style="max-width: 800px; width: 90%;">
+            <button class="modal-close" onclick="closeGmNotesArchive()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color: #3b82f6; margin-bottom: 0.5rem;"><i class="fa-solid fa-book-open"></i> Notizen-Archiv (Offline & Abwesende Spieler)</h3>
+            <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem; opacity: 0.8;">Hier siehst du alle lokal gespeicherten Notizen zu Spielern, auch wenn sie aktuell nicht im Raum sind. Du kannst sie hier jederzeit einsehen oder bearbeiten.</p>
+            <div id="gm-notes-archive-content" style="display: flex; flex-direction: column; gap: 1rem; max-height: 60vh; overflow-y: auto;">
+                <!-- Filled dynamically via JS -->
+            </div>
+            <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                <button class="tool-btn" onclick="closeGmNotesArchive()" style="background: rgba(255,255,255,0.1);"><i class="fa-solid fa-check"></i> Fertig</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Help Modal -->
     <div id="help-modal-overlay" class="help-modal-overlay" onclick="closeHelp()">
         <div class="help-modal-box" onclick="event.stopPropagation()">
@@ -427,6 +445,135 @@
             <div id="help-modal-content"></div>
         </div>
     </div>
+
+    <!-- Multiplayer Modal -->
+    <div id="multiplayer-modal-overlay" class="help-modal-overlay" onclick="closeMultiplayerModal()">
+        <div class="help-modal-box" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeMultiplayerModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="color: #3b82f6; margin-bottom: 0.5rem;"><i class="fa-solid fa-satellite-dish"></i> Live-Sync (P2P)</h3>
+            <p style="margin-top: 0; margin-bottom: 1rem;">Verbinde Browser direkt miteinander für Live-Würfe und Charakter-Updates (ohne Server/Discord).</p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <strong style="color: #ed4245;">👑 Als Spielleiter (Host)</strong>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">Erstellt einen Raum und öffnet das GM Dashboard. Teile den Code mit deinen Spielern.</p>
+                <button class="tool-btn" onclick="hostMultiplayerSession()" style="width: 100%; justify-content: center; background: #ed4245; border: none;"><i class="fa-solid fa-tower-broadcast"></i> Session hosten</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--panel-border); margin-bottom: 1rem;"></div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <strong style="color: #57F287;">🎲 Als Spieler beitreten</strong>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">Gib den 4-stelligen Raumcode deines Spielleiters ein.</p>
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <input type="text" id="multiplayer-join-code" placeholder="z.B. X7B9" maxlength="4" style="text-transform: uppercase; text-align: center; font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; border-radius: 4px; outline: none; padding: 0.5rem;">
+                    <button class="tool-btn" onclick="joinMultiplayerSession()" style="background: #57F287; color: black; border: none; font-weight: bold; padding: 0.8rem; justify-content: center;"><i class="fa-solid fa-right-to-bracket"></i> Beitreten</button>
+                </div>
+            </div>
+            
+            <div id="multiplayer-status" style="text-align: center; font-weight: bold; margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <!-- GM Dashboard (Hidden by default) -->
+    <div id="gm-dashboard" style="display: none; flex-direction: column; width: 100%; max-width: 1600px; margin: 0 auto; min-height: 75vh; background: transparent; z-index: 10; gap: 1rem;">
+        
+        <div class="toolbar" style="border-radius: 0; border-left: none; border-right: none; border-top: none; justify-content: space-between; padding: 1rem;">
+            <div style="font-weight: 800; font-size: 1.2rem; color: #ed4245; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-chess-king"></i> GM Dashboard
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="tool-btn theme-wrapper" style="padding: 0; display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);">
+                    <i class="fa-solid fa-palette" style="padding-left: 0.8rem; pointer-events: none; opacity: 0.8;"></i>
+                    <select id="gm-theme-select" onchange="changeTheme(this.value)" style="background: transparent; border: none; color: white; padding: 0.8rem; outline: none; cursor: pointer; font-weight: bold; appearance: none;">
+                        <option value="time" style="color: black;">Vibe: Zeitreise</option>
+                        <option value="steampunk" style="color: black;">Vibe: Steampunk</option>
+                        <option value="apocalypse" style="color: black;">Vibe: Apokalypse</option>
+                        <option value="cyberpunk" style="color: black;">Vibe: Cyberpunk</option>
+                        <option value="mafia" style="color: black;">Vibe: 1920s Mafia</option>
+                        <option value="lovecraft" style="color: black;">Vibe: Lovecraft</option>
+                        <option value="magic" style="color: black;">Vibe: Royal Magic</option>
+                        <option value="deepspace" style="color: black;">Vibe: Deep Space</option>
+                        <option value="wildwest" style="color: black;">Vibe: Wilder Westen</option>
+                        <option value="pirates" style="color: black;">Vibe: Piraten</option>
+                        <option value="superhero" style="color: black;">Vibe: Superhelden</option>
+                        <option value="medieval" style="color: black;">Vibe: Mittelalter</option>
+                        <option value="ultracore" style="color: black;">Vibe: Ultracore</option>
+                    </select>
+                </div>
+                <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3);">
+                    Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong>
+                </div>
+                <button class="tool-btn" onclick="showGmNotesArchive()" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6;"><i class="fa-solid fa-book-open"></i> Notizen-Archiv</button>
+                <button class="tool-btn" onclick="exportGmNotes()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;"><i class="fa-solid fa-download"></i> Save</button>
+                <label class="tool-btn" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; cursor: pointer; margin: 0;">
+                    <i class="fa-solid fa-upload"></i> Load
+                    <input type="file" accept=".json" style="display:none" onchange="importGmNotes(event)">
+                </label>
+                <button class="tool-btn" onclick="exitGmMode()" style="background: rgba(255,255,255,0.1);"><i class="fa-solid fa-xmark"></i> Dashboard schließen</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 400px 1fr; gap: 2rem; flex: 1; padding: 1rem;">
+            
+            <!-- Left: Live Log & Dice -->
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; position: sticky; top: 1rem; height: calc(100vh - 150px);">
+                <!-- GM Dice Roller -->
+                <div style="padding: 1.5rem; border-bottom: 1px solid var(--panel-border); background: rgba(0,0,0,0.2);">
+                    <div style="font-weight: bold; margin-bottom: 1rem; color: #fbbf24; font-size: 1.1rem; text-align: center;"><i class="fa-solid fa-dice"></i> GM Würfel-Box</div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+                        <button class="tool-btn" onclick="rollGmDice(6)" style="flex: 1; justify-content: center; background: #f59e0b; color: black; border: none; font-weight: bold; padding: 0.8rem;"><i class="fa-solid fa-dice-d6"></i> 1W6</button>
+                        <button class="tool-btn" onclick="rollGmDice(100)" style="flex: 1; justify-content: center; background: #8b5cf6; color: white; border: none; font-weight: bold; padding: 0.8rem;"><i class="fa-solid fa-dice-d20"></i> 1W100</button>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <input type="text" id="gm-custom-dice" placeholder="z.B. 2w10" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 0.8rem; border-radius: 4px; outline: none; font-size: 1rem; text-align: center;">
+                        <button class="tool-btn" onclick="const v=document.getElementById('gm-custom-dice').value; if(v) rollGmCustomDice(v);" style="background: rgba(255,255,255,0.1); border: 1px solid var(--panel-border);"><i class="fa-solid fa-dice"></i> Roll</button>
+                    </div>
+                    
+                    <!-- Big Result Display -->
+                    <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid rgba(251,191,36,0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <div id="gm-dice-big-result" style="font-size: 2.5rem; font-weight: 900; color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.5);">--</div>
+                        <div id="gm-dice-subtitle" style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">Dein letzter Wurf</div>
+                    </div>
+                </div>
+
+                <!-- Letzter Spieler-Wurf -->
+                <div style="padding: 1.5rem; border-bottom: 1px solid var(--panel-border); background: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, rgba(0,0,0,0.2) 100%);">
+                    <div style="font-weight: bold; margin-bottom: 1rem; color: #3b82f6; font-size: 1.1rem; text-align: center;"><i class="fa-solid fa-users"></i> Letzter Spieler-Wurf</div>
+                    <div style="background: rgba(0,0,0,0.6); padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                        <div id="gm-player-dice-big-result" style="font-size: 3.5rem; font-weight: 900; color: #3b82f6; text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); line-height: 1;">--</div>
+                        <div id="gm-player-dice-subtitle" style="font-size: 1rem; font-weight: bold; color: white; margin-top: 0.8rem;">Warte auf Wurf...</div>
+                        <div id="gm-player-dice-name" style="font-size: 0.8rem; color: #9ca3af; margin-top: 0.3rem;">-</div>
+                    </div>
+                </div>
+
+                <div style="padding: 1rem; border-bottom: 1px solid var(--panel-border); font-weight: bold; display: flex; justify-content: space-between; background: rgba(0,0,0,0.4);">
+                    <span><i class="fa-solid fa-tower-broadcast"></i> Live-Feed</span>
+                    <button onclick="clearGmLog()" style="background:transparent; border:none; color:#ed4245; cursor:pointer; font-size:0.8rem;" title="Log leeren"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <ul id="gm-live-log" style="list-style: none; margin: 0; padding: 1rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.8rem; min-height: 300px;">
+                    <!-- Log entries go here -->
+                </ul>
+            </div>
+
+            <!-- Right: Players & General Notes -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                
+                <!-- Player Cards Grid -->
+                <div id="gm-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; align-items: start;">
+                    <!-- Player Cards go here -->
+                </div>
+                
+                <!-- General GM Notes -->
+                <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border);">
+                    <div style="font-weight: bold; margin-bottom: 0.8rem; color: #fbbf24; font-size: 1.1rem;"><i class="fa-solid fa-book-journal-whills"></i> Allgemeine SL-Notizen</div>
+                    <textarea id="gm-general-notes" oninput="saveGmGeneralNotes(this.value)" placeholder="Hier kannst du gruppenübergreifende Kampagnen-Notizen, NPCs oder Plot-Ideen festhalten..." style="width: 100%; height: 250px; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 1rem; border-radius: 4px; resize: vertical; outline: none; font-family: inherit; line-height: 1.5;"></textarea>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="footer-disclaimer">Dies ist ein inoffizielles Fan-Projekt von <strong>German Redneck Engineering</strong> und steht in keiner Verbindung zu Rocket Beans Entertainment GmbH.<br>Entwickelt von <a href="https://github.com/DonDavis-vibe" target="_blank">DonDavis</a>, <a href="https://github.com/Rec0iL" target="_blank">R3c0il</a> & <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Antigravity AI</a> | <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Update History & Repository auf GitHub</a><br>Das Pen & Paper Regelsystem "How to be a Hero" unterliegt der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank">howtobeahero.de</a>.</div>
 </body>
 </html>
 

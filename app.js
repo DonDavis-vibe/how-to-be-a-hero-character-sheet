@@ -36,6 +36,7 @@ function saveData() {
     isDirty = true;
     // Auto-save to cache is disabled per user request.
     // Data is kept in memory until the user clicks "Speichern (JSON)".
+    if (typeof sendMultiplayerState === 'function') sendMultiplayerState();
 }
 
 
@@ -823,6 +824,14 @@ function addToLog(dice, result, timestamp) {
     }
     
     sendToDiscord(dice + ": " + result);
+    if (typeof sendMultiplayerLog === 'function') {
+        const temp = document.createElement('div');
+        temp.innerHTML = result;
+        const cleanResult = temp.textContent || temp.innerText || "";
+        let bigNum = cleanResult.match(/\d+/);
+        bigNum = bigNum ? bigNum[0] : "--";
+        sendMultiplayerLog(dice + ": " + cleanResult, "🎲", bigNum, dice);
+    }
 }
 
 function addActivityLog(message, cssClass, iconHtml) {
@@ -860,6 +869,7 @@ function addActivityLog(message, cssClass, iconHtml) {
     }
     
     sendToDiscord(message, emoji);
+    if (typeof sendMultiplayerLog === 'function') sendMultiplayerLog(message, emoji);
 }
 
 // --- Discord Sync ---
@@ -1658,9 +1668,20 @@ function startUltracoreFx() {
     fxInterval = setInterval(spawnNode, 2000);
 }
 
-function changeTheme() {
-    const selector = document.getElementById('theme-selector');
-    const theme = selector.value;
+function changeTheme(themeVal) {
+    let theme = themeVal;
+    if (!theme) {
+        // Find which selector triggered this or fallback to player selector
+        const selector = document.getElementById('theme-selector');
+        theme = selector ? selector.value : 'time';
+    }
+    
+    // Sync both selectors so they show the same value
+    const sel1 = document.getElementById('theme-selector');
+    const sel2 = document.getElementById('gm-theme-select');
+    if (sel1) sel1.value = theme;
+    if (sel2) sel2.value = theme;
+
     appData.theme = theme;
     saveData();
     applyTheme(theme);
