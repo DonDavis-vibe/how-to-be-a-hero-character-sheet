@@ -1668,7 +1668,7 @@ function startUltracoreFx() {
     fxInterval = setInterval(spawnNode, 2000);
 }
 
-function changeTheme(themeVal) {
+function changeTheme(themeVal, fromSync = false) {
     let theme = themeVal;
     if (!theme) {
         // Find which selector triggered this or fallback to player selector
@@ -1685,6 +1685,15 @@ function changeTheme(themeVal) {
     appData.theme = theme;
     saveData();
     applyTheme(theme);
+    
+    // Broadcast to players if GM changed it
+    if (!fromSync && typeof broadcastTheme === 'function') {
+        const syncCheckbox = document.getElementById('gm-sync-theme-checkbox');
+        // If the checkbox exists and is unchecked, don't broadcast. Otherwise, broadcast.
+        if (!syncCheckbox || syncCheckbox.checked) {
+            broadcastTheme(theme);
+        }
+    }
 }
 
 

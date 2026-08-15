@@ -534,6 +534,17 @@ function joinMultiplayerSession() {
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
+        hostConnection.on('data', (payload) => {
+            if (payload && payload.type === 'theme') {
+                if (typeof changeTheme === 'function') {
+                    // Update dropdown if it exists
+                    const sel = document.getElementById('theme-selector');
+                    if (sel) sel.value = payload.theme;
+                    changeTheme(payload.theme, true); // true = fromSync
+                }
+            }
+        });
+        
         hostConnection.on('error', (err) => {
             console.error(err);
             updateMultiplayerStatus("Verbindungsfehler.", "#ed4245");
@@ -663,3 +674,14 @@ function closeGmNotesArchive() {
     modal.classList.remove('active');
     setTimeout(() => { modal.style.display = 'none'; }, 300);
 }
+
+function broadcastTheme(theme) {
+    if (typeof isGmMode !== 'undefined' && isGmMode) {
+        Object.values(clientConnections).forEach(conn => {
+            if (conn && conn.open) {
+                conn.send({ type: 'theme', theme: theme });
+            }
+        });
+    }
+}
+
