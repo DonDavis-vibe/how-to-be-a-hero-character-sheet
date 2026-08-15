@@ -396,19 +396,24 @@
             <h3 style="color: #5865F2; margin-bottom: 0.5rem;"><i class="fa-brands fa-discord"></i> Discord Webhook Sync</h3>
             <p style="margin-top: 0; margin-bottom: 1rem;">Poste alle deine Würfe und Logbuch-Einträge in Echtzeit direkt in euren Discord-Kanal. Perfekt für den Spielleiter!</p>
             <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.5;">
-                <strong style="color: #5865F2;">So geht's (Schritt für Schritt):</strong><br>
-                1. Gehe in Discord in euren Text- oder Sprachkanal (z.B. <i>#würfeltisch</i>)<br>
-                2. Klicke auf <b>Kanal bearbeiten</b> (Zahnrad) ➔ <b>Integrationen</b> ➔ <b>Webhooks</b><br>
-                3. Erstelle einen neuen Webhook und klicke auf <b>Webhook-URL kopieren</b><br>
-                4. Füge die URL unten ein und aktiviere den Sync!
+                <div style="margin-bottom: 0.8rem;">
+                    <strong style="color: #ed4245;">👑 Für den Spielleiter / Discord-Admin:</strong><br>
+                    1. Gehe in Discord in euren Text- oder Sprachkanal.<br>
+                    2. Klicke auf <b>Kanal bearbeiten</b> (Zahnrad) ➔ <b>Integrationen</b> ➔ <b>Webhooks</b>.<br>
+                    3. Erstelle einen Webhook und schicke die kopierte <b>Webhook-URL</b> an deine Spieler.
+                </div>
+                <div style="border-top: 1px solid var(--panel-border); padding-top: 0.8rem;">
+                    <strong style="color: #57F287;">🎲 Für die Spieler:</strong><br>
+                    Fügt die URL eures Spielleiters einfach unten ein und schon seid ihr live!
+                </div>
             </div>
             
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Deine Webhook URL:</label>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Webhook URL des Spielleiters:</label>
             <input type="text" id="discord-webhook-input" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem; outline: none;">
             
-            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;" title="Deaktiviere dies, wenn du private Test-Würfe machen möchtest, ohne die Gruppe zu spammen.">
                 <input type="checkbox" id="discord-sync-toggle" style="width: 18px; height: 18px;">
-                <b>Sync aktivieren</b>
+                <b>Sync aktiv <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">(Haken raus für private Test-Würfe)</span></b>
             </label>
             
             <button class="tool-btn" onclick="saveDiscordSettings()" style="width: 100%; justify-content: center; background: #5865F2; border: none; padding: 0.8rem; font-size: 1rem;"><i class="fa-solid fa-floppy-disk"></i> Speichern & Testen</button>
