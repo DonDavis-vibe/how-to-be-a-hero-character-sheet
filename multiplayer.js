@@ -1,0 +1,665 @@
+let peer = null;
+let hostConnection = null;
+let clientConnections = {};
+let isGmMode = false;
+let connectedPlayersData = {};
+
+let peerJsLoaded = false;
+
+function openMultiplayerModal() {
+    if (!peerJsLoaded) {
+        updateMultiplayerStatus("Lade Multiplayer-Komponenten...", "#fbbf24");
+        const script = document.createElement('script');
+        script.src = "https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js";
+        script.onload = () => {
+            peerJsLoaded = true;
+            updateMultiplayerStatus("");
+        };
+        document.head.appendChild(script);
+    }
+    
+    const modal = document.getElementById('multiplayer-modal-overlay');
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.classList.add('active'); }, 10);
+}
+
+function closeMultiplayerModal() {
+    const modal = document.getElementById('multiplayer-modal-overlay');
+    modal.classList.remove('active');
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+}
+
+function updateMultiplayerStatus(text, color = "white") {
+    const statusEl = document.getElementById('multiplayer-status');
+    statusEl.innerHTML = text;
+    statusEl.style.color = color;
+}
+
+// Generate a random 4-character alphanumeric code
+function generateRoomCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for(let i=0; i<4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+// --- GM MODE (HOST) ---
+function hostMultiplayerSession() {
+    if (peer) peer.destroy();
+    
+    updateMultiplayerStatus("Erstelle Raum...", "#fbbf24");
+    const roomCode = generateRoomCode();
+    const peerId = 'htbah-' + roomCode;
+    
+    peer = new Peer(peerId);
+    
+    peer.on('open', (id) => {
+        closeMultiplayerModal();
+        enterGmMode(roomCode);
+    });
+    
+    peer.on('connection', (conn) => {
+        // A player connected
+        conn.on('data', (data) => {
+            handleIncomingData(conn.peer, data);
+        });
+        
+        conn.on('close', () => {
+            delete clientConnections[conn.peer];
+            delete connectedPlayersData[conn.peer];
+            renderGmDashboard();
+            addGmLogSystemMessage(`Spieler hat den Raum verlassen.`);
+        });
+        
+        clientConnections[conn.peer] = conn;
+    });
+    
+    peer.on('error', (err) => {
+        updateMultiplayerStatus("Fehler: " + err.type, "#ed4245");
+        console.error(err);
+    });
+}
+
+function enterGmMode(roomCode) {
+    isGmMode = true;
+    document.querySelector('.app-container').style.display = 'none';
+    document.getElementById('gm-dashboard').style.display = 'flex';
+    document.getElementById('gm-room-code').innerText = roomCode;
+    document.getElementById('gm-live-log').innerHTML = '';
+    const gridCol = document.getElementById('gm-players-grid');
+    if (gridCol) gridCol.innerHTML = '';
+    
+    // Load general GM notes
+    const generalNotesField = document.getElementById('gm-general-notes');
+    if (generalNotesField) {
+        generalNotesField.value = localStorage.getItem('gm_general_notes') || '';
+    }
+    
+    loadGmLogHistory();
+    addGmLogSystemMessage(`Session gestartet! Raum-Code: ${roomCode}`);
+}
+
+function exitGmMode() {
+    if (peer) peer.destroy();
+    peer = null;
+    isGmMode = false;
+    clientConnections = {};
+    connectedPlayersData = {};
+    
+    document.getElementById('gm-dashboard').style.display = 'none';
+    document.querySelector('.app-container').style.display = 'grid';
+}
+
+function handleIncomingData(peerId, payload) {
+    if (payload.type === 'state') {
+        connectedPlayersData[peerId] = payload.data;
+        renderGmDashboard();
+    } else if (payload.type === 'log') {
+        const charName = connectedPlayersData[peerId] ? connectedPlayersData[peerId].name : 'Unbekannt';
+        addGmLogEntry(charName, payload.message, payload.emoji);
+        if (payload.bigNumber !== undefined && payload.bigNumber !== null) {
+            updateGmPlayerBigDiceResult(payload.bigNumber, payload.subtitle, charName);
+        }
+        
+        // Trigger Effects based on log content
+        if (typeof fireConfetti === 'function') {
+            const msg = payload.message || '';
+            if (msg.includes('Kritischer Erfolg') || msg.includes('(Max!)')) fireConfetti();
+            if (msg.includes('Patzer') || msg.includes('(Min!)')) fireFumble();
+        }
+    }
+}
+
+function updateGmPlayerBigDiceResult(result, text, charName) {
+    const resDiv = document.getElementById('gm-player-dice-big-result');
+    const subDiv = document.getElementById('gm-player-dice-subtitle');
+    const nameDiv = document.getElementById('gm-player-dice-name');
+    if(!resDiv) return;
+    
+    resDiv.style.transform = 'scale(0.5)';
+    resDiv.style.opacity = '0';
+    
+    const playerColor = getColorForPlayer(charName);
+    
+    setTimeout(() => {
+        resDiv.innerText = result;
+        resDiv.style.color = playerColor;
+        resDiv.style.textShadow = `0 0 15px ${playerColor}99`;
+        subDiv.innerHTML = text;
+        nameDiv.innerHTML = `Gewürfelt von: <strong style="color: ${playerColor};">${charName}</strong>`;
+        resDiv.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        resDiv.style.transform = 'scale(1)';
+        resDiv.style.opacity = '1';
+    }, 150);
+}
+
+const GM_PLAYER_COLORS = ['#3b82f6', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316', '#a855f7', '#14b8a6', '#e11d48', '#84cc16'];
+
+function getColorForPlayer(name) {
+    if (!name || name === 'Unbekannt') return '#9ca3af';
+    // Check if GM has manually assigned a color
+    const stored = localStorage.getItem('gmPlayerColor_' + name);
+    if (stored) return stored;
+    // Fallback to hash
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return GM_PLAYER_COLORS[Math.abs(hash) % GM_PLAYER_COLORS.length];
+}
+
+function setColorForPlayer(name, color) {
+    localStorage.setItem('gmPlayerColor_' + name, color);
+    renderGmDashboard();
+}
+
+function renderGmDashboard() {
+    const gridCol = document.getElementById('gm-players-grid');
+    if (!gridCol) return;
+    
+    gridCol.innerHTML = '';
+    
+    Object.keys(connectedPlayersData).forEach(peerId => {
+        const pData = connectedPlayersData[peerId];
+        const hpPercent = pData.hpMax > 0 ? Math.max(0, Math.min(100, (pData.hpCurrent / pData.hpMax) * 100)) : 0;
+        let hpColor = "#57F287";
+        let hpPulseClass = "";
+        if (hpPercent <= 50) hpColor = "#fee75c";
+        if (hpPercent <= 20) {
+            hpColor = "#ed4245";
+            hpPulseClass = "low-hp-warning";
+        }
+        
+        // Load GM notes for this character
+        const charName = pData.name || 'Unbekannt';
+        const playerColor = getColorForPlayer(charName);
+        const gmNotesKey = 'gmNotes_' + charName;
+        const currentNotes = localStorage.getItem(gmNotesKey) || '';
+        
+        // Portrait Image
+        const portraitSrc = pData.portrait || 'assets/giphy.gif';
+        
+        let skillsHtml = '';
+        let totalPoints = 0;
+        const catNames = { 'handeln': 'Handeln', 'wissen': 'Wissen', 'soziales': 'Soziales' };
+        ['handeln', 'wissen', 'soziales'].forEach(cat => {
+            const arr = pData[`skills_${cat}`] || [];
+            const catGbp = pData[`gbp_${cat}`] || 0;
+            const catAttr = pData[`attr_${cat}`] || 0;
+            
+            if (arr.length > 0 || catGbp > 0) {
+                skillsHtml += `
+                <div style="margin-top: 0.8rem; border-bottom: 1px solid ${playerColor}40; padding-bottom: 0.3rem; margin-bottom: 0.3rem; display: flex; justify-content: space-between; align-items: baseline;">
+                    <strong style="text-transform: uppercase; color: ${playerColor}; font-size: 0.85rem;">${catNames[cat]} <span style="opacity: 0.6; font-size: 0.75rem;">(Wert: ${catAttr})</span></strong>
+                    <span style="font-size: 0.75rem; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 0.1rem 0.4rem; border-radius: 10px;"><i class="fa-solid fa-lightbulb"></i> ${catGbp} GBP</span>
+                </div>`;
+                arr.forEach(s => {
+                    const inv = parseInt(s.invested) || 0;
+                    totalPoints += inv;
+                    skillsHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.9rem; padding: 0.1rem 0;">
+                        <span>${s.name}</span>
+                        <strong>${inv}</strong>
+                    </div>`;
+                });
+            }
+        });
+        
+        let invHtml = '';
+        const invArr = pData.inventory || [];
+        if (invArr.length > 0) {
+            invArr.forEach(i => {
+                invHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.2rem 0;">
+                    <span>${i.name}</span>
+                    <strong style="color: #fbbf24;">x${i.amount}</strong>
+                </div>`;
+            });
+        }
+        
+        let wpnsHtml = '';
+        const wpnArr = pData.weapons || [];
+        if (wpnArr.length > 0) {
+            wpnArr.forEach(w => {
+                wpnsHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.2rem 0;">
+                    <span>${w.name}</span>
+                    <strong style="color: #ed4245;">${w.damage}</strong>
+                </div>`;
+            });
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'glass-panel';
+        card.style.padding = '1rem';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.gap = '0.5rem';
+        card.style.borderTop = `4px solid ${playerColor}`;
+        
+        let ptsColor = totalPoints > 400 ? '#ed4245' : '#9ca3af';
+        
+        // Status effects
+        const statuses = pData.statuses || [];
+        let statusHtml = '';
+        if (statuses.length > 0) {
+            statusHtml = statuses.map(s => {
+                const sName = (typeof s === 'string') ? s : (s.name || '?');
+                const sVal = (typeof s === 'object' && s.value) ? ` (${s.value})` : '';
+                const sType = (typeof s === 'object' && s.type) ? s.type : 'malus';
+                const colorMap = { bonus: 'rgba(87,242,135', malus: 'rgba(237,66,69', neutral: 'rgba(156,163,175' };
+                const base = colorMap[sType] || colorMap.malus;
+                return `<span style="background: ${base},0.2); border: 1px solid ${base},0.5); color: ${base},1); padding: 0.1rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">${sName}${sVal}</span>`;
+            }).join(' ');
+        }
+        
+        // Currency
+        const currencyName = (pData.currency && pData.currency.name) ? pData.currency.name : 'Credits';
+        const currencyAmount = (pData.currency && pData.currency.amount !== undefined) ? pData.currency.amount : 0;
+        
+        // Character info
+        const beruf = pData.beruf || '';
+        const alter = pData.alter || '';
+        const statur = pData.statur || '';
+        
+        // Color picker dots
+        let colorDotsHtml = GM_PLAYER_COLORS.map(c => {
+            const isActive = c === playerColor;
+            return `<span class="gm-color-dot" data-color="${c}" data-char="${charName}" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${c}; cursor:pointer; border: 2px solid ${isActive ? 'white' : 'transparent'}; transition: border 0.2s;"></span>`;
+        }).join('');
+        
+        card.innerHTML = `
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <img src="${portraitSrc}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid ${playerColor}; box-shadow: 0 0 10px ${playerColor}80;">
+                <div style="flex: 1;">
+                    <div style="font-size: 1.2rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: ${playerColor};">
+                        <span>${charName}</span>
+                        <span style="font-size: 0.9rem; color: #fbbf24;"><i class="fa-solid fa-lightbulb"></i> GBP: ${pData.gbp_handeln + pData.gbp_wissen + pData.gbp_soziales}</span>
+                    </div>
+                    <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem;">
+                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' · ')}
+                    </div>
+                    <div style="font-size: 0.8rem; color: ${ptsColor}; text-align: right;">
+                        Verteilte Punkte: <strong>${totalPoints}</strong> / 400
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 0.3rem; align-items: center; flex-wrap: wrap; margin-top: 0.3rem;">
+                <span style="font-size: 0.7rem; opacity: 0.5; margin-right: 0.2rem;"><i class="fa-solid fa-palette"></i></span>
+                ${colorDotsHtml}
+            </div>
+            
+            ${statusHtml ? `<div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem;">${statusHtml}</div>` : ''}
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
+                <div style="flex: 1; margin-right: 1rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.2rem;">
+                        <span>HP</span>
+                        <span class="${hpPulseClass ? 'hp-text-danger' : ''}">${pData.hpCurrent} / ${pData.hpMax}</span>
+                    </div>
+                    <div class="${hpPulseClass}" style="height: 10px; background: rgba(0,0,0,0.5); border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${hpPercent}%; background: ${hpColor}; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                <div style="font-size: 0.85rem; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 0.2rem 0.6rem; border-radius: 10px; white-space: nowrap;">
+                    <i class="fa-solid fa-coins"></i> ${currencyAmount} ${currencyName}
+                </div>
+            </div>
+            
+            <details style="margin-top: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;">Skills anzeigen</summary>
+                <div style="margin-top: 0.5rem;">
+                    ${skillsHtml || '<i>Keine Skills</i>'}
+                </div>
+            </details>
+            
+            <div style="display: flex; gap: 0.5rem;">
+                <details style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                    <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-box-open" style="color: #fbbf24;"></i> Inventar</summary>
+                    <div style="margin-top: 0.5rem;">
+                        ${invHtml || '<i>Leer</i>'}
+                    </div>
+                </details>
+                
+                <details style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                    <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-khanda" style="color: #ed4245;"></i> Waffen</summary>
+                    <div style="margin-top: 0.5rem;">
+                        ${wpnsHtml || '<i>Keine</i>'}
+                    </div>
+                </details>
+            </div>
+            
+            <div style="margin-top: 0.5rem;">
+                <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.2rem;"><i class="fa-solid fa-user-secret"></i> Geheime SL-Notizen:</div>
+                <textarea class="gm-note-textarea" data-charname="${charName}" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 0.5rem; border-radius: 4px; resize: vertical; min-height: 60px; outline: none;">${currentNotes}</textarea>
+            </div>
+        `;
+        
+        // Add event listener to save notes
+        card.querySelector('textarea').addEventListener('input', (e) => {
+            localStorage.setItem('gmNotes_' + e.target.dataset.charname, e.target.value);
+        });
+        
+        // Add color dot click listeners
+        card.querySelectorAll('.gm-color-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                setColorForPlayer(dot.dataset.char, dot.dataset.color);
+            });
+        });
+        
+        gridCol.appendChild(card);
+    });
+}
+
+let gmLogHistory = [];
+
+function loadGmLogHistory() {
+    try {
+        const history = JSON.parse(localStorage.getItem('gmLogHistory')) || [];
+        gmLogHistory = history;
+        const list = document.getElementById('gm-live-log');
+        list.innerHTML = '';
+        // Render backwards since we prepend
+        [...gmLogHistory].reverse().forEach(entry => {
+            const li = document.createElement('li');
+            li.innerHTML = entry.html;
+            li.style.cssText = entry.style;
+            list.prepend(li);
+        });
+    } catch(e) {
+        gmLogHistory = [];
+    }
+}
+
+function saveGmLogHistory() {
+    // Keep max 50 entries
+    if (gmLogHistory.length > 50) gmLogHistory = gmLogHistory.slice(0, 50);
+    localStorage.setItem('gmLogHistory', JSON.stringify(gmLogHistory));
+}
+
+function addGmLogEntry(charName, message, emoji) {
+    const list = document.getElementById('gm-live-log');
+    const li = document.createElement('li');
+    const playerColor = getColorForPlayer(charName);
+    const styleText = `background: rgba(0,0,0,0.5); padding: 0.8rem; border-radius: 4px; border-left: 3px solid ${playerColor};`;
+    li.style.cssText = styleText;
+    
+    const timeStr = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = message;
+    const cleanMsg = tempDiv.textContent || tempDiv.innerText || "";
+    
+    const innerHTML = `
+        <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${timeStr} - <strong style="color: ${playerColor};">${charName}</strong></div>
+        <div>${emoji} ${cleanMsg}</div>
+    `;
+    li.innerHTML = innerHTML;
+    list.prepend(li);
+    
+    gmLogHistory.unshift({ html: innerHTML, style: styleText });
+    saveGmLogHistory();
+}
+
+function addGmLogSystemMessage(msg) {
+    const list = document.getElementById('gm-live-log');
+    const li = document.createElement('li');
+    const styleText = 'background: rgba(251,191,36,0.1); padding: 0.5rem; border-radius: 4px; border-left: 3px solid #fbbf24; font-size: 0.8rem; color: #fbbf24;';
+    li.style.cssText = styleText;
+    li.innerText = msg;
+    list.prepend(li);
+    
+    gmLogHistory.unshift({ html: msg, style: styleText });
+    saveGmLogHistory();
+}
+
+function clearGmLog() {
+    if(confirm('MÃ¶chtest du das Live-Log wirklich komplett leeren?')) {
+        gmLogHistory = [];
+        saveGmLogHistory();
+        document.getElementById('gm-live-log').innerHTML = '';
+        addGmLogSystemMessage('Logbuch wurde geleert.');
+    }
+}
+
+function updateGmBigDiceResult(result, text) {
+    const resDiv = document.getElementById('gm-dice-big-result');
+    const subDiv = document.getElementById('gm-dice-subtitle');
+    
+    resDiv.style.transform = 'scale(0.5)';
+    resDiv.style.opacity = '0';
+    
+    setTimeout(() => {
+        resDiv.innerText = result;
+        subDiv.innerHTML = text;
+        resDiv.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        resDiv.style.transform = 'scale(1)';
+        resDiv.style.opacity = '1';
+    }, 150);
+}
+
+function rollGmDice(max) {
+    const res = Math.floor(Math.random() * max) + 1;
+    const text = `1W${max}`;
+    updateGmBigDiceResult(res, text);
+    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${res}`, '🎲');
+    
+    if (typeof fireConfetti === 'function') {
+        if (max === 100 && res <= 5) fireConfetti();
+        else if (max === 100 && res >= 96) fireFumble();
+        else if (max !== 100 && res === max) fireConfetti();
+        else if (max !== 100 && res === 1) fireFumble();
+    }
+}
+
+function rollGmCustomDice(diceStr) {
+    if(!diceStr) return;
+    const parts = diceStr.toLowerCase().split('w');
+    if (parts.length !== 2) {
+        alert("UngÃ¼ltiges Format! Bitte zz.B. '2w10' eingeben.");
+        return;
+    }
+    const count = parseInt(parts[0]) || 1;
+    const max = parseInt(parts[1]);
+    if (isNaN(max) || max < 2) {
+        alert("UngÃ¼ltiger WÃ¼rfel-Typ!");
+        return;
+    }
+    
+    let total = 0;
+    let rolls = [];
+    for(let i=0; i<count; i++) {
+        const r = Math.floor(Math.random() * max) + 1;
+        total += r;
+        rolls.push(r);
+    }
+    
+    const text = `${diceStr} (${rolls.join(', ')})`;
+    updateGmBigDiceResult(total, text);
+    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${total}`, '🎲');
+    
+    if (typeof fireConfetti === 'function') {
+        if (total === count * max) fireConfetti();
+        else if (total === count) fireFumble();
+    }
+}
+
+// --- PLAYER MODE (CLIENT) ---
+function joinMultiplayerSession() {
+    const code = document.getElementById('multiplayer-join-code').value.trim().toUpperCase();
+    if (!code || code.length !== 4) {
+        updateMultiplayerStatus("Bitte 4-stelligen Code eingeben.", "#ed4245");
+        return;
+    }
+    
+    updateMultiplayerStatus("Verbinde...", "#fbbf24");
+    
+    if (peer) peer.destroy();
+    peer = new Peer(); // Random ID for client
+    
+    peer.on('open', () => {
+        const hostId = 'htbah-' + code;
+        hostConnection = peer.connect(hostId, { reliable: true });
+        
+        hostConnection.on('open', () => {
+            updateMultiplayerStatus('<i class="fa-solid fa-check"></i> Verbunden!', "#57F287");
+            setTimeout(closeMultiplayerModal, 1000);
+            
+            // Send initial state
+            sendMultiplayerState();
+        });
+        
+        hostConnection.on('close', () => {
+            hostConnection = null;
+            alert("Die Verbindung zum Spielleiter wurde getrennt.");
+        });
+        
+        hostConnection.on('error', (err) => {
+            console.error(err);
+            updateMultiplayerStatus("Verbindungsfehler.", "#ed4245");
+        });
+    });
+    
+    peer.on('error', (err) => {
+        console.error(err);
+        updateMultiplayerStatus("Fehler: Raum nicht gefunden.", "#ed4245");
+    });
+}
+
+function sendMultiplayerState() {
+    if (!hostConnection || !hostConnection.open) return;
+    hostConnection.send({
+        type: 'state',
+        data: appData // send full character sheet data
+    });
+}
+
+function sendMultiplayerLog(message, emoji = "ðŸŽ²", bigNumber = null, subtitle = null) {
+    if (isGmMode) {
+        addGmLogEntry("Spielleiter (Lokal)", message, emoji);
+        return;
+    }
+    if (!hostConnection || !hostConnection.open) return;
+    hostConnection.send({
+        type: 'log',
+        message: message,
+        emoji: emoji,
+        bigNumber: bigNumber,
+        subtitle: subtitle
+    });
+}
+
+function saveGmGeneralNotes(val) {
+    localStorage.setItem('gm_general_notes', val);
+}
+// --- GM Notes Management ---
+
+function exportGmNotes() {
+    const notesData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('gmNotes_') || key === 'gm_general_notes')) {
+            notesData[key] = localStorage.getItem(key);
+        }
+    }
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(notesData, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute('href', dataStr);
+    downloadAnchorNode.setAttribute('download', 'htbah_gm_notizen.json');
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function importGmNotes(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            for (const key in data) {
+                if (key.startsWith('gmNotes_') || key === 'gm_general_notes') {
+                    localStorage.setItem(key, data[key]);
+                }
+            }
+            alert('SL Notizen erfolgreich geladen!');
+            if (typeof renderGmDashboard === 'function') renderGmDashboard();
+            const generalNotesField = document.getElementById('gm-general-notes');
+            if (generalNotesField) {
+                generalNotesField.value = localStorage.getItem('gm_general_notes') || '';
+            }
+        } catch (err) {
+            alert('Fehler beim Laden der Datei.');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function showGmNotesArchive() {
+    const modal = document.getElementById('gm-notes-archive-modal');
+    const content = document.getElementById('gm-notes-archive-content');
+    if(!modal || !content) return;
+    content.innerHTML = '';
+    
+    let hasNotes = false;
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('gmNotes_')) {
+            const charName = key.replace('gmNotes_', '');
+            const notes = localStorage.getItem(key) || '';
+            if (notes.trim() === '') continue;
+            hasNotes = true;
+            
+            const playerColor = getColorForPlayer(charName);
+            const box = document.createElement('div');
+            box.style.cssText = 'background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); border-radius: 8px; padding: 1rem;';
+            box.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 0.5rem; color: ${playerColor};">${charName}</div>
+                <textarea style="width: 100%; height: 100px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 4px; resize: vertical; outline: none; font-family: inherit;">${notes}</textarea>
+            `;
+            
+            box.querySelector('textarea').addEventListener('input', (e) => {
+                localStorage.setItem(key, e.target.value);
+                // Also update live dashboard if player is currently connected
+                if (typeof isGmMode !== 'undefined' && isGmMode) renderGmDashboard(); 
+            });
+            content.appendChild(box);
+        }
+    }
+    
+    if (!hasNotes) {
+        content.innerHTML = '<div style="text-align: center; opacity: 0.6; padding: 2rem;">Keine archivierten Spieler-Notizen gefunden.</div>';
+    }
+    
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.classList.add('active'); }, 10);
+}
+
+function closeGmNotesArchive() {
+    const modal = document.getElementById('gm-notes-archive-modal');
+    if(!modal) return;
+    modal.classList.remove('active');
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+}

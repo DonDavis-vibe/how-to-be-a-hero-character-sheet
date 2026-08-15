@@ -192,6 +192,8 @@ body::after {
     gap: 1rem;
     flex-wrap: wrap;
     margin-bottom: -1rem;
+    position: relative;
+    z-index: 50;
 }
 
 .tool-btn {
@@ -2004,3 +2006,46 @@ body.theme-ultracore {
     50% { transform: scale(1) rotate(-90deg); }
     100% { transform: scale(0) rotate(-180deg); }
 }
+
+ 
+ /* --- Multiplayer GM Dashboard --- */
+#gm-live-log li {
+    animation: slideIn 0.3s ease-out;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+#gm-players-grid .glass-panel {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#gm-players-grid .glass-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+#gm-players-grid details summary::-webkit-details-marker {
+    display: none;
+}
+#gm-players-grid details summary::after {
+    content: '\f0d7';
+    font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    float: right;
+    color: #fbbf24;
+}
+#gm-players-grid details[open] summary::after {
+    content: '\f0d8';
+}
+
+ . l o w - h p - w a r n i n g   { 
+         a n i m a t i o n :   h p - p u l s e   1 . 5 s   i n f i n i t e   a l t e r n a t e   ! i m p o r t a n t ; 
+ } 
+ @ k e y f r a m e s   h p - p u l s e   { 
+         0 %   {   b o x - s h a d o w :   0   0   5 p x   r g b a ( 2 3 7 ,   6 6 ,   6 9 ,   0 . 4 ) ;   } 
+         1 0 0 %   {   b o x - s h a d o w :   0   0   2 5 p x   r g b a ( 2 3 7 ,   6 6 ,   6 9 ,   1 ) ;   } 
+ } 
+ . h p - t e x t - d a n g e r   { 
+         c o l o r :   # e d 4 2 4 5   ! i m p o r t a n t ; 
+         t e x t - s h a d o w :   0   0   1 0 p x   r g b a ( 2 3 7 ,   6 6 ,   6 9 ,   0 . 5 ) ; 
+ } 
+  
+ 
