@@ -34,8 +34,8 @@
     <h1 class="sr-only">How to be a Hero - Interaktiver Online Charakterbogen & Tool</h1>
     <div id="fx-layer" style="position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;"></div>
 
-    <div class="header-banner" style="max-width: 1200px; height: 120px; margin: 0.5rem auto 1.5rem auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--glass-border, rgba(255,255,255,0.2));">
-        <img src="assets/header.jpg" alt="How to be a Hero Banner" style="width: 100%; height: 100%; display: block; object-fit: cover; object-position: center;">
+    <div class="header-banner" style="max-width: 1200px; height: 150px; margin: 0.5rem auto 1.5rem auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--glass-border, rgba(255,255,255,0.2)); background: rgba(0,0,0,0.5);">
+        <img src="assets/header2.jpeg" alt="How to be a Hero Banner" style="width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; transform: scale(1.03);">
     </div>
 
     <div class="app-container">
@@ -72,6 +72,8 @@
             <button class="tool-btn" onclick="openMultiplayerModal()" title="Live-Sync (Multiplayer)" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: white; cursor: pointer;">
                 <i class="fa-solid fa-satellite-dish"></i>
             </button>
+            
+            <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('multiplayer')" title="Hilfe zu Multiplayer & Discord" style="font-size: 1.2rem; cursor: pointer; color: #9ca3af; align-self: center; margin-left: 0.2rem; margin-right: 0.5rem;"></i>
 
             <div class="tool-btn theme-wrapper" style="padding: 0; display: flex; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border);">
             <i class="fa-solid fa-palette" style="padding-left: 0.8rem; pointer-events: none; opacity: 0.8;"></i>
@@ -500,10 +502,14 @@
                         <option value="ultracore" style="color: black;">Vibe: Ultracore</option>
                     </select>
                 </div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; color: #9ca3af; font-size: 0.85rem; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    <input type="checkbox" id="gm-sync-theme-checkbox" checked style="cursor: pointer;">
+                    Sync to Players <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('gmSync')" title="Hilfe zum Theme Sync"></i>
+                </label>
                 <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3);">
                     Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong>
                 </div>
-                <button class="tool-btn" onclick="showGmNotesArchive()" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6;"><i class="fa-solid fa-book-open"></i> Notizen-Archiv</button>
+                <button class="tool-btn" onclick="showGmNotesArchive()" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6;"><i class="fa-solid fa-book-open"></i> Notizen-Archiv <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmNotes')" title="Hilfe zu SL Notizen"></i></button>
                 <button class="tool-btn" onclick="exportGmNotes()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;"><i class="fa-solid fa-download"></i> Save</button>
                 <label class="tool-btn" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; cursor: pointer; margin: 0;">
                     <i class="fa-solid fa-upload"></i> Load
@@ -519,7 +525,7 @@
             <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; position: sticky; top: 1rem; height: calc(100vh - 150px);">
                 <!-- GM Dice Roller -->
                 <div style="padding: 1.5rem; border-bottom: 1px solid var(--panel-border); background: rgba(0,0,0,0.2);">
-                    <div style="font-weight: bold; margin-bottom: 1rem; color: #fbbf24; font-size: 1.1rem; text-align: center;"><i class="fa-solid fa-dice"></i> GM Würfel-Box</div>
+                    <div style="font-weight: bold; margin-bottom: 1rem; color: #fbbf24; font-size: 1.1rem; text-align: center;"><i class="fa-solid fa-dice"></i> GM Würfel-Box <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('gmDice')" title="Hilfe zur GM Würfel-Box"></i></div>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
                         <button class="tool-btn" onclick="rollGmDice(6)" style="flex: 1; justify-content: center; background: #f59e0b; color: black; border: none; font-weight: bold; padding: 0.8rem;"><i class="fa-solid fa-dice-d6"></i> 1W6</button>
                         <button class="tool-btn" onclick="rollGmDice(100)" style="flex: 1; justify-content: center; background: #8b5cf6; color: white; border: none; font-weight: bold; padding: 0.8rem;"><i class="fa-solid fa-dice-d20"></i> 1W100</button>
