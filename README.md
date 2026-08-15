@@ -41,6 +41,13 @@ Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach 
 - **Flexibles Layout:** Mit einem Klick auf den Layout-Button in den Notizen verwandelst du die App auf großen Bildschirmen blitzschnell von einem 2-Spalten- in ein übersichtliches 3-Spalten-Layout (Notizen docken sich automatisch links an!).
 - **Geistesblitze (GBP):** Ein dedizierter Button lässt dich deine verdienten Punkte taktisch einsetzen und trackt sie mit.
 
+### 🌐 Discord Sync (NEU!) - Perfekt für Online-Runden
+Das Tool kommt jetzt mit einer **nativen Discord-Integration**, die euer Online-Spiel auf das nächste Level hebt! Ohne eigenen Server oder Accounts können alle Würfe und Aktionen der Spieler in Echtzeit gebündelt werden.
+1. Der Spielleiter erstellt in den Kanal-Einstellungen von Discord unter *Integrationen* einen **Webhook** (hierfür werden "Webhooks verwalten"- oder Admin-Rechte auf dem Server benötigt). *Tipp: Das funktioniert auch im Text-Chat eines Sprachkanals (Voice-Channel)!*
+2. Er kopiert die Webhook-URL und schickt sie an alle Spieler.
+3. Die Spieler fügen die URL oben im Tool ein und aktivieren den Sync.
+4. **Ergebnis:** Jeder Würfelwurf, jeder Lebenspunktverlust und jedes gelootete Item ploppen sofort live im Discord-Kanal auf – jeweils mit dem Namen eures Charakters als Absender und passenden Emojis (⚔️, 🎲, 💔)!
+
 ## 🎨 13 Epische Themes
 Warum sollte ein Bogen wie ein Steuerformular aussehen? Wechsle das Design deines Charakterbogens passend zur Kampagne. Alle Themes verändern das Layout, die Farben, die Icons und bringen coole CSS/JS-Animationen mit (welche man für schwächere Geräte auch per Klick auf den 🪄 ausschalten kann):
 
