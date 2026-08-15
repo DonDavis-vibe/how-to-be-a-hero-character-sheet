@@ -821,6 +821,8 @@ function addToLog(dice, result, timestamp) {
     if (logList.children.length > 10) {
         logList.removeChild(logList.lastChild);
     }
+    
+    sendToDiscord(dice + ": " + result);
 }
 
 function addActivityLog(message, cssClass, iconHtml) {
@@ -840,6 +842,79 @@ function addActivityLog(message, cssClass, iconHtml) {
     
     saveData();
     renderActivityLog();
+    let emoji = "🎲";
+    if (iconHtml) {
+        if (iconHtml.includes('fa-heart-crack')) emoji = "💔";
+        else if (iconHtml.includes('fa-heart')) emoji = "💚";
+        else if (iconHtml.includes('fa-trash')) emoji = "🗑️";
+        else if (iconHtml.includes('fa-minus')) emoji = "➖";
+        else if (iconHtml.includes('fa-plus')) emoji = "➕";
+        else if (iconHtml.includes('fa-box')) emoji = "📦";
+        else if (iconHtml.includes('fa-wand-magic')) emoji = "🪄";
+        else if (iconHtml.includes('fa-masks')) emoji = "🎭";
+        else if (iconHtml.includes('fa-coins')) emoji = "🪙";
+        else if (iconHtml.includes('fa-table')) emoji = "📐";
+        else if (iconHtml.includes('fa-khanda')) emoji = "⚔️";
+        else if (iconHtml.includes('fa-lightbulb')) emoji = "💡";
+        else if (iconHtml.includes('fa-discord')) emoji = "🔗";
+    }
+    
+    sendToDiscord(message, emoji);
+}
+
+// --- Discord Sync ---
+function openDiscordModal() {
+    const modal = document.getElementById('discord-modal-overlay');
+    document.getElementById('discord-webhook-input').value = appData.discordWebhookUrl || '';
+    document.getElementById('discord-sync-toggle').checked = !!appData.discordSyncEnabled;
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.classList.add('active'); }, 10);
+}
+
+function closeDiscordModal() {
+    const modal = document.getElementById('discord-modal-overlay');
+    modal.classList.remove('active');
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+}
+
+function saveDiscordSettings() {
+    appData.discordWebhookUrl = document.getElementById('discord-webhook-input').value.trim();
+    appData.discordSyncEnabled = document.getElementById('discord-sync-toggle').checked;
+    saveData();
+    closeDiscordModal();
+    
+    if (appData.discordSyncEnabled && appData.discordWebhookUrl) {
+        sendToDiscord("Discord Sync erfolgreich aktiviert!", "🔗");
+        if (!appData.activityLog) appData.activityLog = [];
+        appData.activityLog.unshift({
+            time: new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'}),
+            cssClass: 'activity-good',
+            iconHtml: '<i class="fa-brands fa-discord"></i>',
+            message: 'Discord Sync aktiviert'
+        });
+        saveData();
+        renderActivityLog();
+    }
+}
+
+function sendToDiscord(message, emoji = "🎲") {
+    if (!appData.discordSyncEnabled || !appData.discordWebhookUrl) return;
+    
+    const charName = appData.name || "Unbekannter Charakter";
+    
+    // Strip HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = message;
+    const cleanMessage = tempDiv.textContent || tempDiv.innerText || "";
+    
+    fetch(appData.discordWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: charName,
+            content: `${emoji} ${cleanMessage}`
+        })
+    }).catch(err => console.error("Discord Sync Error:", err));
 }
 
 function renderActivityLog() {
@@ -990,7 +1065,8 @@ function resetData() {
             currency: { name: 'Credits', amount: 0 },
             layout3Col: false,
             notes: '', theme: 'default', maxPoints: 400,
-            fxEnabled: true, soundEnabled: true
+            fxEnabled: true, soundEnabled: true,
+            discordWebhookUrl: '', discordSyncEnabled: false
         };
         document.getElementById('portrait-img').src = 'assets/giphy.gif'; // default placeholder
         saveData();
