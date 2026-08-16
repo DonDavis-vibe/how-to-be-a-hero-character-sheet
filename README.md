@@ -110,6 +110,10 @@ git clone https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet.git
 ```
 Für Infos zur internen Datenstruktur: [DATA_FORMAT.md](DATA_FORMAT.md).
 
+## ⚖️ Rechtliches & Disclaimer (Audio-Assets)
+Dieses Tool ist ein rein **nicht-kommerzielles Fan-Projekt**. Einige der im integrierten Soundboard verwendeten Audio-Dateien, Sound-Effekte und Musikstücke (insbesondere das *Dungeons & Swagons Theme*) sind urheberrechtlich geschütztes Material ihrer jeweiligen Eigentümer (z.B. Rocket Beans Entertainment GmbH oder diverse Künstler/Sound-Libraries). 
+Sie werden hier ausschließlich im Rahmen eines kostenlosen Community-Projekts für private Rollenspielrunden verwendet. Es ist keine Urheberrechtsverletzung beabsichtigt. Sollten Rechteinhaber die Entfernung bestimmter Audio-Dateien wünschen, werden diese umgehend aus dem Repository entfernt. Bitte öffne in diesem Fall ein Issue auf GitHub.
+
 ## 📜 Lizenzen
 - **Code:** Der Quellcode dieses Tools steht unter der [MIT License](LICENSE).
 - **Regelwerk:** Das P&P Regelsystem "How to be a Hero" der *Rocket Beans* Community steht unter der **CC BY-NC-SA 4.0** Lizenz. (Siehe [howtobeahero.de](https://howtobeahero.de/))
