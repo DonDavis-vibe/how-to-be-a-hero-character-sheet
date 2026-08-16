@@ -1,4 +1,4 @@
-let peer = null;
+﻿let peer = null;
 let hostConnection = null;
 let clientConnections = {};
 let isGmMode = false;
@@ -148,7 +148,7 @@ function updateGmPlayerBigDiceResult(result, text, charName) {
         resDiv.style.color = playerColor;
         resDiv.style.textShadow = `0 0 15px ${playerColor}99`;
         subDiv.innerHTML = text;
-        nameDiv.innerHTML = `Gewürfelt von: <strong style="color: ${playerColor};">${charName}</strong>`;
+        nameDiv.innerHTML = `GewÃ¼rfelt von: <strong style="color: ${playerColor};">${charName}</strong>`;
         resDiv.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         resDiv.style.transform = 'scale(1)';
         resDiv.style.opacity = '1';
@@ -320,7 +320,7 @@ function renderGmDashboard() {
                         <span style="font-size: 0.9rem; color: #fbbf24;"><i class="fa-solid fa-lightbulb"></i> GBP: ${pData.gbp_handeln + pData.gbp_wissen + pData.gbp_soziales}</span>
                     </div>
                     <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem;">
-                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' • ')}
+                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' â€¢ ')}
                     </div>
                     <div style="font-size: 0.8rem; color: ${ptsColor}; text-align: right;">
                         Verteilte Punkte: <strong>${totalPoints}</strong> / 400
@@ -467,7 +467,7 @@ function addGmLogSystemMessage(msg) {
 }
 
 function clearGmLog() {
-    if(confirm('MÃ¶chtest du das Live-Log wirklich komplett leeren?')) {
+    if(confirm('MÃƒÂ¶chtest du das Live-Log wirklich komplett leeren?')) {
         gmLogHistory = [];
         saveGmLogHistory();
         document.getElementById('gm-live-log').innerHTML = '';
@@ -495,7 +495,7 @@ function rollGmDice(max) {
     const res = Math.floor(Math.random() * max) + 1;
     const text = `1W${max}`;
     updateGmBigDiceResult(res, text);
-    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${res}`, '🎲');
+    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${res}`, 'ðŸŽ²');
     
     if (typeof fireConfetti === 'function') {
         if (max === 100 && res <= 5) fireConfetti();
@@ -509,13 +509,13 @@ function rollGmCustomDice(diceStr) {
     if(!diceStr) return;
     const parts = diceStr.toLowerCase().split('w');
     if (parts.length !== 2) {
-        alert("UngÃ¼ltiges Format! Bitte zz.B. '2w10' eingeben.");
+        alert("UngÃƒÂ¼ltiges Format! Bitte zz.B. '2w10' eingeben.");
         return;
     }
     const count = parseInt(parts[0]) || 1;
     const max = parseInt(parts[1]);
     if (isNaN(max) || max < 2) {
-        alert("UngÃ¼ltiger WÃ¼rfel-Typ!");
+        alert("UngÃƒÂ¼ltiger WÃƒÂ¼rfel-Typ!");
         return;
     }
     
@@ -529,7 +529,7 @@ function rollGmCustomDice(diceStr) {
     
     const text = `${diceStr} (${rolls.join(', ')})`;
     updateGmBigDiceResult(total, text);
-    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${total}`, '🎲');
+    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${total}`, 'ðŸŽ²');
     
     if (typeof fireConfetti === 'function') {
         if (total === count * max) fireConfetti();
@@ -570,11 +570,20 @@ function joinMultiplayerSession() {
         hostConnection.on('data', (payload) => {
             if (payload && payload.type === 'theme') {
                 if (typeof changeTheme === 'function') {
-                    // Update dropdown if it exists
                     const sel = document.getElementById('theme-selector');
                     if (sel) sel.value = payload.theme;
-                    changeTheme(payload.theme, true); // true = fromSync
+                    changeTheme(payload.theme, true);
                 }
+            } else if (payload && payload.type === 'playSound') {
+                if (typeof playAudioFile === 'function') playAudioFile(payload.soundId, payload.volume);
+            } else if (payload && payload.type === 'setVolume') {
+                if (typeof currentAudioPlayers !== 'undefined') {
+                    currentAudioPlayers.forEach(audio => audio.volume = payload.volume);
+                }
+            } else if (payload && payload.type === 'stopSound') {
+                if (typeof stopAllAudio === 'function') stopAllAudio();
+            } else if (payload && payload.type === 'fadeOutSound') {
+                if (typeof fadeOutAllAudio === 'function') fadeOutAllAudio();
             }
         });
         
@@ -598,7 +607,7 @@ function sendMultiplayerState() {
     });
 }
 
-function sendMultiplayerLog(message, emoji = "ðŸŽ²", bigNumber = null, subtitle = null) {
+function sendMultiplayerLog(message, emoji = "Ã°Å¸Å½Â²", bigNumber = null, subtitle = null) {
     if (isGmMode) {
         addGmLogEntry("Spielleiter (Lokal)", message, emoji);
         return;
@@ -717,4 +726,142 @@ function broadcastTheme(theme) {
         });
     }
 }
+
+
+// --- SOUNDBOARD ---
+let currentAudioPlayers = [];
+
+function previewGmSound(soundId) {
+    const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
+    if (typeof playAudioFile === 'function') playAudioFile(soundId, vol);
+}
+
+function sendGmSound(soundId) {
+    const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
+    if (typeof playAudioFile === 'function') playAudioFile(soundId, vol);
+    Object.values(clientConnections).forEach(conn => {
+        if (conn.open) {
+            conn.send({ type: 'playSound', soundId: soundId, volume: vol });
+        }
+    });
+}
+
+function changeGmVolume(vol) {
+    const volume = parseFloat(vol);
+    if (typeof currentAudioPlayers !== 'undefined') {
+        currentAudioPlayers.forEach(audio => audio.volume = volume);
+    }
+    // Sync live volume change to players
+    Object.values(clientConnections).forEach(conn => {
+        if (conn.open) {
+            conn.send({ type: 'setVolume', volume: volume });
+        }
+    });
+}
+
+function sendGmStopSound() {
+    if (typeof stopAllAudio === 'function') stopAllAudio();
+    Object.values(clientConnections).forEach(conn => {
+        if (conn.open) {
+            conn.send({ type: 'stopSound' });
+        }
+    });
+}
+
+function playAudioFile(soundId, overrideVolume = 0.6) {
+    if (typeof appData !== 'undefined' && appData.soundEnabled === false) return;
+
+    const soundMap = {
+        'success': 'assets/sounds/success.webm',
+        'fail': 'assets/sounds/fail.webm',
+        'suspense': 'assets/sounds/suspense.webm',
+        'wilhelm': 'assets/sounds/wilhelm.webm',
+        'theme': 'assets/sounds/theme.webm',
+        'tension': 'assets/sounds/tension.webm',
+        'heartbeat': 'assets/sounds/heartbeat.webm',
+        'rain': 'assets/sounds/rain.webm',
+        'tavern': 'assets/sounds/tavern.webm',
+        'knock': 'assets/sounds/knock.webm',
+        'clock': 'assets/sounds/clock.webm',
+        'explosion': 'assets/sounds/explosion.webm',
+        'combat': 'assets/sounds/combat.webm',
+        'magic': 'assets/sounds/magic.webm',
+        'crickets': 'assets/sounds/crickets.webm',
+        'bell': 'assets/sounds/bell.webm',
+        'dramatic': 'assets/sounds/dramatic.webm',
+        'boss': 'assets/sounds/boss.webm',
+        'sad': 'assets/sounds/sad.webm',
+        'loot': 'assets/sounds/loot5.webm',
+        'boss2': 'assets/sounds/boss2.webm',
+        'shootout': 'assets/sounds/shootout.webm',
+        'brawl': 'assets/sounds/brawl3.webm',
+        'brawl_bud': 'assets/sounds/brawl4.webm',
+        'city': 'assets/sounds/city.webm',
+        'space': 'assets/sounds/space.webm',
+        'campfire': 'assets/sounds/campfire.webm',
+        'spooky': 'assets/sounds/spooky.webm',
+        'elevator': 'assets/sounds/elevator.webm',
+        'medieval': 'assets/sounds/medieval.webm'
+    };
+
+    if (soundMap[soundId]) {
+        const audio = new Audio(soundMap[soundId]);
+        audio.volume = overrideVolume;
+        audio.play().catch(e => console.warn('Audio play blocked:', e));
+        currentAudioPlayers.push(audio);
+        
+        audio.addEventListener('ended', () => {
+            currentAudioPlayers = currentAudioPlayers.filter(a => a !== audio);
+        });
+    }
+}
+
+function sendGmFadeOutSound() {
+    if (typeof fadeOutAllAudio === 'function') fadeOutAllAudio();
+    Object.values(clientConnections).forEach(conn => {
+        if (conn.open) {
+            conn.send({ type: 'fadeOutSound' });
+        }
+    });
+}
+
+function fadeOutAllAudio() {
+    if (typeof currentAudioPlayers === 'undefined' || currentAudioPlayers.length === 0) return;
+
+    // Clone the array so we can clear the global one immediately for new sounds
+    const playersToFade = [...currentAudioPlayers];
+    currentAudioPlayers = [];
+
+    const fadeSteps = 35; // increased steps for smoother fade
+    const fadeDuration = 3500; // 3.5 seconds fade out
+    const stepTime = fadeDuration / fadeSteps;
+
+    playersToFade.forEach(audio => {
+        const startVol = audio.volume;
+        const stepVol = startVol / fadeSteps;
+        let currentStep = 0;
+
+        const fadeInterval = setInterval(() => {
+            currentStep++;
+            let newVol = startVol - (stepVol * currentStep);
+            if (newVol < 0) newVol = 0;
+            audio.volume = newVol;
+
+            if (currentStep >= fadeSteps || newVol === 0) {
+                clearInterval(fadeInterval);
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }, stepTime);
+    });
+}
+
+function stopAllAudio() {
+    currentAudioPlayers.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+    });
+    currentAudioPlayers = [];
+}
+
 
