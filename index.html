@@ -92,7 +92,16 @@
                 <option value="superhero">Vibe: Superhelden</option>
                 <option value="medieval">Vibe: Mittelalter</option>
                 <option value="ultracore">Vibe: Ultracore</option>
-              </select>
+                                      <optgroup label="Musik">
+                            <option value="theme">Dungeons & Swagons</option>
+                            <option value="tension">Dark Tension Ambient</option>
+                            <option value="boss">Boss 1 (Orchestral Epic)</option>
+                            <option value="boss2">Boss 2 (Cyberpunk Synth)</option>
+                            <option value="sad">Traurig (Piano)</option>
+                            <option value="elevator">Fahrstuhlmusik (Rätsel)</option>
+                            <option value="medieval">Tavernen-Musik</option>
+                        </optgroup>
+                    </select>
               <i class="fa-solid fa-chevron-down" style="padding-right: 0.8rem; pointer-events: none; opacity: 0.6; font-size: 0.8rem;"></i>
           </div>
         </div>
@@ -143,7 +152,16 @@
                                 <option value="malus">Malus (Rot)</option>
                                 <option value="bonus">Bonus (Grün)</option>
                                 <option value="neutral">Neutral (Grau)</option>
-                            </select>
+                                                    <optgroup label="Musik">
+                            <option value="theme">Dungeons & Swagons</option>
+                            <option value="tension">Dark Tension Ambient</option>
+                            <option value="boss">Boss 1 (Orchestral Epic)</option>
+                            <option value="boss2">Boss 2 (Cyberpunk Synth)</option>
+                            <option value="sad">Traurig (Piano)</option>
+                            <option value="elevator">Fahrstuhlmusik (Rätsel)</option>
+                            <option value="medieval">Tavernen-Musik</option>
+                        </optgroup>
+                    </select>
                             <button onclick="addCustomStatus()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; cursor: pointer; padding: 0.2rem 0.5rem; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="fa-solid fa-plus"></i> Hinzufügen</button>
                         </div>
                     </div>
@@ -500,12 +518,76 @@
                         <option value="superhero" style="color: black;">Vibe: Superhelden</option>
                         <option value="medieval" style="color: black;">Vibe: Mittelalter</option>
                         <option value="ultracore" style="color: black;">Vibe: Ultracore</option>
+                                            <optgroup label="Musik">
+                            <option value="theme">Dungeons & Swagons</option>
+                            <option value="tension">Dark Tension Ambient</option>
+                            <option value="boss">Boss 1 (Orchestral Epic)</option>
+                            <option value="boss2">Boss 2 (Cyberpunk Synth)</option>
+                            <option value="sad">Traurig (Piano)</option>
+                            <option value="elevator">Fahrstuhlmusik (Rätsel)</option>
+                            <option value="medieval">Tavernen-Musik</option>
+                        </optgroup>
                     </select>
                 </div>
                 <label style="display: flex; align-items: center; gap: 0.5rem; color: #9ca3af; font-size: 0.85rem; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
                     <input type="checkbox" id="gm-sync-theme-checkbox" checked style="cursor: pointer;">
                     Sync to Players <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('gmSync')" title="Hilfe zum Theme Sync"></i>
                 </label>
+                <div style="display: flex; gap: 0.4rem; background: rgba(0,0,0,0.5); padding: 0.4rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); align-items: center;">
+                    <span style="font-size: 0.75rem; color: #9ca3af; margin-right: 0.2rem;"><i class="fa-solid fa-volume-high"></i></span>
+                    <select id="gm-sound-select" style="background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.3rem; border-radius: 4px; font-size: 0.8rem; max-width: 150px;">
+                        <optgroup label="Reaktionen">
+                            <option value="success">Erfolg (Fanfare)</option>
+                            <option value="fail">Fail (Sad Trombone)</option>
+                            <option value="wilhelm">Schmerz (Wilhelm)</option>
+                            <option value="dramatic">Plot Twist</option>
+                            <option value="loot">Loot (Münzen)</option>
+                        </optgroup>
+                        <optgroup label="Atmosphäre & Kulissen">
+                            <option value="heartbeat">Herzschlag</option>
+                            <option value="rain">Regen & Gewitter</option>
+                            <option value="tavern">Kneipen-Atmo</option>
+                            <option value="city">Sci-Fi Stadt</option>
+                            
+                            <option value="space">Raumschiff-Brummen</option>
+                            <option value="campfire">Wald & Lagerfeuer</option>
+                            <option value="spooky">Spukhaus (Grusel)</option>
+                        </optgroup>
+                        <optgroup label="Action & Pacing">
+                            <option value="combat">Kampf (Schwerter)</option>
+                            <option value="shootout">Schießerei</option>
+                            <option value="brawl">Schlägerei (Comic)</option>
+                            <option value="brawl_bud">Faustkampf (Bud Spencer)</option>
+                            <option value="explosion">Explosion</option>
+                            <option value="magic">Magie (Secret)</option>
+                            <option value="knock">Lautes Klopfen</option>
+                            <option value="clock">Tickende Uhr</option>
+                        </optgroup>
+                        <optgroup label="Tisch-Kontrolle">
+                            <option value="bell">Gong / Glocke</option>
+                            <option value="crickets">Grillenzirpen</option>
+                            <option value="suspense">Spannung (Boom)</option>
+                        </optgroup>
+                        
+                                            <optgroup label="Musik">
+                            <option value="theme">Dungeons & Swagons</option>
+                            <option value="tension">Dark Tension Ambient</option>
+                            <option value="boss">Boss 1 (Orchestral Epic)</option>
+                            <option value="boss2">Boss 2 (Cyberpunk Synth)</option>
+                            <option value="sad">Traurig (Piano)</option>
+                            <option value="elevator">Fahrstuhlmusik (Rätsel)</option>
+                            <option value="medieval">Tavernen-Musik</option>
+                        </optgroup>
+                    </select>
+                    <button class="tool-btn" onclick="previewGmSound(document.getElementById('gm-sound-select').value)" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Lokal testen (nur für dich)"><i class="fa-solid fa-headphones" style="color: #a855f7;"></i></button>
+                    <button class="tool-btn" onclick="sendGmSound(document.getElementById('gm-sound-select').value)" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Für alle abspielen"><i class="fa-solid fa-play" style="color: #57F287;"></i></button>
+                    <button class="tool-btn" onclick="sendGmFadeOutSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Ausfaden (2 Sekunden)"><i class="fa-solid fa-arrow-trend-down" style="color: #fbbf24;"></i></button>
+                    <button class="tool-btn" onclick="sendGmStopSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Harter Stop"><i class="fa-solid fa-stop" style="color: #ed4245;"></i></button>
+                    <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: 0.5rem; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 0.8rem;">
+                        <i class="fa-solid fa-volume-low" style="color: #9ca3af; font-size: 0.75rem;"></i>
+                        <input type="range" id="gm-volume-slider" min="0" max="1" step="0.05" value="0.6" oninput="changeGmVolume(this.value)" style="width: 60px; cursor: pointer;" title="Globale Lautstärke (Sync)">
+                    </div>
+                </div>
                 <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3);">
                     Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong>
                 </div>
