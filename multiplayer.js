@@ -53,7 +53,19 @@ function hostMultiplayerSession() {
     const roomCode = generateRoomCode();
     const peerId = 'htbah-' + roomCode;
     
-    peer = new Peer(peerId);
+    const peerConfig = {
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' }
+            ]
+        }
+    };
+    
+    peer = new Peer(peerId, peerConfig);
     
     peer.on('open', (id) => {
         closeMultiplayerModal();
@@ -66,6 +78,11 @@ function hostMultiplayerSession() {
             handleIncomingData(conn.peer, data);
         });
         
+                conn.on('error', (err) => {
+            console.error('Peer connection error:', err);
+            delete clientConnections[conn.peer];
+            renderGmDashboard();
+        });
         conn.on('close', () => {
             delete clientConnections[conn.peer];
             delete connectedPlayersData[conn.peer];
@@ -117,7 +134,7 @@ function handleIncomingData(peerId, payload) {
         connectedPlayersData[peerId] = payload.data;
         renderGmDashboard();
     } else if (payload.type === 'log') {
-        const charName = connectedPlayersData[peerId] ? connectedPlayersData[peerId].name : 'Unbekannt';
+        const charName = connectedPlayersData[peerId] ? [connectedPlayersData[peerId].vorname, connectedPlayersData[peerId].name].filter(Boolean).join(' ') : 'Unbekannt';
         addGmLogEntry(charName, payload.message, payload.emoji);
         if (payload.bigNumber !== undefined && payload.bigNumber !== null) {
             updateGmPlayerBigDiceResult(payload.bigNumber, payload.subtitle, charName);
@@ -148,7 +165,7 @@ function updateGmPlayerBigDiceResult(result, text, charName) {
         resDiv.style.color = playerColor;
         resDiv.style.textShadow = `0 0 15px ${playerColor}99`;
         subDiv.innerHTML = text;
-        nameDiv.innerHTML = `GewÃ¼rfelt von: <strong style="color: ${playerColor};">${charName}</strong>`;
+        nameDiv.innerHTML = `Gewürfelt von: <strong style="color: ${playerColor};">${charName}</strong>`;
         resDiv.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         resDiv.style.transform = 'scale(1)';
         resDiv.style.opacity = '1';
@@ -212,7 +229,7 @@ function renderGmDashboard() {
         }
         
         // Load GM notes for this character
-        const charName = pData.name || 'Unbekannt';
+        const charName = [pData.vorname, pData.name].filter(Boolean).join(' ') || 'Unbekannt';
         const playerColor = getColorForPlayer(charName);
         const gmNotesKey = 'gmNotes_' + charName;
         const currentNotes = localStorage.getItem(gmNotesKey) || '';
@@ -320,7 +337,7 @@ function renderGmDashboard() {
                         <span style="font-size: 0.9rem; color: #fbbf24;"><i class="fa-solid fa-lightbulb"></i> GBP: ${pData.gbp_handeln + pData.gbp_wissen + pData.gbp_soziales}</span>
                     </div>
                     <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem;">
-                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' â€¢ ')}
+                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' • ')}
                     </div>
                     <div style="font-size: 0.8rem; color: ${ptsColor}; text-align: right;">
                         Verteilte Punkte: <strong>${totalPoints}</strong> / 400
@@ -467,7 +484,7 @@ function addGmLogSystemMessage(msg) {
 }
 
 function clearGmLog() {
-    if(confirm('MÃƒÂ¶chtest du das Live-Log wirklich komplett leeren?')) {
+    if(confirm('Möchtest du das Live-Log wirklich komplett leeren?')) {
         gmLogHistory = [];
         saveGmLogHistory();
         document.getElementById('gm-live-log').innerHTML = '';
@@ -495,7 +512,7 @@ function rollGmDice(max) {
     const res = Math.floor(Math.random() * max) + 1;
     const text = `1W${max}`;
     updateGmBigDiceResult(res, text);
-    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${res}`, 'ðŸŽ²');
+    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${res}`, '🎲');
     
     if (typeof fireConfetti === 'function') {
         if (max === 100 && res <= 5) fireConfetti();
@@ -509,13 +526,13 @@ function rollGmCustomDice(diceStr) {
     if(!diceStr) return;
     const parts = diceStr.toLowerCase().split('w');
     if (parts.length !== 2) {
-        alert("UngÃƒÂ¼ltiges Format! Bitte zz.B. '2w10' eingeben.");
+        alert("Ungültiges Format! Bitte z.B. '2w10' eingeben.");
         return;
     }
     const count = parseInt(parts[0]) || 1;
     const max = parseInt(parts[1]);
     if (isNaN(max) || max < 2) {
-        alert("UngÃƒÂ¼ltiger WÃƒÂ¼rfel-Typ!");
+        alert("Ungültiger Würfel-Typ!");
         return;
     }
     
@@ -529,7 +546,7 @@ function rollGmCustomDice(diceStr) {
     
     const text = `${diceStr} (${rolls.join(', ')})`;
     updateGmBigDiceResult(total, text);
-    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${total}`, 'ðŸŽ²');
+    addGmLogEntry('Spielleiter (Lokal)', `${text}: ${total}`, '🎲');
     
     if (typeof fireConfetti === 'function') {
         if (total === count * max) fireConfetti();
@@ -548,7 +565,20 @@ function joinMultiplayerSession() {
     updateMultiplayerStatus("Verbinde...", "#fbbf24");
     
     if (peer) peer.destroy();
-    peer = new Peer(); // Random ID for client
+    
+    const peerConfig = {
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' }
+            ]
+        }
+    };
+    
+    peer = new Peer(peerConfig); // Random ID for client
     
     peer.on('open', () => {
         const hostId = 'htbah-' + code;
@@ -607,7 +637,7 @@ function sendMultiplayerState() {
     });
 }
 
-function sendMultiplayerLog(message, emoji = "Ã°Å¸Å½Â²", bigNumber = null, subtitle = null) {
+function sendMultiplayerLog(message, emoji = "🎲", bigNumber = null, subtitle = null) {
     if (isGmMode) {
         addGmLogEntry("Spielleiter (Lokal)", message, emoji);
         return;
@@ -772,15 +802,15 @@ function playAudioFile(soundId, overrideVolume = 0.6) {
     if (typeof appData !== 'undefined' && appData.soundEnabled === false) return;
 
     const soundMap = {
-        'success': 'assets/sounds/success.webm',
-        'fail': 'assets/sounds/fail.webm',
+        'success': 'assets/sound/crit.mp3',
+        'fail': 'assets/sound/fail.mp3',
         'suspense': 'assets/sounds/suspense.webm',
         'wilhelm': 'assets/sounds/wilhelm.webm',
         'theme': 'assets/sounds/theme.webm',
         'tension': 'assets/sounds/tension.webm',
         'heartbeat': 'assets/sounds/heartbeat.webm',
         'rain': 'assets/sounds/rain.webm',
-        'tavern': 'assets/sounds/tavern.webm',
+        'tavern': 'assets/sounds/menschen.mp3',
         'knock': 'assets/sounds/knock.webm',
         'clock': 'assets/sounds/clock.webm',
         'explosion': 'assets/sounds/explosion.webm',

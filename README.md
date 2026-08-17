@@ -49,6 +49,7 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
   * **🎛️ Integriertes Live-Soundboard:** 21 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
+  * **💡 Pro-Tipp (Integriertes Sound-Mixing):** Da Sounds nicht automatisch stoppen, wenn ein neuer gestartet wird, fungiert das Tool als echter Soundmixer! Der Spielleiter kann zum Beispiel prasselnden Regen als Endlos-Kulisse laufen lassen und *währenddessen* jederzeit eine Schießerei, einen Schrei oder einen Glockenschlag abspielen, ohne dass die Atmosphäre unterbrochen wird.
 
 ### 🦸‍♂️ Für die Spieler:
 Einfach den 4-stelligen Code des Spielleiters eingeben und auf "Beitreten" klicken. Ab jetzt werden alle eure Würfe, Lebenspunkte-Updates und Inventar-Änderungen live auf den Monitor des Spielleiters synchronisiert.
