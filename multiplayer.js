@@ -5,6 +5,10 @@ let isGmMode = false;
 let connectedPlayersData = {};
 
 let peerJsLoaded = false;
+let joinTimeout = null;
+let hostReconnectAttempts = 0;
+let hostReconnectPending = false;
+let roomOnline = false;
 
 function openMultiplayerModal() {
     if (!peerJsLoaded) {
@@ -21,6 +25,12 @@ function openMultiplayerModal() {
     const modal = document.getElementById('multiplayer-modal-overlay');
     modal.style.display = 'flex';
     setTimeout(() => { modal.classList.add('active'); }, 10);
+    loadTurnSettings();
+}
+
+function toggleTurnSettings() {
+    const box = document.getElementById('turn-settings');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
 }
 
 function closeMultiplayerModal() {
@@ -33,6 +43,89 @@ function updateMultiplayerStatus(text, color = "white") {
     const statusEl = document.getElementById('multiplayer-status');
     statusEl.innerHTML = text;
     statusEl.style.color = color;
+}
+
+// --- CONNECTION CONFIG ---
+// STUN reicht nur, solange beide Seiten eine direkte P2P-Verbindung aufbauen können.
+// Hinter symmetrischem NAT (Mobilfunk/CGNAT, Firmennetze) oder wenn UDP blockiert ist,
+// braucht es einen TURN-Server, der den Traffic weiterleitet.
+//
+// Hier optional einen eigenen TURN-Server eintragen (z.B. selbst gehostetes coturn oder
+// ein Anbieter-Konto). Spieler können zusätzlich im Multiplayer-Menü einen eigenen
+// TURN-Server hinterlegen, der dann zusammen mit diesem verwendet wird.
+// Beispiel:
+// const DEFAULT_TURN_SERVER = {
+//     urls: ['turn:turn.example.com:3478', 'turns:turn.example.com:5349'],
+//     username: 'user',
+//     credential: 'pass'
+// };
+const DEFAULT_TURN_SERVER = null;
+
+// Nach dieser Zeit gilt ein Beitritt als gescheitert (WebRTC meldet das nicht selbst)
+const JOIN_TIMEOUT_MS = 20000;
+
+const STUN_SERVERS = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun4.l.google.com:19302' }
+];
+
+// Vom Nutzer im Multiplayer-Menü hinterlegter TURN-Server
+function getCustomTurnServer() {
+    try {
+        const stored = JSON.parse(localStorage.getItem('multiplayer_turn') || 'null');
+        if (stored && stored.urls) return stored;
+    } catch (e) {
+        console.warn('TURN-Konfiguration unlesbar, wird ignoriert.', e);
+    }
+    return null;
+}
+
+function getPeerConfig() {
+    const iceServers = [...STUN_SERVERS];
+    if (DEFAULT_TURN_SERVER) iceServers.push(DEFAULT_TURN_SERVER);
+    const custom = getCustomTurnServer();
+    if (custom) iceServers.push(custom);
+    return { config: { iceServers: iceServers } };
+}
+
+function hasTurnConfigured() {
+    return !!(DEFAULT_TURN_SERVER || getCustomTurnServer());
+}
+
+function saveTurnSettings() {
+    const url = document.getElementById('turn-url').value.trim();
+    const user = document.getElementById('turn-user').value.trim();
+    const pass = document.getElementById('turn-pass').value;
+
+    if (!url) {
+        localStorage.removeItem('multiplayer_turn');
+        updateMultiplayerStatus("TURN-Server entfernt.", "#9ca3af");
+        return;
+    }
+    if (!/^turns?:/i.test(url)) {
+        updateMultiplayerStatus("TURN-URL muss mit turn: oder turns: beginnen.", "#ed4245");
+        return;
+    }
+
+    localStorage.setItem('multiplayer_turn', JSON.stringify({
+        urls: url,
+        username: user,
+        credential: pass
+    }));
+    updateMultiplayerStatus('<i class="fa-solid fa-check"></i> TURN-Server gespeichert.', "#57F287");
+}
+
+function loadTurnSettings() {
+    const custom = getCustomTurnServer();
+    if (!custom) return;
+    const urlField = document.getElementById('turn-url');
+    if (!urlField) return;
+    urlField.value = Array.isArray(custom.urls) ? custom.urls[0] : custom.urls;
+    document.getElementById('turn-user').value = custom.username || '';
+    document.getElementById('turn-pass').value = custom.credential || '';
 }
 
 // Generate a random 4-character alphanumeric code
@@ -48,30 +141,38 @@ function generateRoomCode() {
 // --- GM MODE (HOST) ---
 function hostMultiplayerSession() {
     if (peer) peer.destroy();
-    
+
+    hostReconnectAttempts = 0;
+    hostReconnectPending = false;
+    roomOnline = false;
     updateMultiplayerStatus("Erstelle Raum...", "#fbbf24");
     const roomCode = generateRoomCode();
     const peerId = 'htbah-' + roomCode;
     
-    const peerConfig = {
-        config: {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
-                { urls: 'stun:stun4.l.google.com:19302' }
-            ]
-        }
-    };
-    
-    peer = new Peer(peerId, peerConfig);
-    
+    peer = new Peer(peerId, getPeerConfig());
+
+    // Achtung: PeerJS feuert 'open' auch nach einem erfolgreichen Reconnect erneut.
+    // enterGmMode() darf dann NICHT nochmal laufen - das würde Live-Log und
+    // Spielerübersicht mitten in der Session leeren.
     peer.on('open', (id) => {
-        closeMultiplayerModal();
-        enterGmMode(roomCode);
+        if (!isGmMode) {
+            closeMultiplayerModal();
+            enterGmMode(roomCode);
+        } else if (!roomOnline) {
+            addGmLogSystemMessage("Verbindung zum Server wiederhergestellt.");
+        }
+        hostReconnectAttempts = 0;
+        setRoomStatus(true);
     });
-    
+
+    // Der Signalling-Server trennt inaktive Peers (Tab im Hintergrund, Standby,
+    // kurzer Netzaussetzer). PeerJS meldet sich NICHT von selbst neu an - der Raum
+    // bleibt dann für neue Spieler unauffindbar, obwohl das Dashboard weiterläuft.
+    peer.on('disconnected', () => {
+        setRoomStatus(false);
+        reconnectHost();
+    });
+
     peer.on('connection', (conn) => {
         // A player connected
         conn.on('data', (data) => {
@@ -94,9 +195,79 @@ function hostMultiplayerSession() {
     });
     
     peer.on('error', (err) => {
-        updateMultiplayerStatus("Fehler: " + err.type, "#ed4245");
+        if (err.type === 'unavailable-id') {
+            updateMultiplayerStatus("Raum-Code bereits vergeben. Bitte erneut hosten.", "#ed4245");
+        } else {
+            updateMultiplayerStatus("Fehler: " + err.type, "#ed4245");
+        }
         console.error(err);
     });
+}
+
+function reconnectHost() {
+    if (!peer || peer.destroyed || !isGmMode) return;
+    if (peer.open) return; // Verbindung steht bereits wieder
+
+    // Ein fehlgeschlagener reconnect() löst erneut 'disconnected' aus - ohne diese
+    // Sperre würden sich mehrere Reconnect-Ketten parallel aufschaukeln.
+    if (hostReconnectPending) return;
+
+    if (hostReconnectAttempts >= 8) {
+        addGmLogSystemMessage("Verbindung zum Server verloren. Bitte Dashboard schließen und neu hosten.");
+        return;
+    }
+
+    // Backoff: 2s, 4s, 8s ... max 30s
+    const delay = Math.min(2000 * Math.pow(2, hostReconnectAttempts), 30000);
+    hostReconnectAttempts++;
+    hostReconnectPending = true;
+
+    setTimeout(() => {
+        if (!peer || peer.destroyed || peer.open) {
+            hostReconnectPending = false;
+            return;
+        }
+        try {
+            peer.reconnect();
+        } catch (e) {
+            console.error('Reconnect fehlgeschlagen:', e);
+        }
+        // peer.open wird asynchron gesetzt - kurz warten, dann Ergebnis prüfen
+        setTimeout(() => {
+            hostReconnectPending = false;
+            if (!peer || peer.destroyed) return;
+            if (peer.open) {
+                hostReconnectAttempts = 0;
+                // Nur melden, wenn der Raum vorher wirklich offline war - sonst
+                // erzeugen mehrere 'disconnected'-Events doppelte Log-Einträge.
+                if (!roomOnline) {
+                    setRoomStatus(true);
+                    addGmLogSystemMessage("Verbindung zum Server wiederhergestellt.");
+                }
+            } else {
+                reconnectHost();
+            }
+        }, 3000);
+    }, delay);
+}
+
+// Zeigt im Dashboard an, ob der Raum beim Signalling-Server registriert ist.
+// Bereits verbundene Spieler bleiben bei "offline" erreichbar (P2P läuft direkt),
+// aber neue Spieler können nicht mehr beitreten.
+function setRoomStatus(online) {
+    roomOnline = online;
+    const el = document.getElementById('gm-room-status');
+    if (!el) return;
+
+    if (online) {
+        el.innerHTML = '<i class="fa-solid fa-circle"></i> Raum online';
+        el.style.color = '#57F287';
+        el.title = 'Neue Spieler können beitreten.';
+    } else {
+        el.innerHTML = '<i class="fa-solid fa-circle"></i> Raum offline';
+        el.style.color = '#ed4245';
+        el.title = 'Verbindung zum Signalling-Server verloren - neue Spieler können gerade nicht beitreten. Reconnect läuft.';
+    }
 }
 
 function enterGmMode(roomCode) {
@@ -566,32 +737,29 @@ function joinMultiplayerSession() {
     
     if (peer) peer.destroy();
     
-    const peerConfig = {
-        config: {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
-                { urls: 'stun:stun4.l.google.com:19302' }
-            ]
-        }
-    };
-    
-    peer = new Peer(peerConfig); // Random ID for client
-    
+    peer = new Peer(getPeerConfig()); // Random ID for client
+
     peer.on('open', () => {
         const hostId = 'htbah-' + code;
         hostConnection = peer.connect(hostId, { reliable: true });
-        
+
+        // PeerJS kennt keinen Timeout fuer den DataChannel: scheitert der
+        // WebRTC-Verbindungsaufbau, bleibt die Anzeige sonst ewig auf "Verbinde...".
+        clearTimeout(joinTimeout);
+        joinTimeout = setTimeout(() => {
+            if (hostConnection && hostConnection.open) return;
+            diagnoseFailedConnection(hostConnection);
+        }, JOIN_TIMEOUT_MS);
+
         hostConnection.on('open', () => {
+            clearTimeout(joinTimeout);
             updateMultiplayerStatus('<i class="fa-solid fa-check"></i> Verbunden!', "#57F287");
             setTimeout(closeMultiplayerModal, 1000);
-            
+
             // Send initial state
             sendMultiplayerState();
         });
-        
+
         hostConnection.on('close', () => {
             hostConnection = null;
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
@@ -618,15 +786,86 @@ function joinMultiplayerSession() {
         });
         
         hostConnection.on('error', (err) => {
+            clearTimeout(joinTimeout);
             console.error(err);
             updateMultiplayerStatus("Verbindungsfehler.", "#ed4245");
         });
     });
-    
+
     peer.on('error', (err) => {
+        clearTimeout(joinTimeout);
         console.error(err);
-        updateMultiplayerStatus("Fehler: Raum nicht gefunden.", "#ed4245");
+        if (err.type === 'peer-unavailable') {
+            const safeCode = code.replace(/[<>&"]/g, '');
+            updateMultiplayerStatus(
+                "Raum <strong>" + safeCode + "</strong> nicht gefunden.<br>" +
+                "<span style='font-weight: normal; font-size: 0.85rem;'>Code prüfen - oder der Spielleiter muss den Raum neu hosten.</span>",
+                "#ed4245"
+            );
+        } else if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error') {
+            updateMultiplayerStatus("Signalling-Server nicht erreichbar. Später erneut versuchen.", "#ed4245");
+        } else {
+            updateMultiplayerStatus("Fehler: " + err.type, "#ed4245");
+        }
     });
+}
+
+// Nach dem Timeout auswerten, WORAN es lag - die ICE-Kandidaten verraten das.
+async function diagnoseFailedConnection(conn) {
+    const pc = conn && conn.peerConnection;
+    let localTypes = [];
+    let remoteCount = 0;
+
+    if (pc) {
+        try {
+            const stats = await pc.getStats();
+            stats.forEach(r => {
+                if (r.type === 'local-candidate' && r.candidateType) localTypes.push(r.candidateType);
+                if (r.type === 'remote-candidate') remoteCount++;
+            });
+        } catch (e) {
+            console.warn('getStats fehlgeschlagen:', e);
+        }
+    }
+
+    const hasUdp = localTypes.some(t => t === 'host' || t === 'srflx' || t === 'relay');
+    const hasRelay = localTypes.includes('relay');
+    const hint = "<span style='font-weight: normal; font-size: 0.85rem;'>";
+
+    if (!hasUdp) {
+        // Kein einziger brauchbarer Kandidat: WebRTC ist im Browser blockiert.
+        // Lokale Kandidaten entstehen ohne Netzwerkzugriff - das kann keine Firewall verhindern.
+        updateMultiplayerStatus(
+            "WebRTC ist in diesem Browser blockiert." + "<br>" + hint +
+            "Der Raum wurde gefunden, aber es konnte keine Verbindung aufgebaut werden. " +
+            "Häufigste Ursache: eine VPN- oder Privacy-Extension mit WebRTC-Leak-Schutz. " +
+            "Diese deaktivieren oder einen anderen Browser nutzen.</span>",
+            "#ed4245"
+        );
+    } else if (remoteCount === 0) {
+        updateMultiplayerStatus(
+            "Keine Antwort vom Spielleiter." + "<br>" + hint +
+            "Der Raum existiert, aber die Gegenseite hat keine Verbindungsdaten geschickt. " +
+            "Beim Spielleiter könnte WebRTC blockiert sein.</span>",
+            "#ed4245"
+        );
+    } else if (!hasRelay && !hasTurnConfigured()) {
+        updateMultiplayerStatus(
+            "Keine direkte Verbindung möglich." + "<br>" + hint +
+            "Beide Seiten sind hinter einem strengen NAT (z.B. Mobilfunk oder Firmennetz). " +
+            "Dafür wird ein TURN-Server benötigt - im Menü unter \"Erweitert\" eintragbar.</span>",
+            "#ed4245"
+        );
+    } else {
+        updateMultiplayerStatus(
+            "Verbindungsaufbau fehlgeschlagen." + "<br>" + hint +
+            "Der Raum wurde gefunden, aber die P2P-Verbindung kam nicht zustande. " +
+            "Netzwerk oder TURN-Zugangsdaten prüfen.</span>",
+            "#ed4245"
+        );
+    }
+
+    if (conn) conn.close();
 }
 
 function sendMultiplayerState() {

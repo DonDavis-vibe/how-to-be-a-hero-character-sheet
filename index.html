@@ -490,6 +490,24 @@
                 </div>
             </div>
             
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <button class="tool-btn" onclick="toggleTurnSettings()" style="background: none; border: none; font-size: 0.85rem; color: #9ca3af; padding: 0.2rem;"><i class="fa-solid fa-gear"></i> Erweitert: TURN-Server</button>
+            </div>
+
+            <div id="turn-settings" style="display: none; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <p style="font-size: 0.85rem; margin-top: 0; color: #9ca3af;">
+                    Nur nötig, wenn der Beitritt mit "Keine direkte Verbindung möglich" fehlschlägt.
+                    Das passiert hinter strengem NAT (Mobilfunk, Firmennetz). Ein TURN-Server leitet
+                    die Verbindung dann weiter. Zugangsdaten kommen vom Spielleiter oder einem eigenen Server.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <input type="text" id="turn-url" placeholder="turn:turn.example.com:3478" style="background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; border-radius: 4px; outline: none; padding: 0.4rem; font-size: 0.9rem;">
+                    <input type="text" id="turn-user" placeholder="Benutzername" style="background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; border-radius: 4px; outline: none; padding: 0.4rem; font-size: 0.9rem;">
+                    <input type="password" id="turn-pass" placeholder="Passwort" style="background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; border-radius: 4px; outline: none; padding: 0.4rem; font-size: 0.9rem;">
+                    <button class="tool-btn" onclick="saveTurnSettings()" style="justify-content: center; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6;"><i class="fa-solid fa-floppy-disk"></i> TURN-Server speichern</button>
+                </div>
+            </div>
+
             <div id="multiplayer-status" style="text-align: center; font-weight: bold; margin-top: 1rem;"></div>
         </div>
     </div>
@@ -589,8 +607,9 @@
                         <input type="range" id="gm-volume-slider" min="0" max="1" step="0.05" value="0.6" oninput="changeGmVolume(this.value)" style="width: 60px; cursor: pointer;" title="Globale Lautstärke (Sync)">
                     </div>
                 </div>
-                <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3);">
-                    Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong>
+                <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3); display: flex; align-items: center; gap: 0.8rem;">
+                    <span>Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong></span>
+                    <span id="gm-room-status" style="font-size: 0.75rem; white-space: nowrap;"></span>
                 </div>
                 <button class="tool-btn" onclick="showGmNotesArchive()" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6;"><i class="fa-solid fa-book-open"></i> Notizen-Archiv <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmNotes')" title="Hilfe zu SL Notizen"></i></button>
                 <button class="tool-btn" onclick="exportGmNotes()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;"><i class="fa-solid fa-download"></i> Save</button>
