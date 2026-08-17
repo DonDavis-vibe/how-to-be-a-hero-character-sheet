@@ -394,7 +394,7 @@ function renderGmDashboard() {
         let hpColor = "#57F287";
         let hpPulseClass = "";
         if (hpPercent <= 50) hpColor = "#fee75c";
-        if (hpPercent <= 20) {
+        if (pData.hpCurrent <= 10) {
             hpColor = "#ed4245";
             hpPulseClass = "low-hp-warning";
         }
