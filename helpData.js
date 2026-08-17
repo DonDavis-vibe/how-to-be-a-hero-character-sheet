@@ -18,4 +18,18 @@ const helpData = {
     multiplayer: "<h3>📡 Live-Sync & 🤖 Discord</h3><p><b><i class='fa-solid fa-satellite-dish'></i> Live-Sync (Multiplayer):</b> Dies ist das GM-Dashboard Feature! Ein Spieler oder der Spielleiter klickt auf diesen Button, um einen Server-Code zu generieren. Die anderen Spieler geben diesen Code ein und verbinden sich live (Peer-to-Peer, ohne echten Server). Der Host sieht alle Spieler-Bögen, HP und Würfe in Echtzeit!</p><p><b><i class='fa-brands fa-discord'></i> Discord Sync:</b> Du kannst hier eine Discord-Webhook-URL eintragen. Dann werden alle deine Würfe (und auf Wunsch auch HP-Verluste) vollautomatisch direkt in euren Discord-Kanal gepostet, sodass alle sie lesen können.</p>",
     
     gmDice: "<h3>🎲 GM Würfel-Box</h3><p><b>Schnelle Würfe:</b> Als Spielleiter hast du hier direkten Zugriff auf die wichtigsten Würfel (1W100 für allgemeine Proben, 1W6 für einfachen Schaden).</p><p><b>Custom Würfel:</b> Brauchst du etwas Spezielles (z.B. für Monster-Schaden oder Zufallstabellen)? Gib einfach dein gewünschtes Format ein, z.B. <code>2w8</code> oder <code>1w20+5</code>.</p><p><i>Hinweis: Deine Würfe tauchen sofort live im Feed auf und lösen bei Krits (1-10) oder Patzern (91-100) beim W100 auch bei dir die passenden visuellen Effekte aus!</i></p>"
+,
+
+    general: "<h3><i class='fa-solid fa-circle-info'></i> Willkommen beim How to be a Hero - Tool</h3>" +
+             "<p>Dieser interaktive Charakterbogen nimmt dir die Rechenarbeit am Pen&Paper-Tisch ab und bietet ein nahtloses Multiplayer-Erlebnis.</p>" +
+             "<h4>Top Features:</h4>" +
+             "<ul>" +
+             "<li><b>1-Klick-Würfeln:</b> Klicke einfach auf deine Basis- oder Skill-Werte. Krits und Patzer (10%) werden automatisch erkannt!</li>" +
+             "<li><b>Multiplayer (Live-Sync):</b> Der Spielleiter (GM) generiert einen Code, Spieler treten bei. Der GM sieht alle Würfe, Lebenspunkte und Inventar-Updates sofort auf seinem Bildschirm (GM Dashboard).</li>" +
+             "<li><b>Integriertes Soundboard:</b> Der GM kann live Sounds & Ambient-Tracks für alle Spieler abspielen, mixen und faden.</li>" +
+             "<li><b>Vibe-Themes:</b> Wähle dein Lieblings-Theme (Cyberpunk, Steampunk, Mafia...). Der GM kann als Host das Theme sogar für alle Spieler synchron erzwingen!</li>" +
+             "<li><b>Drag & Drop Notizen:</b> Ziehe Einträge aus dem Logbuch oder deine gewürfelten Ergebnisse einfach mit der Maus rüber in dein Notizfeld.</li>" +
+             "<li><b>Discord-Integration:</b> Verbinde einen Webhook, um alle Würfe direkt in euren Discord-Channel zu posten.</li>" +
+             "</ul>" +
+             "<p><i>Lokaler Speicher: Deine Eingaben werden live im Browser gespeichert. Dennoch solltest du vor/nach einer Session über 'Speichern (JSON)' ein Backup deiner Charakterdaten herunterladen!</i></p>"
 };
