@@ -2260,6 +2260,14 @@ function rollInitiative() {
 }
 
 function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category = null) {
+    // Regelwerk S.8: "keine Fähigkeiten über 100 Punkte haben kann" - der Fähigkeitswert selbst
+    // wird für den Wurf hart bei 100 gedeckelt, auch wenn auf dem Bogen mehr investiert ist.
+    let capHint = '';
+    if (!isBaseAttribute && skillValue > 100) {
+        capHint = ` <span style="opacity:0.7">(Fähigkeit hat ${skillValue} Punkte, laut Regelwerk auf 100 gedeckelt!)</span>`;
+        skillValue = 100;
+    }
+
     const modifier = consumeModifier();
     if (modifier.mod !== 0) {
         modifier.str = modifier.mod > 0 ? ` (inkl. +${modifier.mod} Bonus)` : ` (inkl. ${modifier.mod} Malus)`;
@@ -2308,7 +2316,7 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
     }, 500);
 
     const critDamageHint = statusClass === 'crit-success' ? ` <span style="opacity:0.7">(nächster Schadenswurf wird verdoppelt!)</span>` : '';
-    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>${critDamageHint}`);
+    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>${critDamageHint}${capHint}`);
 }
 
 function handleThemeLogoUpload(event) {
