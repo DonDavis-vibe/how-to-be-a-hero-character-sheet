@@ -1,37 +1,37 @@
 // Default Data based on Angus MacGyver PDF
 const defaultData = {
     vorname: 'Angus',
-    name: 'assets/Macgyver',
+    name: 'MacGyver',
     geschlecht: 'M',
     beruf: 'Problemlöser',
     alter: '42',
-    statur: 'SpOor',
-    
+    statur: 'Sportlich',
+
     hpCurrent: 100,
     hpMax: 100,
 
-    attr_handeln: 17,
+    attr_handeln: 15,
     gbp_handeln: 2,
     skills_handeln: [
-        { id: 'h1', name: 'DIY Basteln', value: 87 },
-        { id: 'h2', name: 'Fahr- und Fluggeräte steuern', value: 60 },
-        { id: 'h3', name: 'leises Vorgehen', value: 50 },
-        { id: 'h4', name: 'Akrobatik', value: 41 }
+        { id: 'h1', name: 'DIY Basteln', invested: 70 },
+        { id: 'h2', name: 'Fahr- und Fluggeräte steuern', invested: 40 },
+        { id: 'h3', name: 'leises Vorgehen', invested: 25 },
+        { id: 'h4', name: 'Akrobatik', invested: 15 }
     ],
 
-    attr_wissen: 16,
+    attr_wissen: 18,
     gbp_wissen: 2,
     skills_wissen: [
-        { id: 'w1', name: 'angewandte Physik', value: 90 },
-        { id: 'w2', name: 'Elektrotechnisches Grundwissen', value: 72 },
-        { id: 'w3', name: 'erste Hilfe', value: 41 }
+        { id: 'w1', name: 'angewandte Physik', invested: 80 },
+        { id: 'w2', name: 'Elektrotechnisches Grundwissen', invested: 60 },
+        { id: 'w3', name: 'erste Hilfe', invested: 40 }
     ],
 
-    attr_soziales: 8,
+    attr_soziales: 7,
     gbp_soziales: 1,
     skills_soziales: [
-        { id: 's1', name: 'Überreden', value: 48 },
-        { id: 's2', name: 'Menschenkenntnis', value: 43 }
+        { id: 's1', name: 'Überreden', invested: 40 },
+        { id: 's2', name: 'Menschenkenntnis', invested: 30 }
     ],
 
     inventory: [
@@ -42,10 +42,12 @@ const defaultData = {
     weapons: [
         { id: 'w1', name: 'Taschenmesser', damage: '1W6-1' }
     ],
-    statuses: ['Verletzt'],
+    statuses: [
+        { id: 'st1', name: 'Verletzt', value: '', type: 'malus' }
+    ],
     currency: { name: 'Credits', amount: 150 },
-    notes: 'Kaugummi + Büroklammer = Bombe?',
-    theme: 'scifi',
+    notes: 'Kaugummi + Büroklammer = Bombe? (400 Punkte komplett verteilt: 150 Handeln, 180 Wissen, 70 Soziales)',
+    theme: 'default',
     maxPoints: 400
 };
 

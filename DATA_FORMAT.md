@@ -87,6 +87,7 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `id` (String): A unique identifier for the skill in the DOM.
   - `name` (String): The name of the skill.
   - `invested` (Number): The amount of points invested into this specific skill. *(Legacy support: if a file contains `value` instead of `invested`, the app will automatically migrate it on import).*
+  - `excludeBonus` (Boolean, Optional): If `true`, the category's attribute bonus is *not* added to this skill's total (per the rulebook, a player may opt out of the bonus for a specific skill). Default `false`.
 
 ### Stats & Settings
 - `hpCurrent` (Number): Current Health Points.

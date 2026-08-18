@@ -185,7 +185,7 @@
                     <div class="attr-header" style="align-items: flex-start;">
                         <h2 class="cat-title" style="display: flex; align-items: center; margin: 0;"><img id="icon-handeln" src="assets/icon_handeln.jpg" class="category-icon"> Handeln <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('skills')" title="Hilfe zu Würfeln"></i></h2>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                            <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly onclick="rollSkillCheck('Basiswert: Handeln', parseInt(this.value))" title="Auf Basiswert Handeln würfeln">
+                            <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly onclick="rollSkillCheck('Basiswert: Handeln', parseInt(this.value), true, 'handeln')" title="Auf Basiswert Handeln würfeln">
                             <button class="tool-btn" onclick="rollInitiative()" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;" title="1W10 + Handeln"><i class="fa-solid fa-bolt"></i> Initiative</button>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
                 <div class="attribute-card" style="--accent: var(--color-knowledge);">
                     <div class="attr-header">
                         <h2 class="cat-title"><img id="icon-wissen" src="assets/icon_wissen.jpg" class="category-icon"> Wissen</h2>
-                        <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly onclick="rollSkillCheck('Basiswert: Wissen', parseInt(this.value))" title="Auf Basiswert Wissen würfeln">
+                        <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly onclick="rollSkillCheck('Basiswert: Wissen', parseInt(this.value), true, 'wissen')" title="Auf Basiswert Wissen würfeln">
                     </div>
                     <div class="attr-gbp">
                         <label>Geistesblitzpunkte</label>
@@ -237,7 +237,7 @@
                 <div class="attribute-card" style="--accent: var(--color-social);">
                     <div class="attr-header">
                         <h2 class="cat-title"><img id="icon-soziales" src="assets/icon_soziales.jpg" class="category-icon"> Soziales</h2>
-                        <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly onclick="rollSkillCheck('Basiswert: Soziales', parseInt(this.value))" title="Auf Basiswert Soziales würfeln">
+                        <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly onclick="rollSkillCheck('Basiswert: Soziales', parseInt(this.value), true, 'soziales')" title="Auf Basiswert Soziales würfeln">
                     </div>
                     <div class="attr-gbp">
                         <label>Geistesblitzpunkte</label>
