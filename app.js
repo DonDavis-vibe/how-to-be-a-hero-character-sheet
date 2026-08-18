@@ -5,6 +5,11 @@ let appData = {};
 
 let lastRollTimestamp = 0;
 
+// Regelwerk S.15: kritische Treffer verdoppeln den nächsten Schadenswurf
+let pendingCritDamage = false;
+// Regelwerk S.4/S.5: GBP dürfen nicht nach einem kritischen Patzer für einen Reroll genutzt werden
+let lastRollByCategory = { handeln: null, wissen: null, soziales: null };
+
 // Initialization
 function init() {
     // Start with a blank character by default, since we are not using localStorage anymore
@@ -254,12 +259,33 @@ function renderSkills(attr) {
 
         const totalSpan = document.createElement('span');
         totalSpan.className = 'skill-total skill-val clickable';
-        totalSpan.title = 'Probe würfeln!';
         totalSpan.id = 'total-' + skill.id;
-        let totalSkillVal = attrVal + (skill.invested || 0);
-        totalSpan.textContent = '= ' + totalSkillVal;
-        totalSpan.onclick = () => rollSkillCheck(skill.name, totalSkillVal);
-        
+        updateSkillTotalDisplay(totalSpan, skill, attrVal);
+        totalSpan.onclick = () => {
+            const currentAttrVal = parseInt(appData[`attr_${attr}`]) || 0;
+            const currentTotal = (skill.excludeBonus ? 0 : currentAttrVal) + (skill.invested || 0);
+            rollSkillCheck(skill.name, currentTotal, false, attr);
+        };
+
+        // Regelwerk S.4: "Der Bonus wird zu jeder Fähigkeit addiert, es sei denn, ein Spieler
+        // möchte dies explizit nicht." - Toggle, um den Begabungs-Bonus für diesen Skill abzuwählen.
+        const bonusToggleBtn = document.createElement('button');
+        bonusToggleBtn.className = 'btn-bonus-toggle' + (skill.excludeBonus ? ' bonus-excluded' : '');
+        bonusToggleBtn.textContent = 'B';
+        bonusToggleBtn.title = skill.excludeBonus
+            ? `Begabungs-Bonus (+${attrVal}) ist für diesen Skill deaktiviert. Klicken zum Aktivieren.`
+            : `Begabungs-Bonus (+${attrVal}) ist aktiv. Klicken um ihn für diesen Skill abzuwählen.`;
+        bonusToggleBtn.onclick = () => {
+            skill.excludeBonus = !skill.excludeBonus;
+            saveData();
+            const currentAttrVal = parseInt(appData[`attr_${attr}`]) || 0;
+            bonusToggleBtn.classList.toggle('bonus-excluded', !!skill.excludeBonus);
+            bonusToggleBtn.title = skill.excludeBonus
+                ? `Begabungs-Bonus (+${currentAttrVal}) ist für diesen Skill deaktiviert. Klicken zum Aktivieren.`
+                : `Begabungs-Bonus (+${currentAttrVal}) ist aktiv. Klicken um ihn für diesen Skill abzuwählen.`;
+            updateSkillTotalDisplay(totalSpan, skill, currentAttrVal);
+        };
+
         const minusBtn = document.createElement('button');
         minusBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
         minusBtn.style = 'background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.7); width: 24px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; transition: all 0.2s;';
@@ -279,13 +305,13 @@ function renderSkills(attr) {
             skill.invested = parseInt(e.target.value) || 0;
             saveData();
             calculatePoints(); // This recalculates the base attribute
-            
+
             // Update all spans in this category visually without re-rendering everything
-            const currentAttrVal = appData[`attr_${attr}`];
+            const currentAttrVal = parseInt(appData[`attr_${attr}`]) || 0;
             appData[`skills_${attr}`].forEach(s => {
                 const span = document.getElementById('total-' + s.id);
                 if (span) {
-                    span.textContent = '= ' + (currentAttrVal + (s.invested || 0));
+                    updateSkillTotalDisplay(span, s, currentAttrVal);
                 }
             });
         };
@@ -318,10 +344,21 @@ function renderSkills(attr) {
         item.appendChild(minusBtn);
         item.appendChild(valInput);
         item.appendChild(plusBtn);
+        item.appendChild(bonusToggleBtn);
         item.appendChild(totalSpan);
         item.appendChild(delBtn);
         listEl.appendChild(item);
     });
+}
+
+// Regelwerk S.8: "keine Fähigkeiten über 100 Punkte haben kann" - markiert Werte über 100 visuell.
+function updateSkillTotalDisplay(span, skill, attrVal) {
+    const total = (skill.excludeBonus ? 0 : attrVal) + (skill.invested || 0);
+    span.textContent = '= ' + total;
+    span.classList.toggle('over-cap', total > 100);
+    span.title = total > 100
+        ? 'Probe würfeln! Achtung: Laut Regelwerk darf ein Fähigkeitswert nicht über 100 liegen - investiere die überzähligen Punkte anderweitig.'
+        : 'Probe würfeln!';
 }
 
 function addSkill(attr) {
@@ -1067,7 +1104,7 @@ function resetData() {
     if (confirm("Möchtest du wirklich einen komplett neuen Charakter erstellen? Alle aktuellen Daten werden gelöscht!")) {
         appData = {
             vorname: '', name: '', geschlecht: '', beruf: '', alter: '', statur: '',
-            hpCurrent: 10, hpMax: 10,
+            hpCurrent: 100, hpMax: 100,
             attr_handeln: 0, gbp_handeln: 0, skills_handeln: [],
             attr_wissen: 0, gbp_wissen: 0, skills_wissen: [],
             attr_soziales: 0, gbp_soziales: 0, skills_soziales: [],
@@ -2115,27 +2152,38 @@ function rollWeaponDamage(damageString, weaponName) {
         total += r;
     }
     total += parsed.mod;
-    
+
+    let rollStr = `[${rolls.join('+')}]` + (parsed.mod !== 0 ? (parsed.mod > 0 ? '+'+parsed.mod : parsed.mod) : '');
+
+    // Regelwerk S.15: Trifft ein Spieler kritisch, wird der ausgewürfelte Schaden verdoppelt.
+    const wasCritHit = pendingCritDamage;
+    if (wasCritHit) {
+        total *= 2;
+        rollStr += ' &times;2 (Krit!)';
+        pendingCritDamage = false;
+    }
+
     const displayRes = document.getElementById('dice-result');
     displayRes.querySelector('.result-number').textContent = total;
     displayRes.querySelector('.result-label').textContent = weaponName + " Schaden";
     displayRes.className = 'dice-result-display active damage-roll';
-    
+
     setTimeout(() => {
         displayRes.classList.remove('active');
         displayRes.classList.remove('damage-roll');
     }, 400);
-    
-    let rollStr = `[${rolls.join('+')}]` + (parsed.mod !== 0 ? (parsed.mod > 0 ? '+'+parsed.mod : parsed.mod) : '');
-    
+
     lastRollTimestamp = Date.now();
     updateLiveTimers();
-    
+
     // Crit/Fumble logic for weapons
-    const isMax = (total - parsed.mod === parsed.count * parsed.sides);
-    const isMin = (total - parsed.mod === parsed.count);
-    
-    if (isMax) {
+    const isMax = !wasCritHit && (total - parsed.mod === parsed.count * parsed.sides);
+    const isMin = !wasCritHit && (total - parsed.mod === parsed.count);
+
+    if (wasCritHit) {
+        fireConfetti();
+        addToLog(`<i class="fa-solid fa-burst"></i> ${weaponName} Schaden`, `<b class="crit-success">${total} (Kritischer Treffer, verdoppelt!)</b> <span style="font-size:0.75rem;opacity:0.7">(${damageString} = ${rollStr})</span>`, lastRollTimestamp);
+    } else if (isMax) {
         fireConfetti();
         addToLog(`<i class="fa-solid fa-burst"></i> ${weaponName} Schaden`, `<b class="crit-success">${total} (Max!)</b> <span style="font-size:0.75rem;opacity:0.7">(${damageString} = ${rollStr})</span>`, lastRollTimestamp);
     } else if (isMin) {
@@ -2175,6 +2223,13 @@ function adjustGbp(category, amount) {
 function useGBP(category) {
     let field = 'gbp_' + category;
     if (appData[field] > 0) {
+        // Regelwerk S.4/S.5: Ein GBP darf nicht eingesetzt werden, wenn der letzte Wurf in dieser
+        // Begabung ein kritischer Misserfolg (Patzer) war.
+        if (lastRollByCategory[category] === 'crit-fail') {
+            const override = confirm(`Laut Regelwerk kann nach einem kritischen Patzer kein Geistesblitzpunkt mehr eingesetzt werden, um den Wurf zu wiederholen.\n\nTrotzdem fortfahren?`);
+            if (!override) return;
+        }
+
         appData[field]--;
         document.getElementById('gbp-current-' + category).value = appData[field];
         addActivityLog(`Geistesblitz genutzt (${category})`, 'activity-neutral', '<i class="fa-solid fa-lightbulb"></i>');
@@ -2204,25 +2259,28 @@ function rollInitiative() {
     }
 }
 
-function rollSkillCheck(skillName, skillValue) {
+function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category = null) {
     const modifier = consumeModifier();
     if (modifier.mod !== 0) {
         modifier.str = modifier.mod > 0 ? ` (inkl. +${modifier.mod} Bonus)` : ` (inkl. ${modifier.mod} Malus)`;
     }
     skillValue += modifier.mod;
-    
+
     const result = Math.floor(Math.random() * 100) + 1;
     let statusText = '';
     let statusClass = '';
-    
-    const critSuccessMax = Math.max(1, Math.round(skillValue / 10));
+
+    // Regelwerk S.3/S.21: Würfe auf Begabungen (Basiswerte) können keine kritischen Erfolge erzielen
+    const critSuccessMax = isBaseAttribute ? 0 : Math.max(1, Math.round(skillValue / 10));
     const critFailMin = 90 + Math.round(skillValue / 10);
-    
-    if (result <= critSuccessMax) {
+
+    if (!isBaseAttribute && result <= critSuccessMax) {
         statusText = '🌟 Kritischer Erfolg!';
         statusClass = 'crit-success';
         fireConfetti();
         if (typeof AudioController !== 'undefined') AudioController.play('crit');
+        // Regelwerk S.15: Ein kritischer Treffer verdoppelt den nächsten Schadenswurf
+        pendingCritDamage = true;
     } else if (result >= critFailMin) {
         statusText = '💀 Patzer!';
         statusClass = 'crit-fail';
@@ -2236,16 +2294,21 @@ function rollSkillCheck(skillName, skillValue) {
         statusClass = 'fail';
     }
 
+    if (category && lastRollByCategory.hasOwnProperty(category)) {
+        lastRollByCategory[category] = statusClass;
+    }
+
     const displayRes = document.getElementById('dice-result');
     displayRes.querySelector('.result-number').textContent = result;
     displayRes.querySelector('.result-label').textContent = skillName + " Probe";
-    
+
     displayRes.className = 'dice-result-display active ' + statusClass;
     setTimeout(() => {
         displayRes.className = 'dice-result-display';
     }, 500);
 
-    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>`);
+    const critDamageHint = statusClass === 'crit-success' ? ` <span style="opacity:0.7">(nächster Schadenswurf wird verdoppelt!)</span>` : '';
+    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>${critDamageHint}`);
 }
 
 function handleThemeLogoUpload(event) {

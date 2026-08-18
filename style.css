@@ -555,6 +555,35 @@ h2 {
     color: var(--color-accent);
     flex-shrink: 0;
 }
+.skill-total.over-cap {
+    color: var(--color-dmg);
+}
+.btn-bonus-toggle {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    color: rgba(255,255,255,0.6);
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.btn-bonus-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+.btn-bonus-toggle.bonus-excluded {
+    color: rgba(255,255,255,0.25);
+    text-decoration: line-through;
+    border-style: dashed;
+}
 .btn-delete-icon {
     background: none; border: none; color: var(--text-secondary);
     cursor: pointer; padding: 0.25rem; flex-shrink: 0;
