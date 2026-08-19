@@ -1045,7 +1045,6 @@ function playAudioFile(soundId, overrideVolume = 0.6) {
         'fail': 'assets/sound/fail.mp3',
         'suspense': 'assets/sounds/suspense.webm',
         'wilhelm': 'assets/sounds/wilhelm.webm',
-        'theme': 'assets/sounds/theme.webm',
         'tension': 'assets/sounds/tension.webm',
         'heartbeat': 'assets/sounds/heartbeat.webm',
         'rain': 'assets/sounds/rain.webm',
