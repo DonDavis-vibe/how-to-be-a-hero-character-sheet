@@ -19,8 +19,15 @@ function init() {
     setupEventListeners();
     setupMouseSpotlight();
     calculatePoints();
-    
+
     setInterval(updateLiveTimers, 1000);
+
+    // Assistenten beim allerersten Besuch automatisch anbieten (rein UI-seitiges Flag, keine Charakterdaten)
+    try {
+        if (!localStorage.getItem(WIZARD_SEEN_KEY)) {
+            setTimeout(openWizard, 600);
+        }
+    } catch (e) { /* localStorage evtl. blockiert */ }
 }
 
 function setupMouseSpotlight() {
@@ -1046,6 +1053,7 @@ function handlePortraitUpload(event) {
         appData.portrait = e.target.result;
         document.getElementById('portrait-img').src = appData.portrait;
         saveData();
+        if (typeof syncWizardMediaPreviews === 'function') syncWizardMediaPreviews();
     };
     reader.readAsDataURL(file);
 }
@@ -1119,6 +1127,7 @@ function resetData() {
         saveData();
         renderAll();
         calculatePoints();
+        openWizard();
     }
 }
 
@@ -1793,28 +1802,19 @@ function applyTheme(theme) {
     const mainLogoImg = document.getElementById('main-theme-logo');
     const removeBtn = document.getElementById('btn-remove-custom-logo');
     
-    let logoSrc = null;
-    if (appData.customThemeLogo) {
-        logoSrc = appData.customThemeLogo;
-    } else if (imgPaths['main-theme-logo']) {
-        logoSrc = imgPaths['main-theme-logo'];
-    }
+    // Immer sichtbar lassen: Auch ohne themen-eigenes Logo-Bild soll der Slot als
+    // klickbare Upload-Fläche für ein eigenes (Fraktions-)Logo erreichbar bleiben.
+    let logoSrc = appData.customThemeLogo || imgPaths['main-theme-logo'];
 
-    if (logoSrc) {
-        if (mainLogoImg) {
-            mainLogoImg.onerror = function() {
-                if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
-                this.onerror = null;
-            };
-            mainLogoImg.onload = function() {
-                if (mainLogoWrapper) mainLogoWrapper.style.display = 'flex';
-            };
-            mainLogoImg.src = logoSrc;
-        }
-        if (removeBtn) removeBtn.style.display = appData.customThemeLogo ? 'flex' : 'none';
-    } else {
-        if (mainLogoWrapper) mainLogoWrapper.style.display = 'none';
+    if (mainLogoImg) {
+        mainLogoImg.onerror = function() {
+            this.onerror = null;
+            this.src = 'assets/logo_default.jpg'; // Fallback, falls das Theme kein eigenes Logo mitbringt
+        };
+        mainLogoImg.src = logoSrc;
     }
+    if (mainLogoWrapper) mainLogoWrapper.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = appData.customThemeLogo ? 'flex' : 'none';
 
     // Apply images to DOM
     for (const [id, path] of Object.entries(imgPaths)) {
@@ -1969,6 +1969,186 @@ function closeHelp() {
     setTimeout(() => {
         modal.style.display = 'none';
     }, 300); // Wait for transition
+}
+
+// --- Charaktererstellungs-Assistent ---
+const WIZARD_SEEN_KEY = 'htbah_wizard_seen';
+let wizardStepIndex = 0;
+
+const wizardSteps = [
+    {
+        title: '👋 Willkommen bei How to be a Hero!',
+        body: () => `
+            <div class="wizard-step-body">
+                <p>Dieser kurze Assistent führt dich in ein paar Schritten durch die Erstellung deines Charakters: Konzept, Bild &amp; Logo, und Fähigkeiten verteilen.</p>
+                <p>Der Bogen im Hintergrund rechnet dabei schon live mit, du kannst also direkt lostippen, während dieses Fenster offen bleibt. Über "Überspringen" steigst du jederzeit aus, den Assistenten findest du später über den <i class="fa-solid fa-hat-wizard"></i>-Button oben erneut.</p>
+            </div>
+        `
+    },
+    {
+        title: '🧑‍🎤 Wer ist dein Charakter?',
+        body: () => `
+            <div class="wizard-step-body">
+                <p>Oben links im Bogen füllst du die Basics deines Charakters aus: Vorname, Name, Geschlecht, Beruf, Alter und Statur. Das sind reine Rollenspiel-Angaben, sie fließen in keine Berechnung ein, hier ist also Kreativität gefragt!</p>
+                <div class="wizard-tip"><i class="fa-solid fa-lightbulb"></i> Für den Einstieg eignen sich vor allem Stereotype wie ein typischer Haudrauf, Forscher oder "Kumpel von nebenan".</div>
+            </div>
+        `,
+        onEnter: () => {
+            const header = document.querySelector('.character-header');
+            if (header) {
+                header.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                header.classList.add('wizard-highlight-pulse');
+                setTimeout(() => header.classList.remove('wizard-highlight-pulse'), 3000);
+            }
+        }
+    },
+    {
+        title: '🖼️ Portrait & Fraktions-Logo',
+        body: () => `
+            <div class="wizard-step-body">
+                <p>Klicke auf dein Charakterbild, um ein eigenes Portrait hochzuladen.</p>
+                <div class="wizard-tip"><i class="fa-solid fa-wand-magic-sparkles"></i> Tipp: Es muss kein Foto sein, auch ein <b>animiertes GIF</b> funktioniert wunderbar als Portrait (schau dir gerne den Standard-Platzhalter an)!</div>
+                <p>Direkt daneben kannst du zusätzlich ein <b>Logo</b> hinterlegen, z.B. ein Fraktions-Wappen, ein Team-Symbol oder ein Firmenlogo. Nicht jedes Vibe-Theme bringt automatisch ein passendes Logo mit, aber der Slot ist immer da: Klick einfach drauf, um dein eigenes hochzuladen.</p>
+                <div class="wizard-media-row">
+                    <div class="wizard-media-item">
+                        <span class="wizard-media-label">Portrait</span>
+                        <img id="wizard-portrait-preview" src="assets/giphy.gif" alt="Portrait Vorschau">
+                        <br>
+                        <button class="tool-btn" onclick="document.getElementById('portrait-upload').click()"><i class="fa-solid fa-camera"></i> Portrait wählen</button>
+                    </div>
+                    <div class="wizard-media-item">
+                        <span class="wizard-media-label">Logo (optional)</span>
+                        <img id="wizard-logo-preview" src="assets/logo_default.jpg" alt="Logo Vorschau">
+                        <br>
+                        <button class="tool-btn" onclick="document.getElementById('theme-logo-upload').click()"><i class="fa-solid fa-shield-halved"></i> Logo wählen</button>
+                    </div>
+                </div>
+            </div>
+        `,
+        onEnter: () => syncWizardMediaPreviews()
+    },
+    {
+        title: '📊 Handeln, Wissen & Soziales',
+        body: () => `
+            <div class="wizard-step-body">
+                <p>Jeder Charakter hat drei Begabungen: <b>Handeln</b> (körperlich/feinmotorisch), <b>Wissen</b> (analytisch/faktenbasiert) und <b>Soziales</b> (Interaktion mit anderen). Bei jeder Kategorie legst du über "+ Skill" konkrete Fähigkeiten an (z.B. "Klettern" unter Handeln) und verteilst Punkte darauf.</p>
+                <p>Der Begabungswert und deine Geistesblitzpunkte werden automatisch aus der Summe deiner Skillpunkte berechnet, du musst nichts selbst ausrechnen.</p>
+                <div class="wizard-tip"><i class="fa-solid fa-circle-exclamation"></i> Insgesamt stehen dir <b>${appData.maxPoints || 400} Punkte</b> zur Verfügung. Aktuell verteilt: <span class="wizard-live-points" id="wizard-live-points">0</span> / ${appData.maxPoints || 400}. Ein einzelner Fähigkeitswert darf laut Regelwerk nie über 100 liegen, das Tool markiert das automatisch rot, falls es passiert.</div>
+            </div>
+        `,
+        onEnter: () => {
+            const el = document.getElementById('wizard-live-points');
+            const src = document.getElementById('points-total');
+            if (el && src) el.textContent = src.textContent;
+            const grid = document.querySelector('.attributes-grid');
+            if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    },
+    {
+        title: '📡 Zusammen spielen: Multiplayer & Discord',
+        body: () => `
+            <div class="wizard-step-body">
+                <p>Spielst du in einer Gruppe? Über das <i class="fa-brands fa-discord"></i>- und <i class="fa-solid fa-satellite-dish"></i>-Icon oben in der Werkzeugleiste kannst du dich mit deinem Tisch verbinden:</p>
+                <p><i class="fa-solid fa-satellite-dish"></i> <b>Live-Sync (Multiplayer):</b> Gib den Raum-Code deines Spielleiters ein und dein Charakterbogen (HP, Würfe, Inventar) wird live mit dem GM-Dashboard synchronisiert, ganz ohne Account oder Server-Setup.</p>
+                <p><i class="fa-brands fa-discord"></i> <b>Discord Sync:</b> Trägst du hier optional die Webhook-URL eures Discord-Kanals ein, poppt jeder deiner Würfe automatisch dort im Chat auf, damit ihn auch alle im Call sehen.</p>
+                <div class="wizard-tip"><i class="fa-solid fa-circle-info"></i> Beides ist komplett optional. Du kannst den Bogen auch ganz ohne Verbindung offline nutzen.</div>
+            </div>
+        `,
+        onEnter: () => {
+            [document.getElementById('btn-discord-sync'), document.getElementById('btn-multiplayer-sync')].forEach(btn => {
+                if (!btn) return;
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                btn.classList.add('wizard-highlight-pulse');
+                setTimeout(() => btn.classList.remove('wizard-highlight-pulse'), 3000);
+            });
+        }
+    },
+    {
+        title: '🎉 Bereit fürs Abenteuer!',
+        body: () => `
+            <div class="wizard-step-body">
+                <p>Das war's schon mit den Grundlagen! Vergiss nicht, deinen Charakter regelmäßig über "Speichern (JSON)" zu sichern, damit nichts verloren geht.</p>
+                <p>Du kannst diesen Assistenten jederzeit über den <i class="fa-solid fa-hat-wizard"></i> "Assistent"-Button oben erneut öffnen.</p>
+            </div>
+        `
+    }
+];
+
+function openWizard() {
+    wizardStepIndex = 0;
+    const modal = document.getElementById('wizard-modal-overlay');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('active'), 10);
+    renderWizardStep();
+}
+
+function closeWizard(markSeen) {
+    if (markSeen) {
+        try { localStorage.setItem(WIZARD_SEEN_KEY, '1'); } catch (e) { /* localStorage evtl. blockiert */ }
+    }
+    const modal = document.getElementById('wizard-modal-overlay');
+    if (!modal) return;
+    modal.classList.remove('active');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+function renderWizardStep() {
+    const step = wizardSteps[wizardStepIndex];
+    if (!step) return;
+
+    const contentEl = document.getElementById('wizard-step-content');
+    contentEl.innerHTML = `<h3 class="wizard-step-title">${step.title}</h3>${step.body()}`;
+
+    const progressEl = document.getElementById('wizard-progress');
+    if (progressEl) {
+        progressEl.innerHTML = wizardSteps.map((_, i) => {
+            let cls = 'dot';
+            if (i === wizardStepIndex) cls += ' active';
+            else if (i < wizardStepIndex) cls += ' done';
+            return `<span class="${cls}"></span>`;
+        }).join('');
+    }
+
+    const prevBtn = document.getElementById('wizard-btn-prev');
+    const nextBtn = document.getElementById('wizard-btn-next');
+    const skipBtn = document.getElementById('wizard-btn-skip');
+    const isLast = wizardStepIndex === wizardSteps.length - 1;
+    if (prevBtn) prevBtn.style.visibility = wizardStepIndex === 0 ? 'hidden' : 'visible';
+    if (nextBtn) nextBtn.innerHTML = isLast ? '<i class="fa-solid fa-check"></i> Fertig' : 'Weiter <i class="fa-solid fa-arrow-right"></i>';
+    if (skipBtn) skipBtn.style.display = isLast ? 'none' : 'inline-flex';
+
+    if (typeof step.onEnter === 'function') {
+        setTimeout(step.onEnter, 50); // kurz warten, bis der Schritt-Inhalt im DOM ist
+    }
+}
+
+function wizardNext() {
+    if (wizardStepIndex >= wizardSteps.length - 1) {
+        closeWizard(true);
+        return;
+    }
+    wizardStepIndex++;
+    renderWizardStep();
+}
+
+function wizardPrev() {
+    if (wizardStepIndex <= 0) return;
+    wizardStepIndex--;
+    renderWizardStep();
+}
+
+function syncWizardMediaPreviews() {
+    const portraitPrev = document.getElementById('wizard-portrait-preview');
+    if (portraitPrev) portraitPrev.src = appData.portrait || 'assets/giphy.gif';
+
+    const logoPrev = document.getElementById('wizard-logo-preview');
+    if (logoPrev) {
+        const mainLogo = document.getElementById('main-theme-logo');
+        logoPrev.src = appData.customThemeLogo || (mainLogo && mainLogo.src ? mainLogo.src : 'assets/logo_default.jpg');
+    }
 }
 
 function renderWeapons() {
@@ -2350,6 +2530,7 @@ function handleThemeLogoUpload(event) {
                 appData.customThemeLogo = compressedDataUrl;
                 saveData();
                 applyTheme(appData.theme || 'default');
+                if (typeof syncWizardMediaPreviews === 'function') syncWizardMediaPreviews();
             }
             img.src = e.target.result;
         }
