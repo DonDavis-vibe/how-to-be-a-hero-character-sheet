@@ -117,7 +117,7 @@ function renderAll() {
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');
-        if(cName) cName.value = appData.currency.name || 'Credits';
+        if(cName) { cName.value = appData.currency.name || 'Credits'; autoSizeCurrencyName(cName); }
         if(cVal) cVal.value = appData.currency.amount || 0;
     }
 
@@ -337,7 +337,7 @@ function renderSkills(attr) {
         const delBtn = document.createElement('button');
         delBtn.className = 'btn-delete-icon';
         delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-        delBtn.style.marginLeft = '1rem';
+        delBtn.style.marginLeft = 'auto';
         delBtn.onclick = () => {
             if (confirm(`Möchtest du den Skill "${skill.name || 'Unbenannt'}" wirklich löschen?`)) {
                 appData[`skills_${attr}`].splice(index, 1);
@@ -347,13 +347,17 @@ function renderSkills(attr) {
             }
         };
 
+        const controlsRow = document.createElement('div');
+        controlsRow.className = 'skill-item-controls';
+        controlsRow.appendChild(minusBtn);
+        controlsRow.appendChild(valInput);
+        controlsRow.appendChild(plusBtn);
+        controlsRow.appendChild(bonusToggleBtn);
+        controlsRow.appendChild(totalSpan);
+        controlsRow.appendChild(delBtn);
+
         item.appendChild(nameInput);
-        item.appendChild(minusBtn);
-        item.appendChild(valInput);
-        item.appendChild(plusBtn);
-        item.appendChild(bonusToggleBtn);
-        item.appendChild(totalSpan);
-        item.appendChild(delBtn);
+        item.appendChild(controlsRow);
         listEl.appendChild(item);
     });
 }
@@ -1921,6 +1925,11 @@ function addCustomStatus() {
         saveData();
         renderStatuses();
     }
+}
+
+function autoSizeCurrencyName(el) {
+    if (!el) return;
+    el.size = Math.max(4, el.value.length + 1);
 }
 
 function updateCurrency() {
