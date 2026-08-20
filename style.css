@@ -1021,7 +1021,7 @@ h2 {
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    width: 100px;
+    min-width: 3ch;
     font-size: 0.9rem;
     outline: none;
 }

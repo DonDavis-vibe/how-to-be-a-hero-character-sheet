@@ -1991,7 +1991,18 @@ function addCustomStatus() {
 
 function autoSizeCurrencyName(el) {
     if (!el) return;
-    el.size = Math.max(4, el.value.length + 1);
+    // ch-Einheiten orientieren sich an der Breite der Ziffer "0" - bei fetter Proportionalschrift
+    // reicht das nicht, echte Buchstaben sind breiter. Deshalb wird die Textbreite exakt per
+    // Canvas gemessen (im aktuell auf dem Feld angewendeten Font) und als px-Breite gesetzt.
+    if (!autoSizeCurrencyName._ctx) {
+        autoSizeCurrencyName._ctx = document.createElement('canvas').getContext('2d');
+    }
+    const ctx = autoSizeCurrencyName._ctx;
+    const cs = getComputedStyle(el);
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const textWidth = ctx.measureText(el.value || ' ').width;
+    // +28px deckt das Eingabefeld-Padding (0.75rem links/rechts) plus etwas Cursor-Puffer ab
+    el.style.width = Math.max(40, Math.ceil(textWidth) + 28) + 'px';
 }
 
 function updateCurrency() {
