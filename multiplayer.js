@@ -1070,7 +1070,15 @@ function playAudioFile(soundId, overrideVolume = 0.6) {
         'campfire': 'assets/sounds/campfire.webm',
         'spooky': 'assets/sounds/spooky.webm',
         'elevator': 'assets/sounds/elevator.webm',
-        'medieval': 'assets/sounds/medieval.webm'
+        'medieval': 'assets/sounds/medieval.webm',
+        'door_creak': 'assets/sounds/door_creak.wav',
+        'thunder_hit': 'assets/sounds/thunder_hit.wav',
+        'glass_break': 'assets/sounds/glass_break.wav',
+        'alarm_breach': 'assets/sounds/alarm_breach.wav',
+        'sword_draw': 'assets/sounds/sword_draw.wav',
+        'horse_gallop': 'assets/sounds/horse_gallop.wav',
+        'prison_door': 'assets/sounds/prison_door.wav',
+        'whoosh_transition': 'assets/sounds/whoosh_transition.wav'
     };
 
     if (soundMap[soundId]) {
