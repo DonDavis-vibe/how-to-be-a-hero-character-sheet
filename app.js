@@ -1474,8 +1474,8 @@ function startWildWestFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
     if(!layer) return;
-    
-    fxInterval = setInterval(() => {
+
+    const spawnTumbleweed = () => {
         const tumbleweed = document.createElement('div');
         tumbleweed.style.position = 'absolute';
         const size = Math.random() * 40 + 30; // 30-70px
@@ -1487,16 +1487,78 @@ function startWildWestFx() {
         tumbleweed.style.left = '100vw'; // Start off-screen right
         tumbleweed.style.bottom = (Math.random() * 20 + 5) + 'vh'; // Roll along the bottom
         tumbleweed.style.opacity = '0.8';
-        
-        const duration = Math.random() * 5 + 4; // 4-9s rolling across
+
+        const duration = Math.random() * 4 + 3.5; // 3.5-7.5s rolling across, a bit livelier than before
         tumbleweed.style.animation = `tumbleweedRoll ${duration}s linear forwards`;
-        
+
         layer.appendChild(tumbleweed);
-        
+
         setTimeout(() => {
             if (tumbleweed.parentNode) tumbleweed.parentNode.removeChild(tumbleweed);
         }, duration * 1000);
-    }, 4500); // spawn every few seconds
+    };
+
+    const scheduleTumbleweed = () => {
+        spawnTumbleweed();
+        // Gelegentlich rollt gleich noch eins kurz hinterher nach
+        if (Math.random() < 0.3) {
+            setTimeout(spawnTumbleweed, Math.random() * 800 + 300);
+        }
+        fxInterval = setTimeout(scheduleTumbleweed, Math.random() * 2500 + 2500); // alle 2.5-5s statt starr alle 4.5s
+    };
+    scheduleTumbleweed();
+
+    // Treibender Wüstenstaub über die komplette Fläche, damit nicht nur der untere Rand lebt
+    const spawnDust = () => {
+        const dust = document.createElement('div');
+        dust.style.position = 'absolute';
+        const size = Math.random() * 60 + 40; // 40-100px
+        dust.style.width = size + 'px';
+        dust.style.height = (size * 0.4) + 'px';
+        dust.style.borderRadius = '50%';
+        dust.style.background = 'radial-gradient(ellipse, rgba(194, 154, 108, 0.35) 0%, transparent 75%)';
+        dust.style.left = Math.random() * 100 + 'vw';
+        dust.style.top = Math.random() * 100 + 'vh';
+        dust.style.filter = 'blur(4px)';
+
+        const duration = Math.random() * 6 + 8; // 8-14s
+        dust.style.animation = `dustDrift ${duration}s ease-in-out forwards`;
+
+        layer.appendChild(dust);
+
+        setTimeout(() => {
+            if (dust.parentNode) dust.parentNode.removeChild(dust);
+        }, duration * 1000);
+    };
+    fxInterval2 = setInterval(spawnDust, 850);
+
+    // Seltener dramatischer Höhepunkt: ein Bussard zieht oben durchs Bild
+    const spawnBuzzard = () => {
+        const buzzard = document.createElement('div');
+        buzzard.style.position = 'absolute';
+        buzzard.style.width = '80px';
+        buzzard.style.height = '32px';
+        buzzard.style.background = `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg"><path d="M0,20 Q15,0 30,15 Q40,20 50,10 Q60,20 70,15 Q85,0 100,20 Q85,25 70,20 Q60,15 50,22 Q40,15 30,20 Q15,25 0,20 Z" fill="%23231208"/></svg>') center/contain no-repeat`;
+        buzzard.style.left = '100vw';
+        buzzard.style.top = Math.random() * 30 + 5 + 'vh';
+        buzzard.style.opacity = '0';
+
+        const duration = Math.random() * 6 + 14; // 14-20s, langsam gleitend
+        buzzard.style.animation = `buzzardFly ${duration}s linear forwards`;
+
+        layer.appendChild(buzzard);
+
+        setTimeout(() => {
+            if (buzzard.parentNode) buzzard.parentNode.removeChild(buzzard);
+        }, duration * 1000);
+    };
+    const scheduleBuzzard = () => {
+        fxInterval3 = setTimeout(() => {
+            spawnBuzzard();
+            scheduleBuzzard();
+        }, Math.random() * 10000 + 25000); // alle 25-35s
+    };
+    scheduleBuzzard();
 }
 
 function startPiratesFx() {
