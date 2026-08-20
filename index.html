@@ -56,17 +56,6 @@
 </div>
             </div>
             
-            <!-- Currency moved to Toolbar for compact layout -->
-            <div class="currency-badge" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(251,191,36,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; color: #fbbf24; font-weight: bold; font-size: 0.9rem;">
-                <i class="fa-solid fa-coins"></i>
-                <input type="text" id="currency-name" class="currency-name" value="Credits" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; outline: none; border-bottom: 1px dashed rgba(251,191,36,0.5); font-size: inherit;">
-                <div style="display: flex; align-items: center; gap: 5px;">
-    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) - 1; updateCurrency();" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">-</button>
-    <input type="number" id="currency-val" class="currency-val" value="0" onchange="updateCurrency()" style="text-align: right; background: transparent; border: none; color: white; font-weight: bold; outline: none; font-size: inherit; width: 50px;">
-    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) + 1; updateCurrency();" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">+</button>
-</div>
-            </div>
-
             <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
             <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
             <button class="tool-btn" onclick="openWizard()" title="Charakter-Erstellungs-Assistent"><i class="fa-solid fa-hat-wizard"></i> Assistent</button>
@@ -262,7 +251,18 @@
             </div>
             <!-- Inventory Section -->
             <div class="inventory-section">
-                <h2 class="cat-title"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon"> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+                    <h2 class="cat-title" style="margin: 0;"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon"> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
+                    <div class="currency-badge" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(251,191,36,0.3); padding: 0.3rem 0.8rem; border-radius: 20px; color: #fbbf24; font-weight: bold; font-size: 0.9rem;">
+                        <i class="fa-solid fa-coins"></i>
+                        <input type="text" id="currency-name" class="currency-name" value="Credits" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; outline: none; border-bottom: 1px dashed rgba(251,191,36,0.5); font-size: inherit; width: 70px;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) - 1; updateCurrency();" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">-</button>
+    <input type="number" id="currency-val" class="currency-val" value="0" onchange="updateCurrency()" style="text-align: right; background: transparent; border: none; color: white; font-weight: bold; outline: none; font-size: inherit; width: 50px;">
+    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) + 1; updateCurrency();" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">+</button>
+</div>
+                    </div>
+                </div>
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
