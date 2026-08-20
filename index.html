@@ -69,6 +69,7 @@
 
             <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
             <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
+            <button class="tool-btn" onclick="openWizard()" title="Charakter-Erstellungs-Assistent"><i class="fa-solid fa-hat-wizard"></i> Assistent</button>
             <button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Speichern (JSON)</button>
             <label class="tool-btn">
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
@@ -80,10 +81,10 @@
             <button id="toggle-fx-btn" class="tool-btn" onclick="toggleFx()" title="Hintergrund-Effekte an/aus" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; margin-right: 0.5rem; cursor: pointer;">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
             </button>
-            <button class="tool-btn" onclick="openDiscordModal()" title="Discord Webhook Sync" style="background: rgba(88, 101, 242, 0.2); border: 1px solid #5865F2; color: white; cursor: pointer;">
+            <button id="btn-discord-sync" class="tool-btn" onclick="openDiscordModal()" title="Discord Webhook Sync" style="background: rgba(88, 101, 242, 0.2); border: 1px solid #5865F2; color: white; cursor: pointer;">
                 <i class="fa-brands fa-discord"></i>
             </button>
-            <button class="tool-btn" onclick="openMultiplayerModal()" title="Live-Sync (Multiplayer)" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: white; cursor: pointer;">
+            <button id="btn-multiplayer-sync" class="tool-btn" onclick="openMultiplayerModal()" title="Live-Sync (Multiplayer)" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: white; cursor: pointer;">
                 <i class="fa-solid fa-satellite-dish"></i>
             </button>
             
@@ -463,6 +464,20 @@
         <div class="help-modal-box" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeHelp()"><i class="fa-solid fa-xmark"></i></button>
             <div id="help-modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Character Creation Wizard -->
+    <div id="wizard-modal-overlay" class="help-modal-overlay" onclick="closeWizard(true)">
+        <div class="help-modal-box wizard-modal-box" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeWizard(true)"><i class="fa-solid fa-xmark"></i></button>
+            <div class="wizard-progress" id="wizard-progress"></div>
+            <div id="wizard-step-content"></div>
+            <div class="wizard-nav">
+                <button class="tool-btn" id="wizard-btn-prev" onclick="wizardPrev()"><i class="fa-solid fa-arrow-left"></i> Zurück</button>
+                <button class="tool-btn" id="wizard-btn-skip" onclick="closeWizard(true)">Überspringen</button>
+                <button class="tool-btn wizard-btn-primary" id="wizard-btn-next" onclick="wizardNext()">Weiter <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
         </div>
     </div>
 
