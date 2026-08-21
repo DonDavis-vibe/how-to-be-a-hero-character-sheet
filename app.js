@@ -2071,18 +2071,37 @@ const wizardSteps = [
         title: '🧑‍🎤 Wer ist dein Charakter?',
         body: () => `
             <div class="wizard-step-body">
-                <p>Oben links im Bogen füllst du die Basics deines Charakters aus: Vorname, Name, Geschlecht, Beruf, Alter und Statur. Das sind reine Rollenspiel-Angaben, sie fließen in keine Berechnung ein, hier ist also Kreativität gefragt!</p>
-                <div class="wizard-tip"><i class="fa-solid fa-lightbulb"></i> Für den Einstieg eignen sich vor allem Stereotype wie ein typischer Haudrauf, Forscher oder "Kumpel von nebenan".</div>
+                <p>Das sind reine Rollenspiel-Angaben, sie fließen in keine Berechnung ein, hier ist also Kreativität gefragt! Trag sie gleich hier ein, sie landen automatisch oben auf deinem Bogen.</p>
+                <div class="wizard-tip"><i class="fa-solid fa-lightbulb"></i> Für den Einstieg eignen sich vor allem Stereotype wie ein typischer Haudrauf, Forscher oder "Kumpel von nebenan". Überleg dir auch eine Eigenart, eine Stimmlage oder was dein Charakter gerne trägt.</div>
+                <div class="wizard-bio-form">
+                    <div class="wizard-field">
+                        <label for="wizard-vorname">Vorname</label>
+                        <input type="text" id="wizard-vorname" oninput="syncBioField('vorname', this.value)" placeholder="z.B. Angus">
+                    </div>
+                    <div class="wizard-field">
+                        <label for="wizard-name">Name</label>
+                        <input type="text" id="wizard-name" oninput="syncBioField('name', this.value)" placeholder="z.B. MacGyver">
+                    </div>
+                    <div class="wizard-field">
+                        <label for="wizard-geschlecht">Geschlecht</label>
+                        <input type="text" id="wizard-geschlecht" oninput="syncBioField('geschlecht', this.value)" placeholder="z.B. männlich, weiblich, divers">
+                    </div>
+                    <div class="wizard-field">
+                        <label for="wizard-beruf">Beruf</label>
+                        <input type="text" id="wizard-beruf" oninput="syncBioField('beruf', this.value)" placeholder="Was macht dein Charakter?">
+                    </div>
+                    <div class="wizard-field">
+                        <label for="wizard-alter">Alter</label>
+                        <input type="text" id="wizard-alter" oninput="syncBioField('alter', this.value)" placeholder="z.B. 34">
+                    </div>
+                    <div class="wizard-field">
+                        <label for="wizard-statur">Statur</label>
+                        <input type="text" id="wizard-statur" oninput="syncBioField('statur', this.value)" placeholder="z.B. drahtig, kräftig, zierlich">
+                    </div>
+                </div>
             </div>
         `,
-        onEnter: () => {
-            const header = document.querySelector('.character-header');
-            if (header) {
-                header.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                header.classList.add('wizard-highlight-pulse');
-                setTimeout(() => header.classList.remove('wizard-highlight-pulse'), 3000);
-            }
-        }
+        onEnter: () => syncWizardBioFields()
     },
     {
         title: '🖼️ Portrait & Fraktions-Logo',
@@ -2114,6 +2133,11 @@ const wizardSteps = [
         body: () => `
             <div class="wizard-step-body">
                 <p>Jeder Charakter hat drei Begabungen: <b>Handeln</b> (körperlich/feinmotorisch), <b>Wissen</b> (analytisch/faktenbasiert) und <b>Soziales</b> (Interaktion mit anderen). Bei jeder Kategorie legst du über "+ Skill" konkrete Fähigkeiten an (z.B. "Klettern" unter Handeln) und verteilst Punkte darauf.</p>
+                <div class="wizard-skill-examples">
+                    <div class="wizard-skill-cat"><strong>💪 Handeln</strong>z.B. Klettern, Reiten, Tischlern, Sprinten, Schießen, Akrobatik</div>
+                    <div class="wizard-skill-cat"><strong>🧠 Wissen</strong>z.B. Latein, Kräuterkunde, Maschinenbau, Geschichte, Erste Hilfe</div>
+                    <div class="wizard-skill-cat"><strong>🗣️ Soziales</strong>z.B. Lügen, Bedrohen, Menschenkenntnis, Überreden, Stände &amp; Sippen</div>
+                </div>
                 <p>Der Begabungswert und deine Geistesblitzpunkte werden automatisch aus der Summe deiner Skillpunkte berechnet, du musst nichts selbst ausrechnen.</p>
                 <div class="wizard-tip"><i class="fa-solid fa-circle-exclamation"></i> Insgesamt stehen dir <b>${appData.maxPoints || 400} Punkte</b> zur Verfügung. Aktuell verteilt: <span class="wizard-live-points" id="wizard-live-points">0</span> / ${appData.maxPoints || 400}. Ein einzelner Fähigkeitswert darf laut Regelwerk nie über 100 liegen, das Tool markiert das automatisch rot, falls es passiert.</div>
             </div>
@@ -2231,6 +2255,24 @@ function syncWizardMediaPreviews() {
         const mainLogo = document.getElementById('main-theme-logo');
         logoPrev.src = appData.customThemeLogo || (mainLogo && mainLogo.src ? mainLogo.src : 'assets/logo_default.jpg');
     }
+}
+
+const WIZARD_BIO_FIELDS = ['vorname', 'name', 'geschlecht', 'beruf', 'alter', 'statur'];
+
+// Schreibt eine Bio-Eingabe aus dem Wizard direkt in appData und hält das echte
+// Feld auf dem Bogen dahinter synchron, damit beide Stellen immer denselben Stand zeigen.
+function syncBioField(field, value) {
+    appData[field] = value;
+    const sheetInput = document.getElementById(field);
+    if (sheetInput && sheetInput.value !== value) sheetInput.value = value;
+    saveData();
+}
+
+function syncWizardBioFields() {
+    WIZARD_BIO_FIELDS.forEach(field => {
+        const el = document.getElementById('wizard-' + field);
+        if (el) el.value = appData[field] || '';
+    });
 }
 
 function renderWeapons() {
