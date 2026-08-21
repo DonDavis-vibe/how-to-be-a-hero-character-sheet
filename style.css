@@ -951,6 +951,55 @@ h2 {
     animation: wizardPulse 1.4s ease-out 2;
     border-radius: 12px;
 }
+.wizard-bio-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+    margin-top: 1rem;
+}
+.wizard-field label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.wizard-field input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+    color: var(--text-primary, white);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.wizard-field input:focus {
+    border-color: var(--color-accent, #8b5cf6);
+}
+.wizard-skill-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+}
+.wizard-skill-cat {
+    flex: 1 1 150px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+.wizard-skill-cat strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.88rem;
+}
 @keyframes wizardPulse {
     0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6); }
     70% { box-shadow: 0 0 0 14px rgba(139, 92, 246, 0); }
