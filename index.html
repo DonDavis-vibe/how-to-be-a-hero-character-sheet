@@ -6,24 +6,59 @@
     
     <!-- SEO Meta Tags -->
     <title>How to be a Hero - Interaktiver Charakterbogen & GM-Tool</title>
-    <meta name="description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper \'How to be a Hero\' (RBTV). Bietet Live-Multiplayer, integriertes Soundboard und 1-Klick-Würfeln.">
+    <meta name="description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV). Bietet Live-Multiplayer, integriertes Soundboard und 1-Klick-Würfeln.">
     <meta name="keywords" content="Pen & Paper, PnP, RBTV, Rocket Beans TV, How to be a Hero, Charakterbogen, Generator, Vorlage, Online Tool, VTT, Spielleiter, GM Dashboard, Multiplayer, Soundboard">
     <meta name="author" content="DonDavis">
+    <meta name="theme-color" content="#8b5cf6">
     <link rel="canonical" href="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
-    
+
     <!-- Open Graph / Facebook / Discord -->
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="de_DE">
+    <meta property="og:site_name" content="How to be a Hero - Charakterbogen">
     <meta property="og:url" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
     <meta property="og:title" content="How to be a Hero - Interaktiver Charakterbogen & GM-Tool">
-    <meta property="og:description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper \'How to be a Hero\' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
+    <meta property="og:description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
     <meta property="og:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/preview.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
     <meta property="twitter:title" content="How to be a Hero - Interaktiver Charakterbogen & GM-Tool">
-    <meta property="twitter:description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper \'How to be a Hero\' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
+    <meta property="twitter:description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
     <meta property="twitter:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/preview.png">
+
+    <!-- Structured Data für Google (Rich Results) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "How to be a Hero - Interaktiver Charakterbogen & GM-Tool",
+        "url": "https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/",
+        "description": "Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV) mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any (Web-based)",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "inLanguage": "de",
+        "author": {
+            "@type": "Person",
+            "name": "DonDavis"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "featureList": [
+            "Automatische Charakterberechnung nach How to be a Hero Regelwerk",
+            "1-Klick Würfeln für Proben und Initiative",
+            "Live-Multiplayer via WebRTC ohne Server oder Account",
+            "GM-Dashboard mit Soundboard und Live-Logbuch",
+            "13 wechselbare visuelle Themes"
+        ]
+    }
+    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -173,7 +208,7 @@
                 <!-- Handeln -->
                 <div class="attribute-card" style="--accent: var(--color-action);">
                     <div class="attr-header" style="align-items: flex-start;">
-                        <h2 class="cat-title" style="display: flex; align-items: center; margin: 0;"><img id="icon-handeln" src="assets/icon_handeln.jpg" class="category-icon"> Handeln <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('skills')" title="Hilfe zu Würfeln"></i></h2>
+                        <h2 class="cat-title" style="display: flex; align-items: center; margin: 0;"><img id="icon-handeln" src="assets/icon_handeln.jpg" class="category-icon" alt=""> Handeln <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('skills')" title="Hilfe zu Würfeln"></i></h2>
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly onclick="rollSkillCheck('Basiswert: Handeln', parseInt(this.value), true, 'handeln')" title="Auf Basiswert Handeln würfeln">
                             <button class="tool-btn" onclick="rollInitiative()" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;" title="1W10 + Handeln"><i class="fa-solid fa-bolt"></i> Initiative</button>
@@ -201,7 +236,7 @@
                 <!-- Wissen -->
                 <div class="attribute-card" style="--accent: var(--color-knowledge);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img id="icon-wissen" src="assets/icon_wissen.jpg" class="category-icon"> Wissen</h2>
+                        <h2 class="cat-title"><img id="icon-wissen" src="assets/icon_wissen.jpg" class="category-icon" alt=""> Wissen</h2>
                         <input type="number" id="attr-wissen" class="attr-val" value="16" data-field="attr_wissen" readonly onclick="rollSkillCheck('Basiswert: Wissen', parseInt(this.value), true, 'wissen')" title="Auf Basiswert Wissen würfeln">
                     </div>
                     <div class="attr-gbp">
@@ -226,7 +261,7 @@
                 <!-- Soziales -->
                 <div class="attribute-card" style="--accent: var(--color-social);">
                     <div class="attr-header">
-                        <h2 class="cat-title"><img id="icon-soziales" src="assets/icon_soziales.jpg" class="category-icon"> Soziales</h2>
+                        <h2 class="cat-title"><img id="icon-soziales" src="assets/icon_soziales.jpg" class="category-icon" alt=""> Soziales</h2>
                         <input type="number" id="attr-soziales" class="attr-val" value="8" data-field="attr_soziales" readonly onclick="rollSkillCheck('Basiswert: Soziales', parseInt(this.value), true, 'soziales')" title="Auf Basiswert Soziales würfeln">
                     </div>
                     <div class="attr-gbp">
@@ -252,7 +287,7 @@
             <!-- Inventory Section -->
             <div class="inventory-section">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
-                    <h2 class="cat-title" style="margin: 0;"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon"> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
+                    <h2 class="cat-title" style="margin: 0;"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon" alt=""> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                     <div class="currency-badge" style="display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; background: rgba(10,10,15,0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(251,191,36,0.45); padding: 0.45rem 1rem; border-radius: 20px; color: #fbbf24; font-weight: bold; font-size: 1.05rem; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">
                         <i class="fa-solid fa-coins"></i>
                         <input type="text" id="currency-name" class="currency-name" value="Credits" oninput="autoSizeCurrencyName(this)" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; text-shadow: inherit; outline: none; border-bottom: 1px dashed rgba(251,191,36,0.7); font-size: inherit; width: 90px; flex-shrink: 0;">
@@ -282,7 +317,7 @@
 
             <!-- Weapons Section -->
             <div class="weapons-section" style="margin-top: 2rem;">
-                <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" style="filter: hue-rotate(150deg);"> Waffen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
+                <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" alt="" style="filter: hue-rotate(150deg);"> Waffen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                 <div class="weapons-list" id="weapons-list">
                     <!-- Populated by JS -->
                 </div>
@@ -301,7 +336,7 @@
         <!-- Notes Section (Movable) -->
         <div class="notes-section glass-panel" id="notes-panel">
             <div class="notes-header" onclick="toggleNotes()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                <h2 class="cat-title" style="margin: 0;"><img id="icon-notizen" src="assets/icon_notizen.jpg" class="category-icon"> Notizen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('logs')" title="Hilfe zum Logbuch Drag & Drop"></i></h2>
+                <h2 class="cat-title" style="margin: 0;"><img id="icon-notizen" src="assets/icon_notizen.jpg" class="category-icon" alt=""> Notizen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('logs')" title="Hilfe zum Logbuch Drag & Drop"></i></h2>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <button class="tool-btn" onclick="event.stopPropagation(); toggleLayout()" title="Notizen anheften (Links / Unten)" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fa-solid fa-table-columns"></i> <span style="font-size: 0.8rem;">Layout</span>
@@ -319,7 +354,7 @@
             
             <!-- Lebenspunkte (HP) -->
             <div class="hp-tracker glass-panel">
-                <h2 class="cat-title"><img id="icon-hp" src="assets/icon_hp.jpg" class="category-icon"> Lebenspunkte</h2>
+                <h2 class="cat-title"><img id="icon-hp" src="assets/icon_hp.jpg" class="category-icon" alt=""> Lebenspunkte</h2>
                 <div class="hp-display">
                     <input type="number" id="hp-current" value="100" onchange="updateHp()">
                     <span class="hp-divider">/</span>
