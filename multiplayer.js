@@ -1160,7 +1160,12 @@ function playAudioFile(soundId, overrideVolume = 0.6) {
         'sword_draw': 'assets/sounds/sword_draw.wav',
         'horse_gallop': 'assets/sounds/horse_gallop.wav',
         'prison_door': 'assets/sounds/prison_door.wav',
-        'whoosh_transition': 'assets/sounds/whoosh_transition.wav'
+        'whoosh_transition': 'assets/sounds/whoosh_transition.wav',
+        'music_mystery': 'assets/sounds/music_mystery.mp3',
+        'music_exploration': 'assets/sounds/music_exploration.mp3',
+        'music_horror': 'assets/sounds/music_horror.mp3',
+        'music_western': 'assets/sounds/music_western.mp3',
+        'music_triumph': 'assets/sounds/music_triumph.mp3'
     };
 
     if (soundMap[soundId]) {
