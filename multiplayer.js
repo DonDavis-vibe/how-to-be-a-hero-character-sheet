@@ -5,23 +5,84 @@ let isGmMode = false;
 let connectedPlayersData = {};
 
 let peerJsLoaded = false;
+let peerJsLoading = false;
+let peerJsLoadCallbacks = [];
 let joinTimeout = null;
 let hostReconnectAttempts = 0;
 let hostReconnectPending = false;
 let roomOnline = false;
 
+// Lädt PeerJS bei Bedarf nach (Modal öffnen ODER Reload-Wiederherstellung) und
+// ruft callback erst auf, wenn Peer wirklich verfügbar ist. Mehrfachaufrufe
+// während des Ladens sammeln sich in einer Warteschlange statt das Script
+// mehrfach einzubinden.
+function ensurePeerJsLoaded(callback) {
+    if (peerJsLoaded && typeof Peer !== 'undefined') {
+        callback();
+        return;
+    }
+    peerJsLoadCallbacks.push(callback);
+    if (peerJsLoading) return;
+    peerJsLoading = true;
+    const script = document.createElement('script');
+    script.src = "https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js";
+    script.onload = () => {
+        peerJsLoaded = true;
+        peerJsLoading = false;
+        const callbacks = peerJsLoadCallbacks;
+        peerJsLoadCallbacks = [];
+        callbacks.forEach(cb => cb());
+    };
+    script.onerror = () => {
+        peerJsLoading = false;
+        console.error('PeerJS konnte nicht geladen werden.');
+    };
+    document.head.appendChild(script);
+}
+
+// --- Reload-Schutz: Rolle + Raum-Code überleben einen Reload (sessionStorage,
+// nicht localStorage - eine versehentlich vor Tagen offen gelassene Session
+// soll nicht in einer neuen Runde wieder auftauchen, ein Reload MITTEN in der
+// laufenden Session aber schon). SL und Spieler versuchen beim nächsten Laden
+// automatisch, denselben Raum wieder zu erreichen. ---
+const MULTIPLAYER_SESSION_KEY = 'htbah_multiplayer_session';
+
+function saveMultiplayerSession(role, code) {
+    try { sessionStorage.setItem(MULTIPLAYER_SESSION_KEY, JSON.stringify({ role, roomCode: code })); } catch (e) { /* sessionStorage evtl. blockiert */ }
+}
+function clearMultiplayerSession() {
+    try { sessionStorage.removeItem(MULTIPLAYER_SESSION_KEY); } catch (e) { /* sessionStorage evtl. blockiert */ }
+}
+function loadMultiplayerSession() {
+    try { return JSON.parse(sessionStorage.getItem(MULTIPLAYER_SESSION_KEY) || 'null'); } catch (e) { return null; }
+}
+
+let multiplayerAutoRestoreAttempted = false;
+
+function tryRestoreMultiplayerSession() {
+    if (multiplayerAutoRestoreAttempted) return;
+    multiplayerAutoRestoreAttempted = true;
+
+    const stored = loadMultiplayerSession();
+    if (!stored || !stored.roomCode) return;
+
+    if (stored.role === 'gm') {
+        updateMultiplayerStatus("Stelle vorherige Sitzung wieder her...", "#fbbf24");
+        ensurePeerJsLoaded(() => hostMultiplayerSession(stored.roomCode));
+    } else if (stored.role === 'player') {
+        updateMultiplayerStatus("Stelle vorherige Sitzung wieder her...", "#fbbf24");
+        ensurePeerJsLoaded(() => joinMultiplayerSession(stored.roomCode));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', tryRestoreMultiplayerSession);
+
 function openMultiplayerModal() {
     if (!peerJsLoaded) {
         updateMultiplayerStatus("Lade Multiplayer-Komponenten...", "#fbbf24");
-        const script = document.createElement('script');
-        script.src = "https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js";
-        script.onload = () => {
-            peerJsLoaded = true;
-            updateMultiplayerStatus("");
-        };
-        document.head.appendChild(script);
+        ensurePeerJsLoaded(() => updateMultiplayerStatus(""));
     }
-    
+
     const modal = document.getElementById('multiplayer-modal-overlay');
     modal.style.display = 'flex';
     setTimeout(() => { modal.classList.add('active'); }, 10);
@@ -139,16 +200,22 @@ function generateRoomCode() {
 }
 
 // --- GM MODE (HOST) ---
-function hostMultiplayerSession() {
+// preferredCodeArg: beim Reload-Schutz wird hier der alte Raum-Code übergeben,
+// damit versucht wird, dieselbe Peer-ID zurückzuerobern und Spieler automatisch
+// wieder andocken können. Defensive Prüfung, falls die Funktion (z.B. als
+// onclick-Handler) direkt mit einem Event-Objekt aufgerufen wird.
+function hostMultiplayerSession(preferredCodeArg) {
+    const preferredCode = typeof preferredCodeArg === 'string' ? preferredCodeArg : undefined;
+
     if (peer) peer.destroy();
 
     hostReconnectAttempts = 0;
     hostReconnectPending = false;
     roomOnline = false;
-    updateMultiplayerStatus("Erstelle Raum...", "#fbbf24");
-    const roomCode = generateRoomCode();
+    updateMultiplayerStatus(preferredCode ? "Stelle vorherige Sitzung wieder her..." : "Erstelle Raum...", "#fbbf24");
+    const roomCode = preferredCode || generateRoomCode();
     const peerId = 'htbah-' + roomCode;
-    
+
     peer = new Peer(peerId, getPeerConfig());
 
     // Achtung: PeerJS feuert 'open' auch nach einem erfolgreichen Reconnect erneut.
@@ -163,6 +230,7 @@ function hostMultiplayerSession() {
         }
         hostReconnectAttempts = 0;
         setRoomStatus(true);
+        saveMultiplayerSession('gm', roomCode);
     });
 
     // Der Signalling-Server trennt inaktive Peers (Tab im Hintergrund, Standby,
@@ -196,7 +264,13 @@ function hostMultiplayerSession() {
     
     peer.on('error', (err) => {
         if (err.type === 'unavailable-id') {
-            updateMultiplayerStatus("Raum-Code bereits vergeben. Bitte erneut hosten.", "#ed4245");
+            clearMultiplayerSession();
+            updateMultiplayerStatus(
+                preferredCode
+                    ? "Alter Raum-Code ist noch nicht wieder freigegeben. Kurz warten und erneut hosten."
+                    : "Raum-Code bereits vergeben. Bitte erneut hosten.",
+                "#ed4245"
+            );
         } else {
             updateMultiplayerStatus("Fehler: " + err.type, "#ed4245");
         }
@@ -295,7 +369,8 @@ function exitGmMode() {
     isGmMode = false;
     clientConnections = {};
     connectedPlayersData = {};
-    
+    clearMultiplayerSession();
+
     document.getElementById('gm-dashboard').style.display = 'none';
     document.querySelector('.app-container').style.display = 'grid';
 }
@@ -726,17 +801,20 @@ function rollGmCustomDice(diceStr) {
 }
 
 // --- PLAYER MODE (CLIENT) ---
-function joinMultiplayerSession() {
-    const code = document.getElementById('multiplayer-join-code').value.trim().toUpperCase();
+// codeArg: beim Reload-Schutz wird hier der alte Raum-Code übergeben, statt
+// ihn aus dem (evtl. noch gar nicht sichtbaren) Eingabefeld zu lesen.
+function joinMultiplayerSession(codeArg) {
+    const rawCode = typeof codeArg === 'string' ? codeArg : document.getElementById('multiplayer-join-code').value;
+    const code = rawCode.trim().toUpperCase();
     if (!code || code.length !== 4) {
         updateMultiplayerStatus("Bitte 4-stelligen Code eingeben.", "#ed4245");
         return;
     }
-    
-    updateMultiplayerStatus("Verbinde...", "#fbbf24");
-    
+
+    updateMultiplayerStatus(typeof codeArg === 'string' ? "Stelle vorherige Sitzung wieder her..." : "Verbinde...", "#fbbf24");
+
     if (peer) peer.destroy();
-    
+
     peer = new Peer(getPeerConfig()); // Random ID for client
 
     peer.on('open', () => {
@@ -755,6 +833,7 @@ function joinMultiplayerSession() {
             clearTimeout(joinTimeout);
             updateMultiplayerStatus('<i class="fa-solid fa-check"></i> Verbunden!', "#57F287");
             setTimeout(closeMultiplayerModal, 1000);
+            saveMultiplayerSession('player', code);
 
             // Send initial state
             sendMultiplayerState();
@@ -762,6 +841,7 @@ function joinMultiplayerSession() {
 
         hostConnection.on('close', () => {
             hostConnection = null;
+            clearMultiplayerSession();
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
@@ -796,6 +876,7 @@ function joinMultiplayerSession() {
         clearTimeout(joinTimeout);
         console.error(err);
         if (err.type === 'peer-unavailable') {
+            clearMultiplayerSession();
             const safeCode = code.replace(/[<>&"]/g, '');
             updateMultiplayerStatus(
                 "Raum <strong>" + safeCode + "</strong> nicht gefunden.<br>" +
@@ -812,6 +893,7 @@ function joinMultiplayerSession() {
 
 // Nach dem Timeout auswerten, WORAN es lag - die ICE-Kandidaten verraten das.
 async function diagnoseFailedConnection(conn) {
+    clearMultiplayerSession();
     const pc = conn && conn.peerConnection;
     let localTypes = [];
     let remoteCount = 0;
