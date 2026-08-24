@@ -955,24 +955,90 @@ function saveDiscordSettings() {
     }
 }
 
+// Discords harte Grenzen. Wird eine überschritten, lehnt der Webhook die
+// gesamte Nachricht mit HTTP 400 ab — also lieber vorher kürzen.
+const DISCORD_MAX_CONTENT = 2000;
+const DISCORD_MAX_USERNAME = 80;
+let discordFehlerGemeldet = false;
+
+// allowed_mentions verhindert nur den Ping — Discord malt "@everyone" trotzdem
+// blau hervorgehoben in den Chat. Auf einem grossen Server sieht es dann so aus,
+// als haette die Spielrunde gerade alle angeschrien. Ein unsichtbares Zeichen
+// hinter dem @ macht daraus wieder ganz normalen Text: gleiche Optik wie im
+// Logbuch, aber keine Erwaehnung mehr.
+const UNSICHTBAR = '\u200b';
+
+function entschaerfeErwaehnungen(text) {
+    return text
+        // @everyone und @here pingen den ganzen Server.
+        .replace(/@(everyone|here)/gi, '@' + UNSICHTBAR + '$1')
+        // <@123>, <@!123> und <@&123> sind einzelne Leute bzw. ganze Rollen.
+        .replace(/<@([!&]?\d+)>/g, '<@' + UNSICHTBAR + '$1>');
+}
+
 function sendToDiscord(message, emoji = "🎲") {
     if (!appData.discordSyncEnabled || !appData.discordWebhookUrl) return;
-    
+
     const charName = appData.name || "Unbekannter Charakter";
-    
+
     // Strip HTML
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = message;
     const cleanMessage = tempDiv.textContent || tempDiv.innerText || "";
-    
+
+    // Discord weist Absendernamen ab, die "discord" oder "clyde" enthalten,
+    // und erkennt auch Umschreibungen wie "Disc0rd". Solche Namen wandern in
+    // den Nachrichtentext, damit der Wurf trotzdem ankommt und man sieht,
+    // von wem er stammt.
+    const nameGesperrt = /discord|clyde/i.test(charName);
+    const text = nameGesperrt
+        ? `**${charName}:** ${emoji} ${cleanMessage}`
+        : `${emoji} ${cleanMessage}`;
+
+    const payload = {
+        content: entschaerfeErwaehnungen(text).slice(0, DISCORD_MAX_CONTENT),
+        // Zweite Sicherung: Sollte die Entschaerfung oben je eine neue
+        // Discord-Syntax verpassen, faellt der Ping hier trotzdem weg.
+        allowed_mentions: { parse: [] }
+    };
+    if (!nameGesperrt) payload.username = charName.slice(0, DISCORD_MAX_USERNAME);
+
     fetch(appData.discordWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: charName,
-            content: `${emoji} ${cleanMessage}`
-        })
-    }).catch(err => console.error("Discord Sync Error:", err));
+        body: JSON.stringify(payload)
+    }).then(res => {
+        if (res.ok) discordFehlerGemeldet = false;
+        else meldeDiscordFehler(res.status);
+    }).catch(err => {
+        console.error("Discord Sync Error:", err);
+        meldeDiscordFehler(0);
+    });
+}
+
+// Ein stiller Sync-Ausfall ist schlimmer als gar keiner: ohne Hinweis würfelt
+// die Gruppe weiter, während im Kanal seit einer Stunde nichts mehr ankommt.
+// Die Meldung erscheint nur einmal und erst wieder nach einem geglückten Wurf.
+function meldeDiscordFehler(status) {
+    if (discordFehlerGemeldet) return;
+    discordFehlerGemeldet = true;
+
+    let grund;
+    if (status === 401 || status === 404) grund = "Webhook ungültig oder gelöscht";
+    else if (status === 400) grund = "Nachricht von Discord abgelehnt";
+    else if (status === 429) grund = "zu viele Würfe in kurzer Zeit";
+    else grund = "Discord nicht erreichbar";
+
+    // Direkt in den Log schreiben — addActivityLog würde erneut senden wollen.
+    if (!appData.activityLog) appData.activityLog = [];
+    appData.activityLog.unshift({
+        time: new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'}),
+        cssClass: 'activity-bad',
+        iconHtml: '<i class="fa-brands fa-discord"></i>',
+        message: `Discord Sync gestört: ${grund}`
+    });
+    saveData();
+    renderActivityLog();
 }
 
 function renderActivityLog() {
@@ -1063,9 +1129,20 @@ function handlePortraitUpload(event) {
 }
 
 // --- Import / Export ---
+
+// Die Webhook-URL ist praktisch das Passwort zum Discord-Kanal: Wer sie hat,
+// kann dort posten. Sie gehört deshalb weder in die Charakter-Datei, die man
+// in der Gruppe herumreicht, noch in den Multiplayer-Stream zum Spielleiter.
+// Sie bleibt nur im Browser desjenigen, der sie eingetragen hat.
+function charakterZumTeilen() {
+    const kopie = Object.assign({}, appData);
+    delete kopie.discordWebhookUrl;
+    return kopie;
+}
+
 function exportData() {
     isDirty = false;
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(charakterZumTeilen(), null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     

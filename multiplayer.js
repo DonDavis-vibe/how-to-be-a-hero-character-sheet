@@ -953,8 +953,10 @@ async function diagnoseFailedConnection(conn) {
 function sendMultiplayerState() {
     if (!hostConnection || !hostConnection.open) return;
     hostConnection.send({
+        // Bogen ohne Webhook-URL: Der Spielleiter braucht sie nicht und soll
+        // sie auch nicht bekommen (siehe charakterZumTeilen in app.js).
         type: 'state',
-        data: appData // send full character sheet data
+        data: charakterZumTeilen()
     });
 }
 
