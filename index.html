@@ -660,6 +660,18 @@
                         <input type="range" id="gm-volume-slider" min="0" max="1" step="0.05" value="0.6" oninput="changeGmVolume(this.value)" style="width: 60px; cursor: pointer;" title="Globale Lautstärke (Sync)">
                     </div>
                 </div>
+                <div id="gm-custom-sound-box" style="display: flex; gap: 0.4rem; background: rgba(139, 92, 246, 0.1); padding: 0.4rem 0.6rem; border-radius: 8px; border: 1px dashed rgba(168, 85, 247, 0.4); align-items: center; flex-wrap: wrap;">
+                    <i class="fa-solid fa-lock" style="color: #a855f7; font-size: 0.8rem;" title="Bleibt nur lokal auf deinem Gerät - wird nie im Repo oder auf der öffentlichen Seite gespeichert"></i>
+                    <span id="gm-custom-sound-label" style="font-size: 0.8rem; color: #9ca3af;">Kein eigener Sound hochgeladen</span>
+                    <label class="tool-btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; cursor: pointer; margin: 0;">
+                        <i class="fa-solid fa-upload"></i> Hochladen
+                        <input type="file" accept="audio/*" style="display:none" onchange="handleCustomSoundUpload(event)">
+                    </label>
+                    <button id="gm-custom-sound-preview-btn" class="tool-btn" onclick="previewCustomSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; display:none;" title="Lokal testen (nur für dich)"><i class="fa-solid fa-headphones" style="color: #a855f7;"></i></button>
+                    <button id="gm-custom-sound-send-btn" class="tool-btn" onclick="sendCustomSoundToAll()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; display:none;" title="Für alle abspielen (nur direkt per WebRTC an eure Session, nicht öffentlich)"><i class="fa-solid fa-play" style="color: #57F287;"></i></button>
+                    <button id="gm-custom-sound-remove-btn" class="tool-btn" onclick="removeCustomSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; display:none;" title="Entfernen"><i class="fa-solid fa-trash" style="color: #ed4245;"></i></button>
+                    <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('customSound')" title="Hilfe zu eigenen privaten Sounds"></i>
+                </div>
                 <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3); display: flex; align-items: center; gap: 0.8rem;">
                     <span>Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong></span>
                     <span id="gm-room-status" style="font-size: 0.75rem; white-space: nowrap;"></span>

@@ -20,6 +20,9 @@ const helpData = {
     gmDice: "<h3>🎲 GM Würfel-Box</h3><p><b>Schnelle Würfe:</b> Als Spielleiter hast du hier direkten Zugriff auf die wichtigsten Würfel (1W100 für allgemeine Proben, 1W6 für einfachen Schaden).</p><p><b>Custom Würfel:</b> Brauchst du etwas Spezielles (z.B. für Monster-Schaden oder Zufallstabellen)? Gib einfach dein gewünschtes Format ein, z.B. <code>2w8</code> oder <code>1w20+5</code>.</p><p><i>Hinweis: Deine Würfe tauchen sofort live im Feed auf und lösen bei Krits (1-10) oder Patzern (91-100) beim W100 auch bei dir die passenden visuellen Effekte aus!</i></p>"
 ,
 
+    customSound: "<h3>🔒 Eigener privater Sound</h3><p>Hast du einen Song oder Sound, den du <b>nicht öffentlich verwenden darfst</b> (z.B. nur für den privaten Rahmen lizenziert), aber trotzdem in eurer Runde nutzen willst? Lade ihn hier hoch!</p><p>Die Datei wird <b>ausschließlich lokal in deinem Browser</b> gespeichert (nie im Repository, nie auf der öffentlich gehosteten Seite). Beim Klick auf \"Für alle abspielen\" wird sie direkt per WebRTC an die aktuell verbundenen Spieler übertragen, genau wie eure Würfe und HP-Updates auch - es findet keine Veröffentlichung auf irgendeiner Plattform statt.</p><p><i>Hinweis: Die Datei bleibt auf diesem Gerät gespeichert, bis du sie über den Papierkorb-Button wieder entfernst. Bei einem Wechsel des Browsers/Geräts musst du sie erneut hochladen.</i></p>"
+,
+
     general: "<h3><i class='fa-solid fa-circle-info'></i> Willkommen beim How to be a Hero - Tool</h3>" +
              "<p>Dieser interaktive Charakterbogen nimmt dir die Rechenarbeit am Pen&Paper-Tisch ab und bietet ein nahtloses Multiplayer-Erlebnis.</p>" +
              "<h4>Top Features:</h4>" +

@@ -361,6 +361,7 @@ function enterGmMode(roomCode) {
     
     loadGmLogHistory();
     addGmLogSystemMessage(`Session gestartet! Raum-Code: ${roomCode}`);
+    if (typeof refreshCustomSoundUI === 'function') refreshCustomSoundUI();
 }
 
 function exitGmMode() {
@@ -862,6 +863,26 @@ function joinMultiplayerSession(codeArg) {
                 if (typeof stopAllAudio === 'function') stopAllAudio();
             } else if (payload && payload.type === 'fadeOutSound') {
                 if (typeof fadeOutAllAudio === 'function') fadeOutAllAudio();
+            } else if (payload && payload.type === 'customSound') {
+                // Privater Sound des SL, kommt direkt per WebRTC an - existiert nur für die
+                // Dauer der Wiedergabe im Speicher, wird nirgends gespeichert oder veröffentlicht.
+                if (typeof appData !== 'undefined' && appData.soundEnabled === false) return;
+                try {
+                    const blob = payload.blob instanceof Blob ? payload.blob : new Blob([payload.blob]);
+                    const url = URL.createObjectURL(blob);
+                    const audio = new Audio(url);
+                    audio.volume = payload.volume || 0.6;
+                    audio.play().catch(e => console.warn('Audio play blocked:', e));
+                    if (typeof currentAudioPlayers !== 'undefined') currentAudioPlayers.push(audio);
+                    audio.addEventListener('ended', () => {
+                        if (typeof currentAudioPlayers !== 'undefined') {
+                            currentAudioPlayers = currentAudioPlayers.filter(a => a !== audio);
+                        }
+                        URL.revokeObjectURL(url);
+                    });
+                } catch (e) {
+                    console.error('Eigener Sound konnte nicht abgespielt werden:', e);
+                }
             }
         });
         
@@ -1189,6 +1210,146 @@ function sendGmFadeOutSound() {
             conn.send({ type: 'fadeOutSound' });
         }
     });
+}
+
+// --- Eigener privater Sound (z.B. lizenzierte Musik, die nur für den privaten Rahmen erlaubt
+// ist und nicht veröffentlicht werden darf). Bleibt ausschließlich lokal im Browser des SL
+// (IndexedDB) und wird beim Abspielen für alle nur direkt per WebRTC an die aktuell verbundenen
+// Spieler übertragen - landet nie im Repository oder auf der öffentlich gehosteten Seite. ---
+const CUSTOM_SOUND_DB_NAME = 'htbah-custom-sounds';
+const CUSTOM_SOUND_STORE = 'sounds';
+const CUSTOM_SOUND_KEY = 'gm-custom-sound';
+const CUSTOM_SOUND_MAX_BYTES = 30 * 1024 * 1024; // 30 MB - großzügig, aber begrenzt die WebRTC-Übertragungsdauer
+
+let customSoundCache = null; // { name, blob } - vermeidet wiederholte DB-Reads während der Session
+
+function openCustomSoundDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(CUSTOM_SOUND_DB_NAME, 1);
+        req.onupgradeneeded = () => {
+            if (!req.result.objectStoreNames.contains(CUSTOM_SOUND_STORE)) {
+                req.result.createObjectStore(CUSTOM_SOUND_STORE);
+            }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+async function saveCustomSoundToDB(name, blob) {
+    const db = await openCustomSoundDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(CUSTOM_SOUND_STORE, 'readwrite');
+        tx.objectStore(CUSTOM_SOUND_STORE).put({ name, blob }, CUSTOM_SOUND_KEY);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+async function loadCustomSoundFromDB() {
+    const db = await openCustomSoundDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(CUSTOM_SOUND_STORE, 'readonly');
+        const req = tx.objectStore(CUSTOM_SOUND_STORE).get(CUSTOM_SOUND_KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+async function deleteCustomSoundFromDB() {
+    const db = await openCustomSoundDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(CUSTOM_SOUND_STORE, 'readwrite');
+        tx.objectStore(CUSTOM_SOUND_STORE).delete(CUSTOM_SOUND_KEY);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+async function refreshCustomSoundUI() {
+    try {
+        customSoundCache = await loadCustomSoundFromDB();
+    } catch (e) {
+        console.warn('Eigener Sound konnte nicht geladen werden:', e);
+        customSoundCache = null;
+    }
+
+    const label = document.getElementById('gm-custom-sound-label');
+    if (!label) return;
+    const previewBtn = document.getElementById('gm-custom-sound-preview-btn');
+    const sendBtn = document.getElementById('gm-custom-sound-send-btn');
+    const removeBtn = document.getElementById('gm-custom-sound-remove-btn');
+
+    if (customSoundCache) {
+        label.textContent = customSoundCache.name;
+        label.style.color = '#e9d5ff';
+        if (previewBtn) previewBtn.style.display = 'inline-flex';
+        if (sendBtn) sendBtn.style.display = 'inline-flex';
+        if (removeBtn) removeBtn.style.display = 'inline-flex';
+    } else {
+        label.textContent = 'Kein eigener Sound hochgeladen';
+        label.style.color = '#9ca3af';
+        if (previewBtn) previewBtn.style.display = 'none';
+        if (sendBtn) sendBtn.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = 'none';
+    }
+}
+
+async function handleCustomSoundUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > CUSTOM_SOUND_MAX_BYTES) {
+        alert('Datei ist größer als 30 MB - das würde die Übertragung an Spieler zu lange dauern lassen. Bitte eine kleinere/komprimierte Version verwenden.');
+        event.target.value = '';
+        return;
+    }
+    try {
+        await saveCustomSoundToDB(file.name, file);
+        event.target.value = '';
+        await refreshCustomSoundUI();
+        if (typeof addGmLogSystemMessage === 'function') {
+            addGmLogSystemMessage(`Eigener Sound "${file.name}" gespeichert (bleibt privat auf diesem Gerät).`);
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Speichern fehlgeschlagen: ' + e.message);
+    }
+}
+
+function previewCustomSound() {
+    if (!customSoundCache) return;
+    const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
+    const url = URL.createObjectURL(customSoundCache.blob);
+    const audio = new Audio(url);
+    audio.volume = vol;
+    audio.play().catch(e => console.warn('Audio play blocked:', e));
+    currentAudioPlayers.push(audio);
+    audio.addEventListener('ended', () => {
+        currentAudioPlayers = currentAudioPlayers.filter(a => a !== audio);
+        URL.revokeObjectURL(url);
+    });
+}
+
+function sendCustomSoundToAll() {
+    if (!customSoundCache) return;
+    const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
+
+    previewCustomSound();
+
+    Object.values(clientConnections).forEach(conn => {
+        if (conn.open) {
+            conn.send({ type: 'customSound', name: customSoundCache.name, volume: vol, blob: customSoundCache.blob });
+        }
+    });
+    if (typeof addGmLogSystemMessage === 'function') {
+        addGmLogSystemMessage(`Eigener Sound "${customSoundCache.name}" an alle gesendet (nur direkt an eure Session, nicht öffentlich).`);
+    }
+}
+
+async function removeCustomSound() {
+    if (!confirm('Eigenen Sound wirklich entfernen?')) return;
+    await deleteCustomSoundFromDB();
+    await refreshCustomSoundUI();
 }
 
 function fadeOutAllAudio() {
