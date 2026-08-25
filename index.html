@@ -565,36 +565,64 @@
     <!-- GM Dashboard (Hidden by default) -->
     <div id="gm-dashboard" style="display: none; flex-direction: column; width: 100%; max-width: 1600px; margin: 0 auto; min-height: 75vh; background: transparent; z-index: 10; gap: 1rem;">
         
-        <div class="toolbar" style="border-radius: 0; border-left: none; border-right: none; border-top: none; justify-content: space-between; padding: 1rem;">
-            <div style="font-weight: 800; font-size: 1.2rem; color: #ed4245; display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fa-solid fa-chess-king"></i> GM Dashboard
-            </div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="tool-btn theme-wrapper" style="padding: 0; display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);">
-                    <i class="fa-solid fa-palette" style="padding-left: 0.8rem; pointer-events: none; opacity: 0.8;"></i>
-                    <select id="gm-theme-select" onchange="changeTheme(this.value)" style="background: transparent; border: none; color: white; padding: 0.8rem; outline: none; cursor: pointer; font-weight: bold; appearance: none;">
-                        <option value="time" style="color: black;">Vibe: Zeitreise</option>
-                        <option value="steampunk" style="color: black;">Vibe: Steampunk</option>
-                        <option value="apocalypse" style="color: black;">Vibe: Apokalypse</option>
-                        <option value="cyberpunk" style="color: black;">Vibe: Cyberpunk</option>
-                        <option value="mafia" style="color: black;">Vibe: 1920s Mafia</option>
-                        <option value="lovecraft" style="color: black;">Vibe: Lovecraft</option>
-                        <option value="magic" style="color: black;">Vibe: Royal Magic</option>
-                        <option value="deepspace" style="color: black;">Vibe: Deep Space</option>
-                        <option value="wildwest" style="color: black;">Vibe: Wilder Westen</option>
-                        <option value="pirates" style="color: black;">Vibe: Piraten</option>
-                        <option value="superhero" style="color: black;">Vibe: Superhelden</option>
-                        <option value="medieval" style="color: black;">Vibe: Mittelalter</option>
-                        <option value="ultracore" style="color: black;">Vibe: Ultracore</option>
-                    </select>
+        <div class="gm-toolbar">
+
+            <!-- Zeile 1: Identitaet & Session -->
+            <div class="gm-toolbar-row gm-toolbar-row-top">
+                <div class="gm-title"><i class="fa-solid fa-chess-king"></i> GM Dashboard</div>
+                <div class="gm-room-badge">
+                    <span class="gm-group-label">Raum-Code</span>
+                    <strong id="gm-room-code">----</strong>
+                    <span id="gm-room-status"></span>
                 </div>
-                <label style="display: flex; align-items: center; gap: 0.5rem; color: #9ca3af; font-size: 0.85rem; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-                    <input type="checkbox" id="gm-sync-theme-checkbox" checked style="cursor: pointer;">
-                    Sync to Players <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('gmSync')" title="Hilfe zum Theme Sync"></i>
-                </label>
-                <div style="display: flex; gap: 0.4rem; background: rgba(0,0,0,0.5); padding: 0.4rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); align-items: center;">
-                    <span style="font-size: 0.75rem; color: #9ca3af; margin-right: 0.2rem;"><i class="fa-solid fa-volume-high"></i></span>
-                    <select id="gm-sound-select" style="background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.3rem; border-radius: 4px; font-size: 0.8rem; max-width: 150px;">
+                <!-- Gruppe: Notizen & Speicherstand -->
+                <div class="gm-group">
+                    <span class="gm-group-label"><i class="fa-solid fa-book-journal-whills"></i> Notizen</span>
+                    <button class="gm-btn" onclick="showGmNotesArchive()" title="Notizen-Archiv öffnen"><i class="fa-solid fa-book-open"></i> Archiv</button>
+                    <span class="gm-group-sep"></span>
+                    <button class="gm-btn gm-btn-icon" onclick="exportGmNotes()" title="Notizen als Datei speichern"><i class="fa-solid fa-download" style="color: #10b981;"></i></button>
+                    <label class="gm-btn gm-btn-icon" title="Notizen aus Datei laden">
+                        <i class="fa-solid fa-upload" style="color: #10b981;"></i>
+                        <input type="file" accept=".json" style="display:none" onchange="importGmNotes(event)">
+                    </label>
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmNotes')" title="Hilfe zu SL Notizen"></i>
+                </div>
+                <button class="gm-btn gm-btn-ghost gm-toolbar-end" onclick="exitGmMode()" title="Dashboard schließen"><i class="fa-solid fa-xmark"></i> Dashboard schließen</button>
+            </div>
+
+            <!-- Zeile 2: Werkzeug-Gruppen -->
+            <div class="gm-toolbar-row">
+
+                <!-- Gruppe: Darstellung -->
+                <div class="gm-group">
+                    <span class="gm-group-label"><i class="fa-solid fa-palette"></i> Vibe</span>
+                    <select id="gm-theme-select" class="gm-select" onchange="changeTheme(this.value)" title="Hintergrund & Farbwelt">
+                        <option value="time" class="gm-opt">Zeitreise</option>
+                        <option value="steampunk" class="gm-opt">Steampunk</option>
+                        <option value="apocalypse" class="gm-opt">Apokalypse</option>
+                        <option value="cyberpunk" class="gm-opt">Cyberpunk</option>
+                        <option value="mafia" class="gm-opt">1920s Mafia</option>
+                        <option value="lovecraft" class="gm-opt">Lovecraft</option>
+                        <option value="magic" class="gm-opt">Royal Magic</option>
+                        <option value="deepspace" class="gm-opt">Deep Space</option>
+                        <option value="wildwest" class="gm-opt">Wilder Westen</option>
+                        <option value="pirates" class="gm-opt">Piraten</option>
+                        <option value="superhero" class="gm-opt">Superhelden</option>
+                        <option value="medieval" class="gm-opt">Mittelalter</option>
+                        <option value="ultracore" class="gm-opt">Ultracore</option>
+                    </select>
+                    <span class="gm-group-sep"></span>
+                    <label class="gm-toggle" title="Vibe-Wechsel auch bei allen Spielern anwenden">
+                        <input type="checkbox" id="gm-sync-theme-checkbox" checked>
+                        <span>Sync</span>
+                    </label>
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('gmSync')" title="Hilfe zum Theme Sync"></i>
+                </div>
+
+                <!-- Gruppe: Sound -->
+                <div class="gm-group">
+                    <span class="gm-group-label"><i class="fa-solid fa-volume-high"></i> Sound</span>
+                    <select id="gm-sound-select" class="gm-select gm-select-wide" title="Sound auswählen">
                         <optgroup label="Reaktionen">
                             <option value="success">Erfolg (Fanfare)</option>
                             <option value="fail">Fail (Sad Trombone)</option>
@@ -651,45 +679,37 @@
                             <option value="music_triumph">Triumph (Sieg)</option>
                         </optgroup>
                     </select>
-                    <button class="tool-btn" onclick="previewGmSound(document.getElementById('gm-sound-select').value)" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Lokal testen (nur für dich)"><i class="fa-solid fa-headphones" style="color: #a855f7;"></i></button>
-                    <button class="tool-btn" onclick="sendGmSound(document.getElementById('gm-sound-select').value)" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Für alle abspielen"><i class="fa-solid fa-play" style="color: #57F287;"></i></button>
-                    <button class="tool-btn" onclick="sendGmFadeOutSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Ausfaden (2 Sekunden)"><i class="fa-solid fa-arrow-trend-down" style="color: #fbbf24;"></i></button>
-                    <button class="tool-btn" onclick="sendGmStopSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;" title="Harter Stop"><i class="fa-solid fa-stop" style="color: #ed4245;"></i></button>
-                    <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: 0.5rem; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 0.8rem;">
-                        <i class="fa-solid fa-volume-low" style="color: #9ca3af; font-size: 0.75rem;"></i>
-                        <input type="range" id="gm-volume-slider" min="0" max="1" step="0.05" value="0.6" oninput="changeGmVolume(this.value)" style="width: 60px; cursor: pointer;" title="Globale Lautstärke (Sync)">
-                    </div>
+                    <button class="gm-btn gm-btn-icon" onclick="previewGmSound(document.getElementById('gm-sound-select').value)" title="Nur für dich vorhören"><i class="fa-solid fa-headphones" style="color: #a855f7;"></i></button>
+                    <button class="gm-btn gm-btn-icon" onclick="sendGmSound(document.getElementById('gm-sound-select').value)" title="Für alle abspielen"><i class="fa-solid fa-play" style="color: #57F287;"></i></button>
+                    <button class="gm-btn gm-btn-icon" onclick="sendGmFadeOutSound()" title="Ausfaden (2 Sekunden)"><i class="fa-solid fa-arrow-trend-down" style="color: #fbbf24;"></i></button>
+                    <button class="gm-btn gm-btn-icon" onclick="sendGmStopSound()" title="Harter Stop"><i class="fa-solid fa-stop" style="color: #ed4245;"></i></button>
+                    <span class="gm-group-sep"></span>
+                    <i class="fa-solid fa-volume-low gm-group-icon"></i>
+                    <input type="range" id="gm-volume-slider" class="gm-volume" min="0" max="1" step="0.05" value="0.6" oninput="changeGmVolume(this.value)" title="Globale Lautstärke (Sync)">
                 </div>
-                <div id="gm-custom-sound-box" style="display: flex; gap: 0.4rem; background: rgba(139, 92, 246, 0.1); padding: 0.4rem 0.6rem; border-radius: 8px; border: 1px dashed rgba(168, 85, 247, 0.4); align-items: center; flex-wrap: wrap;">
-                    <i class="fa-solid fa-lock" style="color: #a855f7; font-size: 0.8rem;" title="Bleibt nur lokal auf deinem Gerät - wird nie im Repo oder auf der öffentlichen Seite gespeichert"></i>
-                    <span id="gm-custom-sound-label" style="font-size: 0.8rem; color: #9ca3af;">Kein eigener Sound hochgeladen</span>
-                    <label class="tool-btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; cursor: pointer; margin: 0;">
-                        <i class="fa-solid fa-upload"></i> Hochladen
+
+                <!-- Gruppe: Eigener Sound (bleibt lokal) -->
+                <div class="gm-group gm-group-private" id="gm-custom-sound-box">
+                    <span class="gm-group-label"><i class="fa-solid fa-lock" title="Bleibt nur lokal auf deinem Gerät - wird nie im Repo oder auf der öffentlichen Seite gespeichert"></i> Eigener Sound</span>
+                    <span id="gm-custom-sound-label" class="gm-group-value">Keiner hochgeladen</span>
+                    <span class="gm-group-sep"></span>
+                    <label class="gm-btn gm-btn-icon" title="Audiodatei hochladen (bleibt lokal)">
+                        <i class="fa-solid fa-upload"></i>
                         <input type="file" accept="audio/*" style="display:none" onchange="handleCustomSoundUpload(event)">
                     </label>
-                    <button id="gm-custom-sound-preview-btn" class="tool-btn" onclick="previewCustomSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; display:none;" title="Lokal testen (nur für dich)"><i class="fa-solid fa-headphones" style="color: #a855f7;"></i></button>
-                    <button id="gm-custom-sound-send-btn" class="tool-btn" onclick="sendCustomSoundToAll()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; display:none;" title="Für alle abspielen (nur direkt per WebRTC an eure Session, nicht öffentlich)"><i class="fa-solid fa-play" style="color: #57F287;"></i></button>
-                    <button id="gm-custom-sound-remove-btn" class="tool-btn" onclick="removeCustomSound()" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; display:none;" title="Entfernen"><i class="fa-solid fa-trash" style="color: #ed4245;"></i></button>
+                    <button id="gm-custom-sound-preview-btn" class="gm-btn gm-btn-icon" onclick="previewCustomSound()" style="display:none;" title="Nur für dich vorhören"><i class="fa-solid fa-headphones" style="color: #a855f7;"></i></button>
+                    <button id="gm-custom-sound-send-btn" class="gm-btn gm-btn-icon" onclick="sendCustomSoundToAll()" style="display:none;" title="Für alle abspielen (nur direkt per WebRTC an eure Session, nicht öffentlich)"><i class="fa-solid fa-play" style="color: #57F287;"></i></button>
+                    <button id="gm-custom-sound-remove-btn" class="gm-btn gm-btn-icon" onclick="removeCustomSound()" style="display:none;" title="Entfernen"><i class="fa-solid fa-trash" style="color: #ed4245;"></i></button>
                     <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('customSound')" title="Hilfe zu eigenen privaten Sounds"></i>
                 </div>
-                <div style="background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid rgba(237, 66, 69, 0.3); display: flex; align-items: center; gap: 0.8rem;">
-                    <span>Raum-Code: <strong id="gm-room-code" style="color: #ed4245; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px;">----</strong></span>
-                    <span id="gm-room-status" style="font-size: 0.75rem; white-space: nowrap;"></span>
-                </div>
-                <button class="tool-btn" onclick="showGmNotesArchive()" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6;"><i class="fa-solid fa-book-open"></i> Notizen-Archiv <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmNotes')" title="Hilfe zu SL Notizen"></i></button>
-                <button class="tool-btn" onclick="exportGmNotes()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981;"><i class="fa-solid fa-download"></i> Save</button>
-                <label class="tool-btn" style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; cursor: pointer; margin: 0;">
-                    <i class="fa-solid fa-upload"></i> Load
-                    <input type="file" accept=".json" style="display:none" onchange="importGmNotes(event)">
-                </label>
-                <button class="tool-btn" onclick="exitGmMode()" style="background: rgba(255,255,255,0.1);"><i class="fa-solid fa-xmark"></i> Dashboard schließen</button>
+
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 400px 1fr; gap: 2rem; flex: 1; padding: 1rem;">
-            
+        <div class="gm-dashboard-grid">
+
             <!-- Left: Live Log & Dice -->
-            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; position: sticky; top: 1rem; height: calc(100vh - 150px);">
+            <div class="gm-side-panel">
                 <!-- GM Dice Roller -->
                 <div style="padding: 1.5rem; border-bottom: 1px solid var(--panel-border); background: rgba(0,0,0,0.2);">
                     <div style="font-weight: bold; margin-bottom: 1rem; color: #fbbf24; font-size: 1.1rem; text-align: center;"><i class="fa-solid fa-dice"></i> GM Würfel-Box <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('gmDice')" title="Hilfe zur GM Würfel-Box"></i></div>
@@ -723,7 +743,7 @@
                     <span><i class="fa-solid fa-tower-broadcast"></i> Live-Feed</span>
                     <button onclick="clearGmLog()" style="background:transparent; border:none; color:#ed4245; cursor:pointer; font-size:0.8rem;" title="Log leeren"><i class="fa-solid fa-trash"></i></button>
                 </div>
-                <ul id="gm-live-log" style="list-style: none; margin: 0; padding: 1rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.8rem; min-height: 300px;">
+                <ul id="gm-live-log" style="list-style: none; margin: 0; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem;">
                     <!-- Log entries go here -->
                 </ul>
             </div>
@@ -732,7 +752,7 @@
             <div style="display: flex; flex-direction: column; gap: 2rem;">
                 
                 <!-- Player Cards Grid -->
-                <div id="gm-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; align-items: start;">
+                <div id="gm-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr)); gap: 1.5rem; align-items: start;">
                     <!-- Player Cards go here -->
                 </div>
                 

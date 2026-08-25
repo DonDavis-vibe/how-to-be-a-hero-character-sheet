@@ -1282,12 +1282,14 @@ async function refreshCustomSoundUI() {
 
     if (customSoundCache) {
         label.textContent = customSoundCache.name;
+        label.title = customSoundCache.name;
         label.style.color = '#e9d5ff';
         if (previewBtn) previewBtn.style.display = 'inline-flex';
         if (sendBtn) sendBtn.style.display = 'inline-flex';
         if (removeBtn) removeBtn.style.display = 'inline-flex';
     } else {
-        label.textContent = 'Kein eigener Sound hochgeladen';
+        label.textContent = 'Keiner hochgeladen';
+        label.title = '';
         label.style.color = '#9ca3af';
         if (previewBtn) previewBtn.style.display = 'none';
         if (sendBtn) sendBtn.style.display = 'none';
