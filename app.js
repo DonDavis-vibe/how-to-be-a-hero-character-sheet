@@ -2532,24 +2532,26 @@ function rollWeaponDamage(damageString, weaponName) {
         return;
     }
     
-    let total = 0;
+    let wuerfelSumme = 0;
     let rolls = [];
     for (let i = 0; i < parsed.count; i++) {
         let r = Math.floor(Math.random() * parsed.sides) + 1;
         rolls.push(r);
-        total += r;
+        wuerfelSumme += r;
     }
-    total += parsed.mod;
 
-    let rollStr = `[${rolls.join('+')}]` + (parsed.mod !== 0 ? (parsed.mod > 0 ? '+'+parsed.mod : parsed.mod) : '');
-
-    // Regelwerk S.15: Trifft ein Spieler kritisch, wird der ausgewürfelte Schaden verdoppelt.
+    // Regelwerk S.15: "Trifft ein Spieler mit seiner Waffe kritisch, wird der
+    // ausgewürfelte Schaden verdoppelt." Verdoppelt wird also nur das Würfelergebnis.
+    // Ein fester Waffenbonus (S.18 nennt als Beispiel Excalibur mit 5W10+10) kommt
+    // danach dazu und wird nicht mitverdoppelt.
     const wasCritHit = pendingCritDamage;
-    if (wasCritHit) {
-        total *= 2;
-        rollStr += ' &times;2 (Krit!)';
-        pendingCritDamage = false;
-    }
+    if (wasCritHit) pendingCritDamage = false;
+
+    const total = (wasCritHit ? wuerfelSumme * 2 : wuerfelSumme) + parsed.mod;
+
+    let rollStr = `[${rolls.join('+')}]`;
+    if (wasCritHit) rollStr += ' &times;2 (Krit!)';
+    if (parsed.mod !== 0) rollStr += (parsed.mod > 0 ? '+' + parsed.mod : parsed.mod);
 
     const displayRes = document.getElementById('dice-result');
     displayRes.querySelector('.result-number').textContent = total;
@@ -2565,8 +2567,8 @@ function rollWeaponDamage(damageString, weaponName) {
     updateLiveTimers();
 
     // Crit/Fumble logic for weapons
-    const isMax = !wasCritHit && (total - parsed.mod === parsed.count * parsed.sides);
-    const isMin = !wasCritHit && (total - parsed.mod === parsed.count);
+    const isMax = !wasCritHit && wuerfelSumme === parsed.count * parsed.sides;
+    const isMin = !wasCritHit && wuerfelSumme === parsed.count;
 
     if (wasCritHit) {
         fireConfetti();
@@ -2656,25 +2658,27 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
         skillValue = 100;
     }
 
+    // Regelwerk S.21: "Bei einem Probenwurf kennzeichnen 10% des Fähigkeitswertes den
+    // Bereich für einen kritischen Erfolg" und "Die untere Grenze des Bereichs für einen
+    // kritischen Misserfolg wird durch 10% der Fähigkeit/Begabung plus 90 gekennzeichnet."
+    // Beide Grenzen hängen am Fähigkeitswert selbst - ein SL-Bonus macht die Probe
+    // leichter, aber nicht die Fähigkeit besser, und verschiebt deshalb nur die
+    // Erfolgsschwelle weiter unten, nicht die Krit-Grenzen.
+    // Würfe auf Begabungen haben laut selber Seite keinen kritischen Erfolgsbereich.
+    const critSuccessMax = isBaseAttribute ? 0 : Math.round(skillValue / 10);
+    const critFailMin = 90 + Math.round(skillValue / 10);
+
     const modifier = consumeModifier();
     if (modifier.mod !== 0) {
         modifier.str = modifier.mod > 0 ? ` (inkl. +${modifier.mod} Bonus)` : ` (inkl. ${modifier.mod} Malus)`;
     }
-    skillValue += modifier.mod;
-
-    // Zweite Deckelung, diesmal nach dem Modifikator: Gewürfelt wird ein W100,
-    // über 100 gibt es nichts mehr zu treffen. Ohne diese Zeile läge critFailMin
-    // bei einer Fähigkeit auf 100 plus SL-Bonus über 100 - ein Patzer wäre dann
-    // rechnerisch unmöglich (Regelwerk S.8).
-    skillValue = Math.max(0, Math.min(100, skillValue));
+    // Erfolgsschwelle inklusive SL-Bonus. Auf dem W100 gibt es über 100 nichts mehr
+    // zu treffen und unter 0 nichts mehr zu verlieren.
+    const zielwert = Math.max(0, Math.min(100, skillValue + modifier.mod));
 
     const result = Math.floor(Math.random() * 100) + 1;
     let statusText = '';
     let statusClass = '';
-
-    // Regelwerk S.3/S.21: Würfe auf Begabungen (Basiswerte) können keine kritischen Erfolge erzielen
-    const critSuccessMax = isBaseAttribute ? 0 : Math.max(1, Math.round(skillValue / 10));
-    const critFailMin = 90 + Math.round(skillValue / 10);
 
     if (!isBaseAttribute && result <= critSuccessMax) {
         statusText = '🌟 Kritischer Erfolg!';
@@ -2686,7 +2690,7 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
         statusClass = 'crit-fail';
         fireFumble();
         if (typeof AudioController !== 'undefined') AudioController.play('fail');
-    } else if (result <= skillValue) {
+    } else if (result <= zielwert) {
         statusText = '✅ Erfolg';
         statusClass = 'success';
     } else {
@@ -2714,7 +2718,7 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
     }, 500);
 
     const critDamageHint = pendingCritDamage ? ` <span style="opacity:0.7">(nächster Schadenswurf wird verdoppelt!)</span>` : '';
-    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>${critDamageHint}${capHint}`);
+    addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${zielwert}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>${critDamageHint}${capHint}`);
 }
 
 function handleThemeLogoUpload(event) {
