@@ -737,11 +737,14 @@ function rollDice(sides) {
     // Add to log
     addToLog(`1W${sides}`, modifier.mod === 0 ? finalResult : `${result}${modifier.str} = <b>${finalResult}</b>`, lastRollTimestamp);
 
-    // Confetti on 1 (Critical Success in HTBAH)
-    if (result === 1) {
-        fireConfetti();
-    } else if (result === 100) {
-        fireFumble();
+    // Krit und Patzer gibt es nur auf dem W100. Auf dem W6 ist die 1 der
+    // schlechteste Schadenswurf, nicht der beste - vorher gab es dafür Konfetti.
+    if (sides === 100) {
+        if (result === 1) {
+            fireConfetti();
+        } else if (result === 100) {
+            fireFumble();
+        }
     }
 }
 
@@ -795,8 +798,12 @@ function rollCustomDice() {
     }
     addToLog(`${count}W${sides}`, logDetail, lastRollTimestamp);
 
-    if (sum === count) { // All 1s is a critical success in some variations, or just standard check
+    // Gleiche Logik wie beim Waffenschaden: alles Maximum ist ein Grund zu feiern,
+    // alles Einsen ist das Gegenteil. Vorher gab es für den Minimalwurf Konfetti.
+    if (sum === count * sides) {
         fireConfetti();
+    } else if (sum === count) {
+        fireFumble();
     }
 }
 
@@ -2655,6 +2662,12 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
     }
     skillValue += modifier.mod;
 
+    // Zweite Deckelung, diesmal nach dem Modifikator: Gewürfelt wird ein W100,
+    // über 100 gibt es nichts mehr zu treffen. Ohne diese Zeile läge critFailMin
+    // bei einer Fähigkeit auf 100 plus SL-Bonus über 100 - ein Patzer wäre dann
+    // rechnerisch unmöglich (Regelwerk S.8).
+    skillValue = Math.max(0, Math.min(100, skillValue));
+
     const result = Math.floor(Math.random() * 100) + 1;
     let statusText = '';
     let statusClass = '';
@@ -2668,8 +2681,6 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
         statusClass = 'crit-success';
         fireConfetti();
         if (typeof AudioController !== 'undefined') AudioController.play('crit');
-        // Regelwerk S.15: Ein kritischer Treffer verdoppelt den nächsten Schadenswurf
-        pendingCritDamage = true;
     } else if (result >= critFailMin) {
         statusText = '💀 Patzer!';
         statusClass = 'crit-fail';
@@ -2687,6 +2698,12 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
         lastRollByCategory[category] = statusClass;
     }
 
+    // Regelwerk S.15: Ein kritischer *Treffer* verdoppelt den nächsten Schadenswurf.
+    // Treffer kann nur eine Handeln-Probe sein - ein Krit auf Überreden darf den
+    // nächsten Waffenschaden nicht verdoppeln. Jede weitere Probe löst den Treffer
+    // wieder ab, damit das Flag nicht szenenlang stehen bleibt.
+    pendingCritDamage = (statusClass === 'crit-success' && category === 'handeln');
+
     const displayRes = document.getElementById('dice-result');
     displayRes.querySelector('.result-number').textContent = result;
     displayRes.querySelector('.result-label').textContent = skillName + " Probe";
@@ -2696,7 +2713,7 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
         displayRes.className = 'dice-result-display';
     }, 500);
 
-    const critDamageHint = statusClass === 'crit-success' ? ` <span style="opacity:0.7">(nächster Schadenswurf wird verdoppelt!)</span>` : '';
+    const critDamageHint = pendingCritDamage ? ` <span style="opacity:0.7">(nächster Schadenswurf wird verdoppelt!)</span>` : '';
     addToLog(`<i class="fa-solid fa-dice"></i> ${skillName}-Probe (Wert: ${skillValue}${modifier.str})`, `gewürfelt <b>${result}</b> &rarr; <span style="color:var(--accent)">${statusText}</span>${critDamageHint}${capHint}`);
 }
 

@@ -411,8 +411,8 @@ function updateGmPlayerBigDiceResult(result, text, charName) {
         resDiv.innerText = result;
         resDiv.style.color = playerColor;
         resDiv.style.textShadow = `0 0 15px ${playerColor}99`;
-        subDiv.innerHTML = text;
-        nameDiv.innerHTML = `Gewürfelt von: <strong style="color: ${playerColor};">${charName}</strong>`;
+        subDiv.innerHTML = escapeHtml(text);
+        nameDiv.innerHTML = `Gewürfelt von: <strong style="color: ${playerColor};">${escapeHtml(charName)}</strong>`;
         resDiv.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         resDiv.style.transform = 'scale(1)';
         resDiv.style.opacity = '1';
@@ -437,6 +437,32 @@ function getColorForPlayer(name) {
 function setColorForPlayer(name, color) {
     localStorage.setItem('gmPlayerColor_' + name, color);
     renderGmDashboard();
+}
+
+// Spielerdaten kommen über WebRTC von fremden Rechnern und landen per innerHTML
+// im Dashboard. Ohne Escaping reicht ein Charaktername wie
+// '<img src=x onerror="...">', um Code im Browser des Spielleiters auszuführen.
+// Gilt für jedes Feld, das ein Spieler selbst befüllt: Name, Beruf, Statur,
+// Fähigkeits-, Item- und Waffennamen, Status, Währung.
+function escapeHtml(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Portraits kommen als data:-URL aus dem Canvas des Spielers. Alles andere -
+// insbesondere 'javascript:' in einem src - wäre ein zweiter Weg, fremden Code
+// auszuführen, also fällt es auf das Standardbild zurück.
+function safeImageSrc(src) {
+    const s = String(src || '');
+    if (/^data:image\/(png|jpeg|jpg|gif|webp|avif);base64,[A-Za-z0-9+/=]+$/i.test(s.replace(/\s/g, ''))) {
+        return s;
+    }
+    return 'assets/giphy.gif';
 }
 
 function renderGmDashboard() {
@@ -477,12 +503,13 @@ function renderGmDashboard() {
         
         // Load GM notes for this character
         const charName = [pData.vorname, pData.name].filter(Boolean).join(' ') || 'Unbekannt';
+        const charNameHtml = escapeHtml(charName);
         const playerColor = getColorForPlayer(charName);
         const gmNotesKey = 'gmNotes_' + charName;
         const currentNotes = localStorage.getItem(gmNotesKey) || '';
-        
+
         // Portrait Image
-        const portraitSrc = pData.portrait || 'assets/giphy.gif';
+        const portraitSrc = safeImageSrc(pData.portrait);
         
         let skillsHtml = '';
         let totalPoints = 0;
@@ -495,14 +522,14 @@ function renderGmDashboard() {
             if (arr.length > 0 || catGbp > 0) {
                 skillsHtml += `
                 <div style="margin-top: 0.8rem; border-bottom: 1px solid ${playerColor}40; padding-bottom: 0.3rem; margin-bottom: 0.3rem; display: flex; justify-content: space-between; align-items: baseline;">
-                    <strong style="text-transform: uppercase; color: ${playerColor}; font-size: 0.85rem;">${catNames[cat]} <span style="opacity: 0.6; font-size: 0.75rem;">(Wert: ${catAttr})</span></strong>
-                    <span style="font-size: 0.75rem; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 0.1rem 0.4rem; border-radius: 10px;"><i class="fa-solid fa-lightbulb"></i> ${catGbp} GBP</span>
+                    <strong style="text-transform: uppercase; color: ${playerColor}; font-size: 0.85rem;">${catNames[cat]} <span style="opacity: 0.6; font-size: 0.75rem;">(Wert: ${escapeHtml(catAttr)})</span></strong>
+                    <span style="font-size: 0.75rem; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 0.1rem 0.4rem; border-radius: 10px;"><i class="fa-solid fa-lightbulb"></i> ${escapeHtml(catGbp)} GBP</span>
                 </div>`;
                 arr.forEach(s => {
                     const inv = parseInt(s.invested) || 0;
                     totalPoints += inv;
                     skillsHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.9rem; padding: 0.1rem 0;">
-                        <span>${s.name}</span>
+                        <span>${escapeHtml(s.name)}</span>
                         <strong>${inv}</strong>
                     </div>`;
                 });
@@ -514,8 +541,8 @@ function renderGmDashboard() {
         if (invArr.length > 0) {
             invArr.forEach(i => {
                 invHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.2rem 0;">
-                    <span>${i.name}</span>
-                    <strong style="color: #fbbf24;">x${i.amount}</strong>
+                    <span>${escapeHtml(i.name)}</span>
+                    <strong style="color: #fbbf24;">x${escapeHtml(i.amount)}</strong>
                 </div>`;
             });
         }
@@ -525,8 +552,8 @@ function renderGmDashboard() {
         if (wpnArr.length > 0) {
             wpnArr.forEach(w => {
                 wpnsHtml += `<div style="display: flex; justify-content: space-between; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.2rem 0;">
-                    <span>${w.name}</span>
-                    <strong style="color: #ed4245;">${w.damage}</strong>
+                    <span>${escapeHtml(w.name)}</span>
+                    <strong style="color: #ed4245;">${escapeHtml(w.damage)}</strong>
                 </div>`;
             });
         }
@@ -539,7 +566,11 @@ function renderGmDashboard() {
         card.style.gap = '0.5rem';
         card.style.borderTop = `4px solid ${playerColor}`;
         
-        let ptsColor = totalPoints > 400 ? '#ed4245' : '#9ca3af';
+        // Das Punktebudget ist auf dem Bogen einstellbar und wird mitgeschickt.
+        // Vorher stand hier fest 400, was bei Runden mit abweichendem Budget bei
+        // jedem Spieler eine falsche Cheat-Warnung ausgelöst hat.
+        const maxPoints = parseInt(pData.maxPoints) || 400;
+        let ptsColor = totalPoints > maxPoints ? '#ed4245' : '#9ca3af';
         
         // Status effects
         const statuses = pData.statuses || [];
@@ -551,7 +582,7 @@ function renderGmDashboard() {
                 const sType = (typeof s === 'object' && s.type) ? s.type : 'malus';
                 const colorMap = { bonus: 'rgba(87,242,135', malus: 'rgba(237,66,69', neutral: 'rgba(156,163,175' };
                 const base = colorMap[sType] || colorMap.malus;
-                return `<span style="background: ${base},0.2); border: 1px solid ${base},0.5); color: ${base},1); padding: 0.1rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">${sName}${sVal}</span>`;
+                return `<span style="background: ${base},0.2); border: 1px solid ${base},0.5); color: ${base},1); padding: 0.1rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: bold;">${escapeHtml(sName)}${escapeHtml(sVal)}</span>`;
             }).join(' ');
         }
         
@@ -572,7 +603,7 @@ function renderGmDashboard() {
         // Color picker dots
         let colorDotsHtml = GM_PLAYER_COLORS.map(c => {
             const isActive = c === playerColor;
-            return `<span class="gm-color-dot" data-color="${c}" data-char="${charName}" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${c}; cursor:pointer; border: 2px solid ${isActive ? 'white' : 'transparent'}; transition: border 0.2s;"></span>`;
+            return `<span class="gm-color-dot" data-color="${c}" data-char="${charNameHtml}" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${c}; cursor:pointer; border: 2px solid ${isActive ? 'white' : 'transparent'}; transition: border 0.2s;"></span>`;
         }).join('');
         
         card.innerHTML = `
@@ -580,14 +611,14 @@ function renderGmDashboard() {
                 <img src="${portraitSrc}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid ${playerColor}; box-shadow: 0 0 10px ${playerColor}80;">
                 <div style="flex: 1;">
                     <div style="font-size: 1.2rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; color: ${playerColor};">
-                        <span>${charName}</span>
-                        <span style="font-size: 0.9rem; color: #fbbf24;"><i class="fa-solid fa-lightbulb"></i> GBP: ${pData.gbp_handeln + pData.gbp_wissen + pData.gbp_soziales}</span>
+                        <span>${charNameHtml}</span>
+                        <span style="font-size: 0.9rem; color: #fbbf24;"><i class="fa-solid fa-lightbulb"></i> GBP: ${(parseInt(pData.gbp_handeln) || 0) + (parseInt(pData.gbp_wissen) || 0) + (parseInt(pData.gbp_soziales) || 0)}</span>
                     </div>
                     <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem;">
-                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).join(' • ')}
+                        ${[beruf, alter ? alter + ' J.' : '', statur].filter(x => x).map(escapeHtml).join(' • ')}
                     </div>
                     <div style="font-size: 0.8rem; color: ${ptsColor}; text-align: right;">
-                        Verteilte Punkte: <strong>${totalPoints}</strong> / 400
+                        Verteilte Punkte: <strong>${totalPoints}</strong> / ${maxPoints}
                     </div>
                 </div>
             </div>
@@ -603,18 +634,18 @@ function renderGmDashboard() {
                 <div style="flex: 1; margin-right: 1rem;">
                     <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.2rem;">
                         <span>HP</span>
-                        <span class="${hpPulseClass ? 'hp-text-danger' : ''}">${pData.hpCurrent} / ${pData.hpMax}</span>
+                        <span class="${hpPulseClass ? 'hp-text-danger' : ''}">${escapeHtml(pData.hpCurrent)} / ${escapeHtml(pData.hpMax)}</span>
                     </div>
                     <div class="${hpPulseClass}" style="height: 10px; background: rgba(0,0,0,0.5); border-radius: 5px; overflow: hidden;">
                         <div style="height: 100%; width: ${hpPercent}%; background: ${hpColor}; transition: width 0.3s ease;"></div>
                     </div>
                 </div>
                 <div style="font-size: 0.85rem; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 0.2rem 0.6rem; border-radius: 10px; white-space: nowrap;">
-                    <i class="fa-solid fa-coins"></i> ${currencyAmount} ${currencyName}
+                    <i class="fa-solid fa-coins"></i> ${escapeHtml(currencyAmount)} ${escapeHtml(currencyName)}
                 </div>
             </div>
             
-            <details data-peer-id="${peerId}" data-details-type="skills" ${skillsOpen} style="margin-top: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+            <details data-peer-id="${escapeHtml(peerId)}" data-details-type="skills" ${skillsOpen} style="margin-top: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                 <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;">Skills anzeigen</summary>
                 <div style="margin-top: 0.5rem;">
                     ${skillsHtml || '<i>Keine Skills</i>'}
@@ -622,14 +653,14 @@ function renderGmDashboard() {
             </details>
             
             <div style="display: flex; gap: 0.5rem;">
-                <details data-peer-id="${peerId}" data-details-type="inventory" ${invOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                <details data-peer-id="${escapeHtml(peerId)}" data-details-type="inventory" ${invOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                     <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-box-open" style="color: #fbbf24;"></i> Inventar</summary>
                     <div style="margin-top: 0.5rem;">
                         ${invHtml || '<i>Leer</i>'}
                     </div>
                 </details>
                 
-                <details data-peer-id="${peerId}" data-details-type="weapons" ${wpnOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                <details data-peer-id="${escapeHtml(peerId)}" data-details-type="weapons" ${wpnOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                     <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-khanda" style="color: #ed4245;"></i> Waffen</summary>
                     <div style="margin-top: 0.5rem;">
                         ${wpnsHtml || '<i>Keine</i>'}
@@ -639,7 +670,7 @@ function renderGmDashboard() {
             
             <div style="margin-top: 0.5rem;">
                 <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.2rem;"><i class="fa-solid fa-user-secret"></i> Geheime SL-Notizen:</div>
-                <textarea class="gm-note-textarea" data-charname="${charName}" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 0.5rem; border-radius: 4px; resize: vertical; min-height: 60px; outline: none;">${currentNotes}</textarea>
+                <textarea class="gm-note-textarea" data-charname="${charNameHtml}" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 0.5rem; border-radius: 4px; resize: vertical; min-height: 60px; outline: none;">${escapeHtml(currentNotes)}</textarea>
             </div>
         `;
         
@@ -660,7 +691,10 @@ function renderGmDashboard() {
 
     // Restore focus if a textarea was active
     if (focusedCharName) {
-        const textarea = document.querySelector(`.gm-note-textarea[data-charname="${focusedCharName}"]`);
+        // Direkter Vergleich statt Attributselektor: Anführungszeichen oder
+        // Backslashes im Charakternamen würden einen Selektor-String sprengen.
+        const textarea = [...document.querySelectorAll('.gm-note-textarea')]
+            .find(el => el.dataset.charname === focusedCharName);
         if (textarea) {
             textarea.focus();
             textarea.setSelectionRange(cursorStart, cursorEnd);
@@ -707,9 +741,11 @@ function addGmLogEntry(charName, message, emoji) {
     tempDiv.innerHTML = message;
     const cleanMsg = tempDiv.textContent || tempDiv.innerText || "";
     
+    // cleanMsg ist zwar von HTML befreit, aber als *Text*. Ohne erneutes Escapen
+    // würde eine Nachricht mit "&lt;img ...&gt;" hier wieder zu echtem HTML.
     const innerHTML = `
-        <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${timeStr} - <strong style="color: ${playerColor};">${charName}</strong></div>
-        <div>${emoji} ${cleanMsg}</div>
+        <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${timeStr} - <strong style="color: ${playerColor};">${escapeHtml(charName)}</strong></div>
+        <div>${escapeHtml(emoji)} ${escapeHtml(cleanMsg)}</div>
     `;
     li.innerHTML = innerHTML;
     list.prepend(li);
@@ -1063,8 +1099,8 @@ function showGmNotesArchive() {
             const box = document.createElement('div');
             box.style.cssText = 'background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); border-radius: 8px; padding: 1rem;';
             box.innerHTML = `
-                <div style="font-weight: bold; margin-bottom: 0.5rem; color: ${playerColor};">${charName}</div>
-                <textarea style="width: 100%; height: 100px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 4px; resize: vertical; outline: none; font-family: inherit;">${notes}</textarea>
+                <div style="font-weight: bold; margin-bottom: 0.5rem; color: ${playerColor};">${escapeHtml(charName)}</div>
+                <textarea style="width: 100%; height: 100px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 4px; resize: vertical; outline: none; font-family: inherit;">${escapeHtml(notes)}</textarea>
             `;
             
             box.querySelector('textarea').addEventListener('input', (e) => {
