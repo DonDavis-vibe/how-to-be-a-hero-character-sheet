@@ -42,13 +42,13 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
 * **1-Klick Hosting:** Klicke im 📡-Menü auf "Als Spielleiter (GM) hosten". Du erhältst einen kurzen Raum-Code (z.B. `1A2B`), den du deinen Spielern gibst.
 * **Live-Dashboard:** Sobald Spieler beitreten, tauchen sie in deinem Dashboard auf. Das Dashboard bietet:
   * **Echtzeit-Spielerkarten:** HP, Profilbild, Skills, Inventar, Waffen, Status und Währung aller Spieler auf einen Blick.
-  * **Anti-Cheat System:** Rote Warnung, falls ein Spieler mehr als die erlaubten 400 Punkte verteilt hat.
+  * **Anti-Cheat System:** Rote Warnung, falls ein Spieler mehr Punkte verteilt hat als sein Budget hergibt (standardmäßig 400, auf dem Bogen einstellbar - das Dashboard übernimmt den eingestellten Wert).
   * **Notizen & Archiv:** Geheime SL-Notizen pro Charakter + allgemeine Kampagnen-Notizen. Das Notizen-Archiv zeigt auch Notizen abwesender Spieler.
   * **Save & Load:** Exportiere und importiere all deine SL-Notizen als JSON-Datei.
   * **Farbcodierung:** Weise jedem Spieler eine eigene Farbe zu für perfekten Überblick.
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
-  * **🎛️ Integriertes Live-Soundboard:** 21 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
+  * **🎛️ Integriertes Live-Soundboard:** 43 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
   * **💡 Pro-Tipp (Integriertes Sound-Mixing):** Da Sounds nicht automatisch stoppen, wenn ein neuer gestartet wird, fungiert das Tool als echter Soundmixer! Der Spielleiter kann zum Beispiel prasselnden Regen als Endlos-Kulisse laufen lassen und *währenddessen* jederzeit eine Schießerei, einen Schrei oder einen Glockenschlag abspielen, ohne dass die Atmosphäre unterbrochen wird.
 
 ### 🦸‍♂️ Für die Spieler:
@@ -67,7 +67,7 @@ Wenn ihr wollt, dass **auch alle Spieler** untereinander die Würfe sehen (z.B. 
 Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach dem offiziellen Regelwerk abzubilden:
 - **Vollautomatisierung:** Basiswerte (Handeln, Wissen, Soziales), Geistesblitzpunkte (GBP) und Skill-Boni werden automatisch berechnet.
 - **1-Klick Proben & Initiative:** Klicke direkt auf deine Skills, Basiswerte oder den **Initiative-Button** (`1W10 + Handeln`), um blitzschnell zu würfeln.
-- **Dynamische Krits:** Kritische Erfolge (die ersten 10% des Skillwerts) und Patzer (die oberen 10%) werden dynamisch anhand deines genauen Werts berechnet (inkl. Konfetti & Sounds!).
+- **Dynamische Krits:** Kritische Erfolge (die ersten 10% des Skillwerts) und Patzer (ab 90 + 10% des Skillwerts, siehe Regelwerk S.21) werden dynamisch anhand deines genauen Werts berechnet (inkl. Konfetti & Sounds!). Je besser die Fähigkeit, desto größer der Krit- und desto kleiner der Patzer-Bereich.
 - **HP & Status:** Flexibel anpassbare Status-Effekte (Bonus/Malus) und eine dramatische **visuelle HP-Warnung** (rotes Pulsieren), sobald dein Charakter auf ≤ 10 Lebenspunkte fällt.
 - **Smartes Würfel-Tool:** Jeder Wurf wird dokumentiert. Trage im Würfel-Tool schnell einen **Spielleiter-Bonus/Malus** ein, der völlig automatisch in deinen nächsten Wurf eingerechnet wird! 
 - **Aktions-Logbuch:** Ein eigenes, aufklappbares Logbuch dokumentiert automatisch chronologisch alle Änderungen an HP, Währung, Inventar, Waffen und Status-Effekten.

@@ -1,0 +1,19 @@
+# Werkzeug- und Editor-Verzeichnisse
+.claude/
+.vscode/
+.idea/
+
+# Betriebssystem-Krempel
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Lokale Notizen und Zwischenstände, die nicht ins Repo gehören
+*.local
+*.log
+*.tmp
+node_modules/
+
+# Eigene Sounds und Charakterdaten bleiben lokal
+custom_sound.*
+mein_charakter*.json
