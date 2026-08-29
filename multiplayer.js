@@ -892,8 +892,9 @@ function joinMultiplayerSession(codeArg) {
             } else if (payload && payload.type === 'playSound') {
                 if (typeof playAudioFile === 'function') playAudioFile(payload.soundId, payload.volume);
             } else if (payload && payload.type === 'setVolume') {
+                // Der SL verschiebt seinen Pegel; der eigene Regler bleibt darüber liegen.
                 if (typeof currentAudioPlayers !== 'undefined') {
-                    currentAudioPlayers.forEach(audio => audio.volume = payload.volume);
+                    currentAudioPlayers.forEach(audio => applyVolume(audio, payload.volume));
                 }
             } else if (payload && payload.type === 'stopSound') {
                 if (typeof stopAllAudio === 'function') stopAllAudio();
@@ -907,7 +908,7 @@ function joinMultiplayerSession(codeArg) {
                     const blob = payload.blob instanceof Blob ? payload.blob : new Blob([payload.blob]);
                     const url = URL.createObjectURL(blob);
                     const audio = new Audio(url);
-                    audio.volume = payload.volume || 0.6;
+                    applyVolume(audio, payload.volume);
                     audio.play().catch(e => console.warn('Audio play blocked:', e));
                     if (typeof currentAudioPlayers !== 'undefined') currentAudioPlayers.push(audio);
                     audio.addEventListener('ended', () => {
@@ -1141,6 +1142,68 @@ function broadcastTheme(theme) {
 // --- SOUNDBOARD ---
 let currentAudioPlayers = [];
 
+// Der Spielleiter mischt mit seinem Regler das Verhältnis der Sounds zueinander
+// (leiser Regen unter einem lauten Schuss). Der Spieler-Regler legt sich als
+// Gesamtlautstärke darüber, statt den Pegel des SL zu ersetzen - so bleibt die
+// Mischung erhalten und jeder kann trotzdem selbst entscheiden, wie laut es bei
+// ihm ist. Effektiv gilt also: SL-Pegel × Spieler-Pegel.
+// Bewusst im localStorage und nicht in appData: die Lautstärke ist eine
+// Einstellung dieses Geräts, keine Eigenschaft des Charakters. In appData würde
+// sie in der exportierten JSON landen, bei jedem Import fremd überschrieben und
+// zusätzlich per sendMultiplayerState beim Spielleiter auflaufen. Außerdem hält
+// saveData() nichts dauerhaft - Charakterdaten leben nur im Speicher, bis man
+// "Speichern (JSON)" drückt.
+const PLAYER_VOLUME_KEY = 'htbah_player_volume';
+let playerVolume = 1;
+
+function loadPlayerVolume() {
+    try {
+        const stored = parseFloat(localStorage.getItem(PLAYER_VOLUME_KEY));
+        if (!isNaN(stored)) playerVolume = Math.max(0, Math.min(1, stored));
+    } catch (e) { /* localStorage evtl. blockiert */ }
+    return playerVolume;
+}
+loadPlayerVolume();
+
+function getPlayerVolume() {
+    return playerVolume;
+}
+
+// Merkt sich am Audio-Element, wie laut der SL es haben wollte, damit der
+// Spieler-Regler jederzeit neu darauf angewendet werden kann - auch mitten im
+// laufenden Ambient-Track.
+function applyVolume(audio, gmVolume) {
+    const gm = (typeof gmVolume === 'number' && !isNaN(gmVolume)) ? gmVolume : 0.6;
+    audio.gmVolume = gm;
+    audio.volume = Math.max(0, Math.min(1, gm * getPlayerVolume()));
+}
+
+function changePlayerVolume(vol) {
+    const v = parseFloat(vol);
+    if (isNaN(v)) return;
+    playerVolume = Math.max(0, Math.min(1, v));
+    try {
+        localStorage.setItem(PLAYER_VOLUME_KEY, String(playerVolume));
+    } catch (e) { /* localStorage evtl. blockiert - dann gilt der Wert nur für diese Sitzung */ }
+    // Bereits laufende Sounds sofort nachziehen, nicht erst beim nächsten Abspielen
+    currentAudioPlayers.forEach(audio => applyVolume(audio, audio.gmVolume));
+    updatePlayerVolumeIcon(playerVolume);
+}
+
+function updatePlayerVolumeIcon(v) {
+    const icon = document.getElementById('player-volume-icon');
+    if (!icon) return;
+    icon.className = 'fa-solid ' + (v === 0 ? 'fa-volume-xmark' : v < 0.5 ? 'fa-volume-low' : 'fa-volume-high');
+}
+
+// Beim Laden den gespeicherten Wert in den Regler zurückschreiben
+function initPlayerVolumeSlider() {
+    loadPlayerVolume();
+    const slider = document.getElementById('player-volume-slider');
+    if (slider) slider.value = playerVolume;
+    updatePlayerVolumeIcon(playerVolume);
+}
+
 function previewGmSound(soundId) {
     const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
     if (typeof playAudioFile === 'function') playAudioFile(soundId, vol);
@@ -1159,7 +1222,7 @@ function sendGmSound(soundId) {
 function changeGmVolume(vol) {
     const volume = parseFloat(vol);
     if (typeof currentAudioPlayers !== 'undefined') {
-        currentAudioPlayers.forEach(audio => audio.volume = volume);
+        currentAudioPlayers.forEach(audio => applyVolume(audio, volume));
     }
     // Sync live volume change to players
     Object.values(clientConnections).forEach(conn => {
@@ -1229,7 +1292,7 @@ function playAudioFile(soundId, overrideVolume = 0.6) {
 
     if (soundMap[soundId]) {
         const audio = new Audio(soundMap[soundId]);
-        audio.volume = overrideVolume;
+        applyVolume(audio, overrideVolume);
         audio.play().catch(e => console.warn('Audio play blocked:', e));
         currentAudioPlayers.push(audio);
         
@@ -1359,7 +1422,7 @@ function previewCustomSound() {
     const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
     const url = URL.createObjectURL(customSoundCache.blob);
     const audio = new Audio(url);
-    audio.volume = vol;
+    applyVolume(audio, vol);
     audio.play().catch(e => console.warn('Audio play blocked:', e));
     currentAudioPlayers.push(audio);
     audio.addEventListener('ended', () => {

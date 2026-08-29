@@ -54,6 +54,8 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
 ### 🦸‍♂️ Für die Spieler:
 Einfach den 4-stelligen Code des Spielleiters eingeben und auf "Beitreten" klicken. Ab jetzt werden alle eure Würfe, Lebenspunkte-Updates und Inventar-Änderungen live auf den Monitor des Spielleiters synchronisiert.
 
+**🔊 Eigener Lautstärkeregler:** Neben dem Sound-Schalter in der Symbolleiste sitzt ein Regler für **deine** Lautstärke. Er legt sich als Gesamtlautstärke über den Pegel des Spielleiters, statt ihn zu ersetzen – dessen Mischung bleibt also erhalten (leiser Regen unter einem lauten Schuss), du bestimmst nur, wie laut das Ganze bei dir ankommt. Gilt auch für deine eigenen Würfel- und Treffer-Sounds. Die Einstellung bleibt auf deinem Gerät und wandert nicht in deine Charakter-JSON.
+
 ### 🤖 Optional: Discord Webhook Sync (Für alle sichtbar)
 Wenn ihr wollt, dass **auch alle Spieler** untereinander die Würfe sehen (z.B. wenn ihr in einem Voice-Call seid), könnt ihr zusätzlich zum Live-Dashboard die native Discord-Integration nutzen:
 1. Der Spielleiter erstellt im Textkanal eures Discord-Servers einen **Webhook**.

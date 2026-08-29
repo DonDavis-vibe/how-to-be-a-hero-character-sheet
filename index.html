@@ -99,9 +99,13 @@
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
                 <input type="file" id="import-upload" accept=".json" style="display:none" onchange="importData(event)">
             </label>
-            <button id="toggle-sound-btn" class="tool-btn" onclick="toggleSound()" title="Sound-Effekte an/aus" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; margin-right: 0.5rem; cursor: pointer;">
+            <button id="toggle-sound-btn" class="tool-btn" onclick="toggleSound()" title="Sound-Effekte an/aus" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; cursor: pointer;">
                 <i class="fa-solid fa-volume-high"></i>
             </button>
+            <div class="tool-btn player-volume-box" title="Deine Lautstärke - gilt für die Sounds des Spielleiters und deine eigenen Würfel-Sounds">
+                <i class="fa-solid fa-volume-high" id="player-volume-icon"></i>
+                <input type="range" id="player-volume-slider" class="player-volume" min="0" max="1" step="0.05" value="1" oninput="changePlayerVolume(this.value)" aria-label="Lautstärke">
+            </div>
             <button id="toggle-fx-btn" class="tool-btn" onclick="toggleFx()" title="Hintergrund-Effekte an/aus" style="background: rgba(0,0,0,0.3); border: 1px solid var(--panel-border); color: white; margin-right: 0.5rem; cursor: pointer;">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
             </button>

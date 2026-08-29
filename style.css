@@ -2078,3 +2078,25 @@ body.theme-ultracore {
     .gm-select { flex: 1 1 120px; max-width: none; }
     .gm-volume { flex: 1 1 80px; width: auto; }
 }
+
+/* Lautstärkeregler des Spielers in der Symbolleiste */
+.player-volume-box {
+    gap: 0.5rem;
+    margin-right: 0.5rem;
+    cursor: default;
+    /* 5px statt 0.5rem: mit dem 18px hohen Regler drin ergibt das exakt die
+       30px der übrigen Symbolleisten-Buttons */
+    padding: 5px 0.8rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border, rgba(255,255,255,0.15));
+}
+.player-volume-box:hover { border-color: var(--panel-border, rgba(255,255,255,0.15)); }
+.player-volume-box i { opacity: 0.8; font-size: 0.9rem; }
+.player-volume {
+    width: 70px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--color-accent);
+    vertical-align: middle;
+}

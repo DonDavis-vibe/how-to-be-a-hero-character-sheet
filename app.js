@@ -136,7 +136,8 @@ function renderAll() {
             btn.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
         }
     }
-    
+    if (typeof initPlayerVolumeSlider === 'function') initPlayerVolumeSlider();
+
     if (appData.theme) {
         const selector = document.getElementById('theme-selector');
         if (selector) selector.value = appData.theme;

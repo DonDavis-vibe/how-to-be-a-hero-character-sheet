@@ -11,6 +11,9 @@ const AudioController = {
         if (!soundEnabled) return;
         const snd = this.sounds[soundName];
         if (snd) {
+            // Der Lautstärkeregler gilt für alles, was man hört - auch für die
+            // eigenen Würfel- und Treffer-Sounds, nicht nur für das SL-Soundboard.
+            snd.volume = typeof getPlayerVolume === 'function' ? getPlayerVolume() : 1;
             snd.currentTime = 0;
             snd.play().catch(e => console.log('Audio blocked:', e));
         }
