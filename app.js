@@ -880,12 +880,17 @@ function addToLog(dice, result, timestamp) {
     
     sendToDiscord(dice + ": " + result);
     if (typeof sendMultiplayerLog === 'function') {
+        // Über die Leitung geht nur Klartext. Das Dashboard des Spielleiters escapt
+        // alles, was von außen kommt - würde hier Markup mitfahren (der Wurf-Titel
+        // enthält z.B. ein <i>-Icon), stünde es dort als sichtbarer Text.
         const temp = document.createElement('div');
         temp.innerHTML = result;
         const cleanResult = temp.textContent || temp.innerText || "";
+        temp.innerHTML = dice;
+        const cleanDice = (temp.textContent || temp.innerText || "").trim();
         let bigNum = cleanResult.match(/\d+/);
         bigNum = bigNum ? bigNum[0] : "--";
-        sendMultiplayerLog(dice + ": " + cleanResult, "🎲", bigNum, dice);
+        sendMultiplayerLog(cleanDice + ": " + cleanResult, "🎲", bigNum, cleanDice);
     }
 }
 

@@ -737,12 +737,12 @@ function addGmLogEntry(charName, message, emoji) {
     
     const timeStr = new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
     
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = message;
-    const cleanMsg = tempDiv.textContent || tempDiv.innerText || "";
-    
-    // cleanMsg ist zwar von HTML befreit, aber als *Text*. Ohne erneutes Escapen
-    // würde eine Nachricht mit "&lt;img ...&gt;" hier wieder zu echtem HTML.
+    // Kein innerHTML-Umweg mehr, um Tags zu strippen: dabei entstehen echte
+    // Elemente, und ein <img src=x onerror="..."> feuert auch in einem Knoten,
+    // der nie im Dokument hängt. Was hier ankommt, ist ohnehin Klartext
+    // (siehe addToLog in app.js) und wird nur noch escapt.
+    const cleanMsg = message === null || message === undefined ? '' : String(message);
+
     const innerHTML = `
         <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${timeStr} - <strong style="color: ${playerColor};">${escapeHtml(charName)}</strong></div>
         <div>${escapeHtml(emoji)} ${escapeHtml(cleanMsg)}</div>
