@@ -2100,3 +2100,20 @@ body.theme-ultracore {
     accent-color: var(--color-accent);
     vertical-align: middle;
 }
+
+/* Dezenter Support-Link im Footer - bewusst unauffälliger als die anderen
+   Links, damit er nicht wie ein weiterer Pflichthinweis wirkt. */
+.footer-support {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+}
+.footer-support a {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    font-weight: normal;
+}
+.footer-support a:hover {
+    color: #ffdd57;
+    text-decoration: underline;
+}
