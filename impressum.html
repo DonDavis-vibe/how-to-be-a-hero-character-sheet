@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
+<title>Impressum</title>
+<style>
+    /*
+        Eigenstaendige Impressum-Seite, absichtlich ohne Abhaengigkeit zu
+        style.css oder den Theme-Variablen des jeweiligen Tools: soll sich
+        unveraendert in jedes Pen & Paper-Projekt kopieren lassen, egal
+        welches Design die Hauptseite gerade hat.
+
+        Anpassen pro Projekt:
+        - Der "Zurueck"-Link unten zeigt auf "./index.html" - Pfad pruefen,
+          falls das Tool anders aufgebaut ist.
+        - Adresse/Kontakt sind fuer DonDavis ([Name entfernt]) hinterlegt und
+          gelten fuer alle Projekte, in denen er als Betreiber auftritt.
+          Bei einem Tool mit anderem/zusaetzlichem Betreiber entsprechend
+          ergaenzen.
+    */
+    :root {
+        --bg: #0f172a;
+        --panel: #1e293b;
+        --border: rgba(255, 255, 255, 0.12);
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --accent: #8b5cf6;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        padding: 2.5rem 1.25rem 4rem;
+    }
+    .wrap {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+    .back-link:hover { color: var(--text); }
+    h1 {
+        font-size: 1.8rem;
+        margin: 0 0 1.5rem;
+    }
+    h2 {
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin: 2rem 0 0.6rem;
+    }
+    section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.5rem 1.75rem;
+    }
+    p { margin: 0 0 0.4rem; }
+    a { color: #93c5fd; }
+    .muted { color: var(--text-muted); font-size: 0.85rem; }
+    hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1.75rem 0;
+    }
+    footer {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+</style>
+</head>
+<body>
+    <div class="wrap">
+        <a class="back-link" href="./index.html">&larr; Zurück zum Tool</a>
+
+        <h1>Impressum</h1>
+
+        <section>
+            <p><strong>[Name entfernt]</strong></p>
+            <p>[Anschrift entfernt]</p>
+            <p>[Ort entfernt]</p>
+            <p>Deutschland</p>
+
+            <h2>Kontakt</h2>
+            <p>Telefon: [Telefon entfernt]</p>
+            <p>E-Mail: <a href="[E-Mail entfernt]</a></p>
+        </section>
+
+        <footer>
+            <p>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG).</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -122,3 +122,6 @@ Sie werden hier ausschließlich im Rahmen eines kostenlosen Community-Projekts f
 ## 📜 Lizenzen
 - **Code:** Der Quellcode dieses Tools steht unter der [MIT License](LICENSE).
 - **Regelwerk:** Das P&P Regelsystem "How to be a Hero" der *Rocket Beans* Community steht unter der **CC BY-NC-SA 4.0** Lizenz. (Siehe [howtobeahero.de](https://howtobeahero.de/))
+
+## 📇 Impressum
+[Impressum](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/impressum.html)
