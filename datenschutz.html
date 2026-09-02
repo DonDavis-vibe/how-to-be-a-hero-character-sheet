@@ -94,8 +94,8 @@
             [Anschrift entfernt]<br>
             [Ort entfernt]<br>
             Deutschland</p>
-            <p>Telefon: [Telefon entfernt]<br>
-            E-Mail: <a href="[E-Mail entfernt]</a></p>
+            <p>Telefon: <span id="phone-contact">[Telefon entfernt]</span><br>
+            E-Mail: <span id="email-contact">[E-Mail entfernt]</span></p>
         </div>
 
         <h2>2. Grundsätzliches</h2>
@@ -159,5 +159,25 @@
             <p>Diese Erklärung beschreibt den tatsächlichen technischen Aufbau dieses Tools zum oben genannten Stand. Ändert sich die eingesetzte Technik, wird sie entsprechend angepasst.</p>
         </footer>
     </div>
+
+    <script>
+        // Gleicher Schutz wie in impressum.html - siehe dort fuer die
+        // ausfuehrliche Begruendung. Ohne JavaScript bleibt die vollstaendige,
+        // lesbare Nummer/Adresse als Text sichtbar, nur ohne Klick-Funktion.
+        document.addEventListener('DOMContentLoaded', function () {
+            var emailEl = document.getElementById('email-contact');
+            if (emailEl) {
+                var email = emailEl.textContent.replace(' [at] ', '@');
+                emailEl.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
+            }
+
+            var phoneEl = document.getElementById('phone-contact');
+            if (phoneEl) {
+                var display = phoneEl.textContent.replace(' [tel] ', ' ');
+                var dialable = '+49' + display.replace(/^0/, '').replace(/\s+/g, '');
+                phoneEl.innerHTML = '<a href="tel:' + dialable + '">' + display + '</a>';
+            }
+        });
+    </script>
 </body>
 </html>
