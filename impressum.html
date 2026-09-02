@@ -97,8 +97,8 @@
             <p>Deutschland</p>
 
             <h2>Kontakt</h2>
-            <p>Telefon: <span id="phone-contact">[Telefon entfernt]</span></p>
-            <p>E-Mail: <span id="email-contact">[E-Mail entfernt]</span></p>
+            <p>Telefon: <span class="cx-tel">[Telefon entfernt]</span></p>
+            <p>E-Mail: <span class="cx-mail">[E-Mail entfernt]</span></p>
         </section>
 
         <footer>
@@ -107,33 +107,43 @@
     </div>
 
     <script>
-        // Schutz vor simplen Scrapern: Telefon und E-Mail stehen im Quelltext
-        // nicht als zusammenhaengender, direkt matchbarer String, sondern mit
-        // einer Textmarke dazwischen. Menschen mit deaktiviertem JavaScript
-        // sehen weiterhin die vollstaendige, lesbare Nummer/Adresse (nur ohne
-        // Klick-Funktion) - das Impressum bleibt so in jedem Fall "unmittelbar
-        // wahrnehmbar", auch ohne Skript.
+        // Schutz vor Scrapern: Anders als eine simple "[at]"-Ersetzung (das ist
+        // die bekannteste Verschleierungskonvention ueberhaupt und wird von
+        // gaengigen Harvestern gezielt erkannt) steht die echte Zieladresse
+        // NIRGENDS als zusammenhaengender String im Quelltext - weder im
+        // sichtbaren Text noch im Skript. Sie entsteht erst zur Laufzeit aus
+        // getrennten Fragmenten (String.fromCharCode, Array-Join). Ein Bot
+        // muesste die Logik unten tatsaechlich ausfuehren, nicht nur ein
+        // bekanntes Muster ersetzen.
         //
-        // Wichtig zur Einordnung: Das haelt naive Regex-/Text-Scraper ab, die
-        // nur den rohen HTML-Quelltext lesen. Ein Scraper, der die Seite wie
-        // ein echter Browser rendert (inkl. JavaScript), sieht am Ende
-        // trotzdem die echte Adresse - vollstaendige Unsichtbarkeit fuer
-        // jede Art von Bot gibt es bei einem oeffentlich pflichtigen
-        // Impressum grundsaetzlich nicht.
-        document.addEventListener('DOMContentLoaded', function () {
-            var emailEl = document.getElementById('email-contact');
-            if (emailEl) {
-                var email = emailEl.textContent.replace(' [at] ', '@');
-                emailEl.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
-            }
+        // Menschen mit deaktiviertem JavaScript sehen weiterhin die volle,
+        // lesbare Nummer/Adresse (nur ohne Klick-Funktion) - das Impressum
+        // bleibt so in jedem Fall "unmittelbar wahrnehmbar" (§5 DDG), auch
+        // ohne Skript. Und zur ehrlichen Einordnung: Das haelt Scraper ab, die
+        // den rohen HTML-Quelltext lesen. Ein Bot, der die Seite wie ein
+        // echter Browser inkl. JavaScript rendert, sieht am Ende trotzdem die
+        // echte Adresse - vollstaendige Unsichtbarkeit gegenueber jeder Art
+        // von Bot gibt es bei einem oeffentlich pflichtigen Impressum nicht.
+        (function () {
+            var user = ['x', 'x'].join('_');
+            var host = ['x', 'x'].join('.');
+            var mail = user + String.fromCharCode(64) + host;
+            var tRest = '0000' + '0000';
 
-            var phoneEl = document.getElementById('phone-contact');
-            if (phoneEl) {
-                var display = phoneEl.textContent.replace(' [tel] ', ' ');
-                var dialable = '+49' + display.replace(/^0/, '').replace(/\s+/g, '');
-                phoneEl.innerHTML = '<a href="tel:' + dialable + '">' + display + '</a>';
-            }
-        });
+            document.querySelectorAll('.cx-mail').forEach(function (el) {
+                var a = document.createElement('a');
+                a.href = 'mailto:' + mail;
+                a.setAttribute('aria-label', 'E-Mail an ' + mail);
+                while (el.firstChild) a.appendChild(el.firstChild);
+                el.appendChild(a);
+            });
+            document.querySelectorAll('.cx-tel').forEach(function (el) {
+                var a = document.createElement('a');
+                a.href = 'tel:+49231' + tRest;
+                while (el.firstChild) a.appendChild(el.firstChild);
+                el.appendChild(a);
+            });
+        })();
     </script>
 </body>
 </html>
