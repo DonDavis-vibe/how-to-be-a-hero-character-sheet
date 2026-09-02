@@ -17,3 +17,6 @@ node_modules/
 # Eigene Sounds und Charakterdaten bleiben lokal
 custom_sound.*
 mein_charakter*.json
+
+# Einmal-Werkzeug zum Bereinigen der History (PII im Klartext) - nach Gebrauch loeschen
+/.scrub/
