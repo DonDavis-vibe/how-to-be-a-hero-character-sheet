@@ -335,6 +335,9 @@
                 </div>
             </div>
 
+            <!-- Tischmitte: geteilte Loot-Ablage, nur als verbundener Spieler sichtbar (tischmitte.js) -->
+            <div id="tischmitte-section" class="tischmitte-section" style="display: none;"></div>
+
         </div>
 
         <!-- Notes Section (Movable) -->
@@ -425,6 +428,9 @@
                 </div>
             </div>
             
+            <!-- Gruppenübersicht: Mitspieler mit HP und Status, nur als verbundener Spieler (gruppe.js) -->
+            <div id="gruppe-panel" class="glass-panel gruppe-panel" style="margin-top: 1rem; display: none;"></div>
+
             <div class="glass-panel" style="margin-top: 1rem;">
                 <details class="activity-log-container" open>
                     <summary class="logbuch-summary" style="display: flex; justify-content: space-between; align-items: center; outline: none; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
@@ -450,6 +456,8 @@
     <script src="audio.js"></script>
     <script src="multiplayer.js"></script>
     <script src="app.js"></script>
+    <script src="tischmitte.js"></script>
+    <script src="gruppe.js"></script>
 <div id="crit-fail-overlay"></div>
 
     <!-- Discord Modal -->
@@ -760,6 +768,9 @@
                     <!-- Player Cards go here -->
                 </div>
                 
+                <!-- Tischmitte: Loot vorbereiten, verstecken, aufdecken (tischmitte.js) -->
+                <div id="gm-tischmitte" class="gm-tischmitte"></div>
+
                 <!-- General GM Notes -->
                 <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border);">
                     <div style="font-weight: bold; margin-bottom: 0.8rem; color: #fbbf24; font-size: 1.1rem;"><i class="fa-solid fa-book-journal-whills"></i> Allgemeine SL-Notizen</div>

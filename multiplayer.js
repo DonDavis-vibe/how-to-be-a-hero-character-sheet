@@ -256,10 +256,21 @@ function hostMultiplayerSession(preferredCodeArg) {
             delete clientConnections[conn.peer];
             delete connectedPlayersData[conn.peer];
             renderGmDashboard();
+            if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
+            if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
+            if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
             addGmLogSystemMessage(`Spieler hat den Raum verlassen.`);
         });
         
         clientConnections[conn.peer] = conn;
+
+        // Tischmitte und Gruppenstand gehen automatisch an jeden, der beitritt
+        const begruessen = () => {
+            if (typeof tischmitteAnVerbindung === 'function') tischmitteAnVerbindung(conn);
+            if (typeof gruppeAnVerbindung === 'function') gruppeAnVerbindung(conn);
+        };
+        if (conn.open) begruessen();
+        else conn.on('open', begruessen);
     });
     
     peer.on('error', (err) => {
@@ -377,9 +388,14 @@ function exitGmMode() {
 }
 
 function handleIncomingData(peerId, payload) {
+    // Tischmitte (tischmitte.js): Nehmen / Ablegen
+    if (typeof tischmitteAnfrageVerarbeiten === 'function' && tischmitteAnfrageVerarbeiten(peerId, payload)) return;
     if (payload.type === 'state') {
+        const neuerSpieler = !connectedPlayersData[peerId];
         connectedPlayersData[peerId] = payload.data;
         renderGmDashboard();
+        if (neuerSpieler && typeof renderTischmitteGm === 'function') renderTischmitteGm();
+        if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
     } else if (payload.type === 'log') {
         const charName = connectedPlayersData[peerId] ? [connectedPlayersData[peerId].vorname, connectedPlayersData[peerId].name].filter(Boolean).join(' ') : 'Unbekannt';
         addGmLogEntry(charName, payload.message, payload.emoji);
@@ -437,6 +453,7 @@ function getColorForPlayer(name) {
 function setColorForPlayer(name, color) {
     localStorage.setItem('gmPlayerColor_' + name, color);
     renderGmDashboard();
+    if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
 }
 
 // Spielerdaten kommen über WebRTC von fremden Rechnern und landen per innerHTML
@@ -874,11 +891,15 @@ function joinMultiplayerSession(codeArg) {
 
             // Send initial state
             sendMultiplayerState();
+            if (typeof tischmitteBeitritt === 'function') tischmitteBeitritt();
+            if (typeof renderGruppe === 'function') renderGruppe();
         });
 
         hostConnection.on('close', () => {
             hostConnection = null;
             clearMultiplayerSession();
+            if (typeof tischmitteGetrennt === 'function') tischmitteGetrennt();
+            if (typeof gruppeGetrennt === 'function') gruppeGetrennt();
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
@@ -900,6 +921,10 @@ function joinMultiplayerSession(codeArg) {
                 if (typeof stopAllAudio === 'function') stopAllAudio();
             } else if (payload && payload.type === 'fadeOutSound') {
                 if (typeof fadeOutAllAudio === 'function') fadeOutAllAudio();
+            } else if (payload && typeof tischmitteNachrichtVerarbeiten === 'function' && tischmitteNachrichtVerarbeiten(payload)) {
+                // erledigt in tischmitte.js
+            } else if (payload && typeof gruppeNachrichtVerarbeiten === 'function' && gruppeNachrichtVerarbeiten(payload)) {
+                // erledigt in gruppe.js
             } else if (payload && payload.type === 'customSound') {
                 // Privater Sound des SL, kommt direkt per WebRTC an - existiert nur für die
                 // Dauer der Wiedergabe im Speicher, wird nirgends gespeichert oder veröffentlicht.

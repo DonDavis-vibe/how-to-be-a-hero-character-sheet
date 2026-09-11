@@ -23,6 +23,16 @@ const helpData = {
     customSound: "<h3>🔒 Eigener privater Sound</h3><p>Hast du einen Song oder Sound, den du <b>nicht öffentlich verwenden darfst</b> (z.B. nur für den privaten Rahmen lizenziert), aber trotzdem in eurer Runde nutzen willst? Lade ihn hier hoch!</p><p>Die Datei wird <b>ausschließlich lokal in deinem Browser</b> gespeichert (nie im Repository, nie auf der öffentlich gehosteten Seite). Beim Klick auf \"Für alle abspielen\" wird sie direkt per WebRTC an die aktuell verbundenen Spieler übertragen, genau wie eure Würfe und HP-Updates auch - es findet keine Veröffentlichung auf irgendeiner Plattform statt.</p><p><i>Hinweis: Die Datei bleibt auf diesem Gerät gespeichert, bis du sie über den Papierkorb-Button wieder entfernst. Bei einem Wechsel des Browsers/Geräts musst du sie erneut hochladen.</i></p>"
 ,
 
+    gruppe: "<h3>👥 Gruppe</h3>" +
+            "<p>Sobald du im Live-Sync mit deinem Spielleiter verbunden bist, siehst du hier deine <b>Mitspieler</b>: Bild, Name, Lebenspunkte und ihre aktuellen Status-Effekte. Fällt jemand auf 10 LP oder weniger, blinkt die Zeile rot.</p>" +
+            "<p>Mehr ist es absichtlich nicht - Skills, Inventar und Notizen der anderen bleiben privat bzw. Sache des Spielleiters. Die Farbe kommt vom Spielleiter-Dashboard.</p>",
+
+    tischmitte: "<h3>🫳 Tischmitte</h3>" +
+                "<p>Die Tischmitte ist eine geteilte Ablage zwischen Spielleiter und Spielern - wie Beute, die in der Mitte des Tisches liegt.</p>" +
+                "<p><b>Für den Spielleiter:</b> Lege Gegenstände, Waffen oder Geld ab. <b>Versteckte</b> Einträge siehst nur du - so kannst du den Loot eines Abenteuers schon vor der Session vorbereiten. Findet die Gruppe die Truhe, klickst du auf <i>Aufdecken</i> (oder <i>Alle aufdecken</i>) und die Beute erscheint bei allen Spielern. Über <i>Geben an …</i> schiebst du etwas auch direkt einem bestimmten Charakter ins Inventar.</p>" +
+                "<p><b>Für Spieler:</b> Sobald der Spielleiter etwas aufdeckt, klappt die Tischmitte bei dir auf. Mit <i>Nehmen</i> wandert der Gegenstand in dein Inventar (Waffen zu den Waffen, Geld in die Kasse). Greifen zwei gleichzeitig zu, bekommt nur einer den Gegenstand - der Spielleiter entscheidet. Über <i>Eigenes ablegen</i> kannst du auch etwas aus deinem Inventar in die Mitte legen, z.B. um es einem Mitspieler zu geben - bei Stapeln (3x Verbandskasten) wählst du, wie viele davon.</p>" +
+                "<p><i>Die Tischmitte des Spielleiters bleibt in seinem Browser gespeichert, bis er sie leert - auch über einen Reload hinweg.</i></p>",
+
     general: "<h3><i class='fa-solid fa-circle-info'></i> Willkommen beim How to be a Hero - Tool</h3>" +
              "<p>Dieser interaktive Charakterbogen nimmt dir die Rechenarbeit am Pen&Paper-Tisch ab und bietet ein nahtloses Multiplayer-Erlebnis.</p>" +
              "<h4>Top Features:</h4>" +

@@ -114,6 +114,8 @@ function renderAll() {
     renderWeapons();
     renderStatuses();
     renderActivityLog();
+    // Tischmitte (tischmitte.js) - nur als verbundener Spieler; Inventar-Auswahl fürs Ablegen aktuell halten
+    if (typeof renderTischmitteSpieler === 'function') renderTischmitteSpieler();
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');

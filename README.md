@@ -48,11 +48,16 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
   * **Farbcodierung:** Weise jedem Spieler eine eigene Farbe zu für perfekten Überblick.
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
+  * **🤯 Tischmitte (Loot-Ablage):** Beute (Gegenstände, Waffen, Geld) schon vor der Session anlegen und **versteckt** halten - nur du siehst sie. Findet die Gruppe die Truhe, ein Klick auf *Aufdecken* und die Beute erscheint bei allen Spielern; per *Geben an …* landet etwas direkt bei einem Charakter. Die Tischmitte bleibt in deinem Browser gespeichert.
   * **🎛️ Integriertes Live-Soundboard:** 43 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
   * **💡 Pro-Tipp (Integriertes Sound-Mixing):** Da Sounds nicht automatisch stoppen, wenn ein neuer gestartet wird, fungiert das Tool als echter Soundmixer! Der Spielleiter kann zum Beispiel prasselnden Regen als Endlos-Kulisse laufen lassen und *währenddessen* jederzeit eine Schießerei, einen Schrei oder einen Glockenschlag abspielen, ohne dass die Atmosphäre unterbrochen wird.
 
 ### 🦸‍♂️ Für die Spieler:
 Einfach den 4-stelligen Code des Spielleiters eingeben und auf "Beitreten" klicken. Ab jetzt werden alle eure Würfe, Lebenspunkte-Updates und Inventar-Änderungen live auf den Monitor des Spielleiters synchronisiert.
+
+**👥 Gruppe:** Rechts zwischen Würfel-Tool und Logbuch siehst du deine Mitspieler - Name, Lebenspunkte und Status-Effekte, live. Mehr bewusst nicht; Skills, Inventar und Notizen der anderen bleiben privat.
+
+**🤯 Tischmitte:** Deckt der Spielleiter Beute auf, klappt auf deinem Bogen die Tischmitte auf. *Nehmen* legt den Gegenstand in dein Inventar (Waffen zu den Waffen, Geld in die Kasse) - greifen zwei gleichzeitig zu, bekommt ihn nur einer. Umgekehrt kannst du eigene Sachen in die Mitte legen, um sie einem Mitspieler zu geben.
 
 **🔊 Eigener Lautstärkeregler:** Neben dem Sound-Schalter in der Symbolleiste sitzt ein Regler für **deine** Lautstärke. Er legt sich als Gesamtlautstärke über den Pegel des Spielleiters, statt ihn zu ersetzen – dessen Mischung bleibt also erhalten (leiser Regen unter einem lauten Schuss), du bestimmst nur, wie laut das Ganze bei dir ankommt. Gilt auch für deine eigenen Würfel- und Treffer-Sounds. Die Einstellung bleibt auf deinem Gerät und wandert nicht in deine Charakter-JSON.
 
