@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="https://howtobeahero.de/skins/wiki.png" alt="How to be a Hero Logo" width="200" />
-  <h1>🎲 How to be a Hero - Digital Character Sheet & GM Dashboard 🎲</h1>
+  <img src="assets/logo-herohq.svg" alt="HeroHQ Logo" width="140" />
+  <h1>🎲 HeroHQ 🎲</h1>
 
   <p>
-    <strong>Ein interaktiver, regelkonformer und voll animierter Charakterbogen + Live Spielleiter-Dashboard für das "How to be a Hero" Pen & Paper System.</strong><br>
+    <strong>HeroHQ</strong> ist ein interaktiver, regelkonformer und voll animierter Charakterbogen + Live Spielleiter-Dashboard für das "How to be a Hero" Pen & Paper System.<br>
     <em>Ein Community-Projekt für die fantastische Rocket Beans und HTBAH Community! 💖</em>
   </p>
 
@@ -48,6 +48,8 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
   * **Farbcodierung:** Weise jedem Spieler eine eigene Farbe zu für perfekten Überblick.
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
+  * **🎲 Zufallsgenerator:** SL-Vorbereitungswerkzeug im Dashboard - Namen, NSC (inkl. optionalem Eldara-Wesen mit passender Eigenschaft), Orte, magische Gegenstände, Begägnungen und Gerüchte würfeln. Ergebnisse lassen sich per Klick in die SL-Notizen übernehmen oder (bei Gegenständen) direkt versteckt in die Tischmitte legen. Rein lokal beim SL, nichts geht automatisch an Spieler raus.
+  * **🪄 SL-Eingriff:** Per Knopf in der Spielerkarte einem Charakter direkt Gegenstände, Waffen oder Geld geben und Status-Effekte setzen oder entfernen - auf Wunsch **verdeckt**, also ohne Logbuch-Eintrag oder Hinweis beim Spieler (für Flüche, heimlich zugesteckte Dinge, schleichende Vergiftungen). In deinem Live-Feed steht jeder Eingriff.
   * **🤯 Tischmitte (Loot-Ablage):** Beute (Gegenstände, Waffen, Geld) schon vor der Session anlegen und **versteckt** halten - nur du siehst sie. Findet die Gruppe die Truhe, ein Klick auf *Aufdecken* und die Beute erscheint bei allen Spielern; per *Geben an …* landet etwas direkt bei einem Charakter. Die Tischmitte bleibt in deinem Browser gespeichert.
   * **🎛️ Integriertes Live-Soundboard:** 43 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
   * **💡 Pro-Tipp (Integriertes Sound-Mixing):** Da Sounds nicht automatisch stoppen, wenn ein neuer gestartet wird, fungiert das Tool als echter Soundmixer! Der Spielleiter kann zum Beispiel prasselnden Regen als Endlos-Kulisse laufen lassen und *währenddessen* jederzeit eine Schießerei, einen Schrei oder einen Glockenschlag abspielen, ohne dass die Atmosphäre unterbrochen wird.
@@ -78,6 +80,19 @@ Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach 
 - **HP & Status:** Flexibel anpassbare Status-Effekte (Bonus/Malus) und eine dramatische **visuelle HP-Warnung** (rotes Pulsieren), sobald dein Charakter auf ≤ 10 Lebenspunkte fällt.
 - **Smartes Würfel-Tool:** Jeder Wurf wird dokumentiert. Trage im Würfel-Tool schnell einen **Spielleiter-Bonus/Malus** ein, der völlig automatisch in deinen nächsten Wurf eingerechnet wird! 
 - **Aktions-Logbuch:** Ein eigenes, aufklappbares Logbuch dokumentiert automatisch chronologisch alle Änderungen an HP, Währung, Inventar, Waffen und Status-Effekten.
+
+---
+
+## 📜 Hausregeln & Regelpakete (Vorbereitung)
+Viele Runden spielen HTBAH mit eigenen Erweiterungen. Über den Button **Hausregeln** (Bogen und GM-Dashboard) lässt sich ein **Regelpaket** aktivieren, das der Spielleiter per Live-Sync an alle Spieler verteilt. Ohne Paket rechnet der Bogen exakt wie bisher.
+
+Ein Paket kann mitbringen:
+* **Feste Talentliste** mit Beschreibungen (per Klick auf den Bogen übernehmen, bestehende Punkte bleiben).
+* **Progressive Talentkosten** und ein eigenes Punktebudget - „Verteilte Punkte“ zeigt dann die Kosten.
+* **Talentbaum**: Hauptbäume + Wesen wählen, Skills mit Rang- und Skillpunkten lernen, die aus den Talentwerten entstehen; gelernte Skills im Kampf abhaken und ihren Schaden direkt würfeln.
+* **Wesen-Effekte** (Boni/Mali) und **Würfeltabellen** (Kochen, Zechen, Orakel ...).
+
+Eingebaut ist das Paket *Eldara – Version Arrrrr* einer Piraten-Runde. Eigene Pakete lassen sich als JSON laden; das Format steht in [DATA_FORMAT.md](DATA_FORMAT.md).
 
 ---
 

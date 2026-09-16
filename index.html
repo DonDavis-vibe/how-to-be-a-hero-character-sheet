@@ -5,27 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
-    <title>How to be a Hero - Interaktiver Charakterbogen & GM-Tool</title>
-    <meta name="description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV). Bietet Live-Multiplayer, integriertes Soundboard und 1-Klick-Würfeln.">
-    <meta name="keywords" content="Pen & Paper, PnP, RBTV, Rocket Beans TV, How to be a Hero, Charakterbogen, Generator, Vorlage, Online Tool, VTT, Spielleiter, GM Dashboard, Multiplayer, Soundboard">
+    <title>HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero</title>
+    <meta name="description" content="HeroHQ ist der kostenlose Online-Charakterbogen & GM-Dashboard für das Pen & Paper 'How to be a Hero' (RBTV). Bietet Live-Multiplayer, integriertes Soundboard und 1-Klick-Würfeln.">
+    <meta name="keywords" content="HeroHQ, Pen & Paper, PnP, RBTV, Rocket Beans TV, How to be a Hero, Charakterbogen, Generator, Vorlage, Online Tool, VTT, Spielleiter, GM Dashboard, Multiplayer, Soundboard">
     <meta name="author" content="DonDavis">
-    <meta name="theme-color" content="#8b5cf6">
+    <meta name="theme-color" content="#57c2f0">
     <link rel="canonical" href="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
+    <link rel="icon" type="image/svg+xml" href="assets/logo-herohq.svg">
 
     <!-- Open Graph / Facebook / Discord -->
     <meta property="og:type" content="website">
     <meta property="og:locale" content="de_DE">
-    <meta property="og:site_name" content="How to be a Hero - Charakterbogen">
+    <meta property="og:site_name" content="HeroHQ">
     <meta property="og:url" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
-    <meta property="og:title" content="How to be a Hero - Interaktiver Charakterbogen & GM-Tool">
-    <meta property="og:description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
+    <meta property="og:title" content="HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero">
+    <meta property="og:description" content="HeroHQ ist der kostenlose Online-Charakterbogen & GM-Dashboard für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
     <meta property="og:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/preview.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
-    <meta property="twitter:title" content="How to be a Hero - Interaktiver Charakterbogen & GM-Tool">
-    <meta property="twitter:description" content="Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
+    <meta property="twitter:title" content="HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero">
+    <meta property="twitter:description" content="HeroHQ ist der kostenlose Online-Charakterbogen & GM-Dashboard für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
     <meta property="twitter:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/preview.png">
 
     <!-- Structured Data für Google (Rich Results) -->
@@ -33,9 +34,9 @@
     {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "How to be a Hero - Interaktiver Charakterbogen & GM-Tool",
+        "name": "HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero",
         "url": "https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/",
-        "description": "Kostenloser Online Charakterbogen & GM-Tool für das Pen & Paper 'How to be a Hero' (RBTV) mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.",
+        "description": "HeroHQ ist der kostenlose Online-Charakterbogen & GM-Dashboard für das Pen & Paper 'How to be a Hero' (RBTV) mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any (Web-based)",
         "browserRequirements": "Requires JavaScript",
@@ -66,7 +67,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <h1 class="sr-only">How to be a Hero - Interaktiver Online Charakterbogen & Tool</h1>
+    <h1 class="sr-only">HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero</h1>
     
     <!-- Floating Info Button -->
     <button onclick="showHelp('general')" style="position: absolute; top: 1.5rem; right: 1.5rem; z-index: 100; background: rgba(0, 0, 0, 0.6); color: white; border: 1px solid var(--panel-border, rgba(255,255,255,0.2)); border-radius: 8px; padding: 0.6rem 1.2rem; font-size: 1.1rem; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='rgba(0, 0, 0, 0.6)'; this.style.transform='scale(1)';">
@@ -75,8 +76,15 @@
 
     <div id="fx-layer" style="position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;"></div>
 
-    <div class="header-banner" style="max-width: 1200px; height: 150px; margin: 0.5rem auto 1.5rem auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--glass-border, rgba(255,255,255,0.2)); background: rgba(0,0,0,0.5);">
-        <img src="assets/header2.jpeg" alt="How to be a Hero Banner" style="width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; transform: scale(1.03);">
+    <div class="header-banner" style="max-width: 1200px; height: 220px; margin: 0.5rem auto 1.5rem auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--glass-border, rgba(255,255,255,0.2)); background: rgba(0,0,0,0.5); position: relative;">
+        <img id="header-banner-img" src="assets/header-herohq.jpg" alt="HeroHQ Banner" style="width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 25%;">
+        <div style="position: absolute; left: 18px; bottom: 16px; display: flex; align-items: center; gap: 12px;">
+            <img src="assets/logo-herohq-drip.svg" alt="" aria-hidden="true" style="width: 50px; height: auto; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));">
+            <div>
+                <div style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 2rem; line-height: 1.15; color: #fff; letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 22px rgba(0,0,0,0.6);">HeroHQ</div>
+                <div style="font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 0.8rem; color: rgba(255,255,255,0.9); text-shadow: 0 1px 6px rgba(0,0,0,0.95);">Charakterbogen &amp; Spielleiter-Dashboard für How to be a Hero</div>
+            </div>
+        </div>
     </div>
 
     <div class="app-container">
@@ -94,6 +102,7 @@
             <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
             <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
             <button class="tool-btn" onclick="openWizard()" title="Charakter-Erstellungs-Assistent"><i class="fa-solid fa-hat-wizard"></i> Assistent</button>
+            <button id="btn-hausregeln" class="tool-btn" onclick="openHausregeln()" title="Hausregeln / Regelpaket der Runde"><i class="fa-solid fa-scroll"></i> Hausregeln</button>
             <button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Speichern (JSON)</button>
             <label class="tool-btn">
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
@@ -288,6 +297,9 @@
                 </div>
 
             </div>
+            <!-- Talentbaum (nur sichtbar, wenn ein Regelpaket mit Talentbaum aktiv ist - talentbaum.js) -->
+            <div id="talentbaum-section" class="talentbaum-section" style="display: none;"></div>
+
             <!-- Inventory Section -->
             <div class="inventory-section">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
@@ -305,7 +317,11 @@
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
-                                <div class="add-item-box" style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
+                <!-- Eldara-Hausregel: Rasterinventar mit begrenzten Plätzen statt der
+                     freien Liste (inventarraster.js) - nur sichtbar, wenn das
+                     Regelpaket "eldora-arrrrr" aktiv ist. -->
+                <div class="inventar-raster" id="inventar-raster" style="display: none;"></div>
+                                <div class="add-item-box" id="add-item-box" style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="text" id="new-item-input" placeholder="Item Name..." style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;" onkeypress="handleNewItemKey(event)">
                         <div style="display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
@@ -319,8 +335,9 @@
                 </div>
             </div>
 
-            <!-- Weapons Section -->
-            <div class="weapons-section" style="margin-top: 2rem;">
+            <!-- Weapons Section - bei aktivem Eldara-Regelpaket ausgeblendet, weil
+                 Waffen dort im Rasterinventar (inventarraster.js) leben -->
+            <div class="weapons-section" id="weapons-section" style="margin-top: 2rem;">
                 <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" alt="" style="filter: hue-rotate(150deg);"> Waffen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                 <div class="weapons-list" id="weapons-list">
                     <!-- Populated by JS -->
@@ -337,6 +354,17 @@
 
             <!-- Tischmitte: geteilte Loot-Ablage, nur als verbundener Spieler sichtbar (tischmitte.js) -->
             <div id="tischmitte-section" class="tischmitte-section" style="display: none;"></div>
+
+            <!-- Quest-Logbuch: erscheint erst, sobald der SL mindestens eine Quest
+                 geteilt hat - bleibt bis dahin komplett unsichtbar (quests.js) -->
+            <div id="quest-section" class="quest-section" style="display: none;"></div>
+
+            <!-- Schiffs-Inventar: nur bei aktivem Eldara-Regelpaket (schiffsinventar.js) -->
+            <div id="schiff-section" class="schiff-section" style="display: none;"></div>
+
+            <!-- Seekampf-Karte: Live-Ansicht der SL-Karte, nur bei aktivem
+                 Eldara-Regelpaket (seekampf.js) -->
+            <div id="seekampf-section" class="seekampf-section" style="display: none;"></div>
 
         </div>
 
@@ -456,8 +484,18 @@
     <script src="audio.js"></script>
     <script src="multiplayer.js"></script>
     <script src="app.js"></script>
+    <script src="hausregeln.js"></script>
+    <script src="talentbaum.js"></script>
     <script src="tischmitte.js"></script>
     <script src="gruppe.js"></script>
+    <script src="nscliste.js"></script>
+    <script src="quests.js"></script>
+    <script src="inventarraster.js"></script>
+    <script src="schiffsinventar.js"></script>
+    <script src="battlemap.js"></script>
+    <script src="seekampf.js"></script>
+    <script src="eingriff.js"></script>
+    <script src="randomizer.js"></script>
 <div id="crit-fail-overlay"></div>
 
     <!-- Discord Modal -->
@@ -488,6 +526,24 @@
             </label>
             
             <button class="tool-btn" onclick="saveDiscordSettings()" style="width: 100%; justify-content: center; background: #5865F2; border: none; padding: 0.8rem; font-size: 1rem;"><i class="fa-solid fa-floppy-disk"></i> Speichern & Testen</button>
+        </div>
+    </div>
+
+    <!-- Hausregeln / Regelpaket (hausregeln.js) -->
+    <div id="hausregeln-modal-overlay" class="help-modal-overlay" onclick="closeHausregeln()">
+        <div class="help-modal-box hausregeln-modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeHausregeln()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-scroll"></i> Hausregeln &amp; Regelpakete <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('hausregeln')" title="Hilfe zu Hausregeln"></i></h3>
+            <div id="hausregeln-body"></div>
+        </div>
+    </div>
+
+    <!-- SL-Eingriff: Gegenstand geben / Status setzen, wahlweise verdeckt (eingriff.js) -->
+    <div id="eingriff-modal-overlay" class="help-modal-overlay" onclick="closeEingriff()">
+        <div class="help-modal-box eingriff-modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeEingriff()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-hand-sparkles"></i> SL-Eingriff <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('gmEingriff')" title="Hilfe zum SL-Eingriff"></i></h3>
+            <div id="eingriff-body"></div>
         </div>
     </div>
 
@@ -604,6 +660,13 @@
 
             <!-- Zeile 2: Werkzeug-Gruppen -->
             <div class="gm-toolbar-row">
+
+                <!-- Gruppe: Hausregeln -->
+                <div class="gm-group">
+                    <span class="gm-group-label"><i class="fa-solid fa-scroll"></i> Regeln</span>
+                    <button class="gm-btn" onclick="openHausregeln()" title="Regelpaket der Runde wählen und an die Spieler senden"><i class="fa-solid fa-scroll"></i> Hausregeln</button>
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('hausregeln')" title="Hilfe zu Hausregeln"></i>
+                </div>
 
                 <!-- Gruppe: Darstellung -->
                 <div class="gm-group">
@@ -762,12 +825,35 @@
 
             <!-- Right: Players & General Notes -->
             <div style="display: flex; flex-direction: column; gap: 2rem;">
-                
+
                 <!-- Player Cards Grid -->
                 <div id="gm-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr)); gap: 1.5rem; align-items: start;">
                     <!-- Player Cards go here -->
                 </div>
-                
+
+                <!-- Zufallsgenerator: SL-Vorbereitungswerkzeug (randomizer.js) - bewusst
+                     prominent in der breiten Hauptspalte statt in der schmalen
+                     Seitenleiste, damit man beim Würfeln alle Tabellen im Blick hat.
+                     Unterhalb der Charakterbögen, damit die Spielerübersicht beim
+                     Öffnen des Dashboards zuerst kommt. -->
+                <div id="gm-randomizer" class="gm-randomizer"></div>
+
+                <!-- NSC-Liste: SL-Übersicht über eigene NPCs, manuell oder aus dem
+                     Zufallsgenerator übernommen (nscliste.js) -->
+                <div id="gm-nscliste" class="gm-nscliste"></div>
+
+                <!-- Quest-Logbuch: Quests vor/während der Runde anlegen und gezielt
+                     mit der Gruppe teilen (quests.js) -->
+                <div id="gm-quests" class="gm-quests"></div>
+
+                <!-- Schiffs-Inventar: geteilter Vorrat der Crew, nur bei aktivem
+                     Eldara-Regelpaket (schiffsinventar.js) -->
+                <div id="gm-schiff" class="gm-schiff"></div>
+
+                <!-- Seekampf: taktischer Kampf-Tracker mit Karte (battlemap.js +
+                     seekampf.js), SL-only, nur bei aktivem Eldara-Regelpaket -->
+                <div id="gm-seekampf" class="gm-seekampf"></div>
+
                 <!-- Tischmitte: Loot vorbereiten, verstecken, aufdecken (tischmitte.js) -->
                 <div id="gm-tischmitte" class="gm-tischmitte"></div>
 
@@ -781,9 +867,36 @@
         </div>
     </div>
     
-    <div class="footer-disclaimer">Dies ist ein inoffizielles Fan-Projekt von <strong>German Redneck Engineering</strong> und steht in keiner Verbindung zu Rocket Beans Entertainment GmbH.<br>Entwickelt von <a href="https://github.com/DonDavis-vibe" target="_blank">DonDavis</a>, <a href="https://github.com/Rec0iL" target="_blank">R3c0il</a> & <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Antigravity AI</a> | <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank">Update History & Repository auf GitHub</a><br>Bugs gefunden oder Ideen fürs Tool? Ab damit in unseren <a href="https://discord.gg/mx3cQnGtmq" target="_blank"><i class="fa-brands fa-discord"></i> Dev- &amp; Test-Discord</a>.<br>Das Pen & Paper Regelsystem "How to be a Hero" unterliegt der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank">howtobeahero.de</a>.<br><a href="impressum.html">Impressum</a> | <a href="datenschutz.html">Datenschutzerklärung</a>
-        <div class="footer-support">Gefällt dir das Tool? <a href="https://ko-fi.com/don_davis" target="_blank" rel="noopener"><i class="fa-solid fa-mug-hot"></i> Kaffee spendieren auf Ko-fi</a></div>
-    </div>
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-col-brand">
+                <div class="footer-brand"><img src="assets/logo-herohq.svg" alt="" aria-hidden="true" class="footer-brand-icon"> HeroHQ</div>
+                <p class="footer-tagline">Ein Fan-Werkzeug für "How to be a Hero" – Charakterbogen, Spielleiter-Dashboard und Echtzeit-Multiplayer im Browser. Keine Anmeldung, alles bleibt in deinem Browser.</p>
+                <p class="footer-meta">Code: MIT · Regeln: CC BY-NC-SA 4.0</p>
+            </div>
+
+            <nav class="footer-col" aria-label="Links">
+                <h4>Links</h4>
+                <a class="footer-link" href="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/" target="_blank" rel="noopener"><i class="fa-solid fa-link"></i> Web-App (GitHub Pages) <i class="fa-solid fa-arrow-up-right-from-square footer-link-ext"></i></a>
+                <a class="footer-link" href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Quellcode auf GitHub <i class="fa-solid fa-arrow-up-right-from-square footer-link-ext"></i></a>
+                <a class="footer-link" href="https://howtobeahero.de/" target="_blank" rel="noopener"><i class="fa-solid fa-heart"></i> How to be a Hero (offiziell) <i class="fa-solid fa-arrow-up-right-from-square footer-link-ext"></i></a>
+            </nav>
+
+            <nav class="footer-col" aria-label="Mitmachen">
+                <h4>Mitmachen</h4>
+                <button type="button" class="footer-link footer-link-btn" onclick="showHelp('general')"><i class="fa-solid fa-circle-question"></i> Hilfe &amp; Kurzanleitung</button>
+                <a class="footer-link" href="https://discord.gg/mx3cQnGtmq" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Discord <i class="fa-solid fa-arrow-up-right-from-square footer-link-ext"></i></a>
+                <a class="footer-link" href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet/issues/new" target="_blank" rel="noopener"><i class="fa-solid fa-bug"></i> Fehler melden <i class="fa-solid fa-arrow-up-right-from-square footer-link-ext"></i></a>
+                <a class="footer-link" href="https://ko-fi.com/don_davis" target="_blank" rel="noopener"><i class="fa-solid fa-mug-hot"></i> Unterstützen (Ko-fi) <i class="fa-solid fa-arrow-up-right-from-square footer-link-ext"></i></a>
+            </nav>
+
+            <div class="footer-col footer-col-legal">
+                <p>HeroHQ ist ein inoffizielles Fan-Projekt von <strong>German Redneck Engineering</strong> und steht in keiner Verbindung zur Rocket Beans Entertainment GmbH. Entwickelt von <a href="https://github.com/DonDavis-vibe" target="_blank" rel="noopener">DonDavis</a>, <a href="https://github.com/Rec0iL" target="_blank" rel="noopener">R3c0il</a> &amp; <a href="https://github.com/DonDavis-vibe/how-to-be-a-hero-character-sheet" target="_blank" rel="noopener">Antigravity AI</a>.</p>
+                <p>Das Pen &amp; Paper Regelsystem "How to be a Hero" ist ein Projekt der Rocket Beans Community und steht unter der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> Lizenz. Mehr Infos unter <a href="https://howtobeahero.de/" target="_blank" rel="noopener">howtobeahero.de</a>.</p>
+                <p class="footer-legal-links"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutzerklärung</a></p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
 

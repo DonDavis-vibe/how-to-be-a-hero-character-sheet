@@ -62,12 +62,23 @@ function showSaveIndicator() {
     }, 2000);
 }
 
+// Zeigt das Eldara-Piraten-Banner statt des allgemeinen HeroHQ-Banners, sobald
+// die Runde das Hausregel-Paket "eldora-arrrrr" aktiv hat (siehe hausregeln.js).
+function updateHeaderBanner() {
+    const img = document.getElementById('header-banner-img');
+    if (!img) return;
+    const eldoraAktiv = typeof hausregelnAktiv === 'function' && hausregelnAktiv()
+        && appData.hausregeln && appData.hausregeln.paket === 'eldora-arrrrr';
+    const ziel = eldoraAktiv ? 'assets/header-eldora.jpg' : 'assets/header-herohq.jpg';
+    if (img.getAttribute('src') !== ziel) img.setAttribute('src', ziel);
+}
+
 // Rendering
 function renderAll() {
     if (appData.name) {
-        document.title = `${appData.name} - Charakterbogen (HTBAH)`;
+        document.title = `${appData.name} - HeroHQ`;
     } else {
-        document.title = "Charakterbogen (HTBAH)";
+        document.title = "HeroHQ";
     }
     
     // Layout Mode
@@ -114,8 +125,15 @@ function renderAll() {
     renderWeapons();
     renderStatuses();
     renderActivityLog();
+    // Hausregel-Erweiterung (talentbaum.js) - zeigt sich nur mit aktivem Regelpaket
+    if (typeof renderTalentbaum === 'function') renderTalentbaum();
+    updateHeaderBanner();
     // Tischmitte (tischmitte.js) - nur als verbundener Spieler; Inventar-Auswahl fürs Ablegen aktuell halten
     if (typeof renderTischmitteSpieler === 'function') renderTischmitteSpieler();
+    // Schiffs-Inventar (schiffsinventar.js) - nur bei aktivem Eldara-Regelpaket
+    if (typeof renderSchiffSpieler === 'function') renderSchiffSpieler();
+    // Seekampf-Karte (seekampf.js) - nur bei aktivem Eldara-Regelpaket
+    if (typeof renderSeekampfSpieler === 'function') renderSeekampfSpieler();
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');
@@ -256,6 +274,8 @@ function renderSkills(attr) {
         nameInput.contentEditable = true;
         nameInput.setAttribute('placeholder', 'Skill Name');
         nameInput.textContent = skill.name || '';
+        // Talente aus einem Regelpaket (hausregeln.js) bringen eine Beschreibung mit
+        if (skill.beschreibung) nameInput.title = skill.beschreibung;
         nameInput.oninput = (e) => {
             skill.name = e.target.textContent;
             saveData();
@@ -357,6 +377,15 @@ function renderSkills(attr) {
         controlsRow.appendChild(plusBtn);
         controlsRow.appendChild(bonusToggleBtn);
         controlsRow.appendChild(totalSpan);
+        // Sondertabelle des Regelpakets (z.B. Kochen, Zechen) direkt am Talent würfeln
+        if (skill.tabelle && typeof hausregelnTabellen === 'function' && hausregelnTabellen()[skill.tabelle]) {
+            const tabBtn = document.createElement('button');
+            tabBtn.className = 'btn-skill-tabelle';
+            tabBtn.innerHTML = '<i class="fa-solid fa-table-list"></i>';
+            tabBtn.title = `Sondertabelle "${hausregelnTabellen()[skill.tabelle].name}" würfeln`;
+            tabBtn.onclick = () => hausregelnTabelleWuerfeln(skill.tabelle);
+            controlsRow.appendChild(tabBtn);
+        }
         controlsRow.appendChild(delBtn);
 
         item.appendChild(nameInput);
@@ -388,12 +417,17 @@ function addSkill(attr) {
 
 function calculatePoints() {
     let totalInvested = 0;
+    // Hausregeln (hausregeln.js): Mit Kostenstaffel zählt fürs Budget nicht der
+    // Talentwert, sondern was er gekostet hat. Ohne Paket ist beides identisch.
+    let totalKosten = 0;
+    const kostenFn = typeof hausregelnTalentKosten === 'function' ? hausregelnTalentKosten : (n => n);
     ['handeln', 'wissen', 'soziales'].forEach(attr => {
         let catSum = 0;
         if (appData[`skills_${attr}`]) {
             appData[`skills_${attr}`].forEach(skill => {
                 const pts = skill.invested !== undefined ? skill.invested : (skill.value !== undefined ? skill.value : 0);
                 catSum += parseInt(pts) || 0;
+                totalKosten += kostenFn(parseInt(pts) || 0);
                 
                 // auto-migrate legacy data
                 if (skill.invested === undefined && skill.value !== undefined) {
@@ -435,21 +469,34 @@ function calculatePoints() {
         }
     });
     
-    const max = appData.maxPoints || 400;
+    const hausregelBudget = typeof hausregelnBudget === 'function' ? hausregelnBudget() : undefined;
+    const max = hausregelBudget || appData.maxPoints || 400;
+    const verteilt = hausregelBudget ? totalKosten : totalInvested;
     
     const totalEl = document.getElementById('points-total');
     const containerEl = document.getElementById('points-counter');
     if (totalEl) {
-        totalEl.textContent = totalInvested;
+        totalEl.textContent = verteilt;
+        totalEl.title = hausregelBudget ? `Kosten nach Hausregel-Staffel (${totalInvested} Punkte verteilt)` : '';
+    }
+    // Das Budget kommt dann aus dem Paket - das Feld zeigt es nur noch an
+    const maxInput = document.getElementById('points-max');
+    if (maxInput) {
+        if (hausregelBudget) maxInput.value = max;
+        maxInput.readOnly = !!hausregelBudget;
+        maxInput.title = hausregelBudget ? 'Budget laut Regelpaket' : '';
     }
     
     if (containerEl) {
-        if (totalInvested > max) {
+        if (verteilt > max) {
             containerEl.classList.add('over-limit');
         } else {
             containerEl.classList.remove('over-limit');
         }
     }
+
+    // Rang-/Skillpunkte des Talentbaums entstehen aus den Talentwerten
+    if (typeof renderTalentbaum === 'function' && typeof talentbaumRegeln === 'function' && talentbaumRegeln()) renderTalentbaum();
 }
 
 function updateMaxPoints() {
@@ -520,6 +567,29 @@ function handleDragEnd(e) {
 
 function renderInventory() {
     const listEl = document.getElementById('inventory-list');
+    const rasterBox = document.getElementById('inventar-raster');
+    const addBox = document.getElementById('add-item-box');
+    const weaponsSection = document.getElementById('weapons-section');
+    // Eldara-Hausregel: Rasterinventar (inventarraster.js) statt der freien
+    // Liste - das eigene Formular des Rasters ersetzt add-item-box komplett,
+    // und Waffen wandern als eigener Eintrags-Typ mit ins Raster (siehe
+    // irWaffenNachRasterMigrieren) statt im klassischen Waffen-Panel zu leben.
+    if (typeof eldaraAktiv === 'function' && eldaraAktiv()) {
+        if (typeof irWaffenNachRasterMigrieren === 'function') irWaffenNachRasterMigrieren();
+        // .inventory-list ist per CSS "display: grid !important" gesetzt - eine
+        // normale inline style.display würde dagegen verlieren.
+        listEl.style.setProperty('display', 'none', 'important');
+        listEl.innerHTML = '';
+        if (addBox) addBox.style.display = 'none';
+        if (weaponsSection) weaponsSection.style.display = 'none';
+        if (rasterBox) { rasterBox.style.display = ''; renderInventarRaster(); }
+        return;
+    }
+    if (typeof irWaffenAusRasterMigrieren === 'function') irWaffenAusRasterMigrieren();
+    if (rasterBox) { rasterBox.style.display = 'none'; rasterBox.innerHTML = ''; }
+    if (addBox) addBox.style.display = '';
+    if (weaponsSection) weaponsSection.style.display = '';
+    listEl.style.removeProperty('display');
     listEl.innerHTML = '';
 
     appData.inventory.forEach((item, index) => {
@@ -2151,7 +2221,7 @@ let wizardStepIndex = 0;
 
 const wizardSteps = [
     {
-        title: '👋 Willkommen bei How to be a Hero!',
+        title: '👋 Willkommen bei HeroHQ!',
         body: () => `
             <div class="wizard-step-body">
                 <p>Dieser kurze Assistent führt dich in ein paar Schritten durch die Erstellung deines Charakters: Konzept, Bild &amp; Logo, und Fähigkeiten verteilen.</p>

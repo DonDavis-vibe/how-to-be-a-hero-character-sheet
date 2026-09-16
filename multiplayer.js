@@ -257,17 +257,25 @@ function hostMultiplayerSession(preferredCodeArg) {
             delete connectedPlayersData[conn.peer];
             renderGmDashboard();
             if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
+            if (typeof renderSchiffGm === 'function') renderSchiffGm();
+            if (typeof renderSeekampfGm === 'function') renderSeekampfGm();
             if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
+            if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(conn.peer);
             if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
             addGmLogSystemMessage(`Spieler hat den Raum verlassen.`);
         });
         
         clientConnections[conn.peer] = conn;
 
-        // Tischmitte und Gruppenstand gehen automatisch an jeden, der beitritt
+        // Hausregeln der Runde (hausregeln.js) gehen automatisch an jeden, der
+        // beitritt - so muss der SL sie nicht jedes Mal von Hand verteilen.
         const begruessen = () => {
+            if (typeof hausregelnAnVerbindung === 'function') hausregelnAnVerbindung(conn);
             if (typeof tischmitteAnVerbindung === 'function') tischmitteAnVerbindung(conn);
             if (typeof gruppeAnVerbindung === 'function') gruppeAnVerbindung(conn);
+            if (typeof questeAnVerbindung === 'function') questeAnVerbindung(conn);
+            if (typeof schiffAnVerbindung === 'function') schiffAnVerbindung(conn);
+            if (typeof skAnVerbindung === 'function') skAnVerbindung(conn);
         };
         if (conn.open) begruessen();
         else conn.on('open', begruessen);
@@ -390,12 +398,19 @@ function exitGmMode() {
 function handleIncomingData(peerId, payload) {
     // Tischmitte (tischmitte.js): Nehmen / Ablegen
     if (typeof tischmitteAnfrageVerarbeiten === 'function' && tischmitteAnfrageVerarbeiten(peerId, payload)) return;
+    // Schiffs-Inventar (schiffsinventar.js): Nehmen / Ablegen
+    if (typeof schiffAnfrageVerarbeiten === 'function' && schiffAnfrageVerarbeiten(peerId, payload)) return;
+    // Seekampf (seekampf.js): Zugvorschlag für zugewiesenes Schiff
+    if (typeof skAnfrageVerarbeiten === 'function' && skAnfrageVerarbeiten(peerId, payload)) return;
     if (payload.type === 'state') {
         const neuerSpieler = !connectedPlayersData[peerId];
         connectedPlayersData[peerId] = payload.data;
         renderGmDashboard();
         if (neuerSpieler && typeof renderTischmitteGm === 'function') renderTischmitteGm();
+        if (typeof renderSchiffGm === 'function') renderSchiffGm();
+        if (neuerSpieler && typeof renderSeekampfGm === 'function') renderSeekampfGm();
         if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
+        if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(peerId);
     } else if (payload.type === 'log') {
         const charName = connectedPlayersData[peerId] ? [connectedPlayersData[peerId].vorname, connectedPlayersData[peerId].name].filter(Boolean).join(' ') : 'Unbekannt';
         addGmLogEntry(charName, payload.message, payload.emoji);
@@ -586,7 +601,14 @@ function renderGmDashboard() {
         // Das Punktebudget ist auf dem Bogen einstellbar und wird mitgeschickt.
         // Vorher stand hier fest 400, was bei Runden mit abweichendem Budget bei
         // jedem Spieler eine falsche Cheat-Warnung ausgelöst hat.
-        const maxPoints = parseInt(pData.maxPoints) || 400;
+        let maxPoints = parseInt(pData.maxPoints) || 400;
+        // Mit Hausregel-Kostenstaffel (hausregeln.js) zählt fürs Budget, was die
+        // Punkte gekostet haben - sonst würde jeder Eldara-Spieler als Cheater gelten.
+        if (typeof hausregelnBudget === 'function' && hausregelnBudget() && pData.hausregeln && pData.hausregeln.paket === hausregeln.paketId) {
+            maxPoints = hausregelnBudget();
+            totalPoints = ['handeln', 'wissen', 'soziales'].reduce((sum, cat) =>
+                sum + (pData[`skills_${cat}`] || []).reduce((n, s) => n + hausregelnTalentKosten(parseInt(s.invested) || 0), 0), 0);
+        }
         let ptsColor = totalPoints > maxPoints ? '#ed4245' : '#9ca3af';
         
         // Status effects
@@ -607,8 +629,12 @@ function renderGmDashboard() {
         const currencyName = (pData.currency && pData.currency.name) ? pData.currency.name : 'Credits';
         const currencyAmount = (pData.currency && pData.currency.amount !== undefined) ? pData.currency.amount : 0;
         
+        // Talentbaum aus der Hausregel-Erweiterung (talentbaum.js), falls der Spieler einen hat
+        const talentbaumHtml = typeof talentbaumDashboardHtml === 'function' ? talentbaumDashboardHtml(pData) : '';
+
         // Check open states
         const skillsOpen = openStates[`${peerId}_skills`] ? 'open' : '';
+        const tbOpen = openStates[`${peerId}_talentbaum`] ? 'open' : '';
         const invOpen = openStates[`${peerId}_inventory`] ? 'open' : '';
         const wpnOpen = openStates[`${peerId}_weapons`] ? 'open' : '';
 
@@ -643,6 +669,7 @@ function renderGmDashboard() {
             <div style="display: flex; gap: 0.3rem; align-items: center; flex-wrap: wrap; margin-top: 0.3rem;">
                 <span style="font-size: 0.7rem; opacity: 0.5; margin-right: 0.2rem;"><i class="fa-solid fa-palette"></i></span>
                 ${colorDotsHtml}
+                <button class="gm-btn gm-eingriff-btn" data-eingriff="${escapeHtml(peerId)}" title="Gegenstand geben oder Status setzen - auf Wunsch verdeckt"><i class="fa-solid fa-hand-sparkles"></i> Eingriff</button>
             </div>
             
             ${statusHtml ? `<div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem;">${statusHtml}</div>` : ''}
@@ -668,6 +695,12 @@ function renderGmDashboard() {
                     ${skillsHtml || '<i>Keine Skills</i>'}
                 </div>
             </details>
+            
+            ${talentbaumHtml ? `
+            <details data-peer-id="${escapeHtml(peerId)}" data-details-type="talentbaum" ${tbOpen} style="background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
+                <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-diagram-project" style="color: #fbbf24;"></i> Talentbaum</summary>
+                <div style="margin-top: 0.5rem;">${talentbaumHtml}</div>
+            </details>` : ''}
             
             <div style="display: flex; gap: 0.5rem;">
                 <details data-peer-id="${escapeHtml(peerId)}" data-details-type="inventory" ${invOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
@@ -696,6 +729,9 @@ function renderGmDashboard() {
             localStorage.setItem('gmNotes_' + e.target.dataset.charname, e.target.value);
         });
         
+        const eingriffBtn = card.querySelector('[data-eingriff]');
+        if (eingriffBtn && typeof openEingriff === 'function') eingriffBtn.addEventListener('click', () => openEingriff(eingriffBtn.dataset.eingriff));
+
         // Add color dot click listeners
         card.querySelectorAll('.gm-color-dot').forEach(dot => {
             dot.addEventListener('click', () => {
@@ -893,6 +929,9 @@ function joinMultiplayerSession(codeArg) {
             sendMultiplayerState();
             if (typeof tischmitteBeitritt === 'function') tischmitteBeitritt();
             if (typeof renderGruppe === 'function') renderGruppe();
+            if (typeof questeBeitritt === 'function') questeBeitritt();
+            if (typeof schiffBeitritt === 'function') schiffBeitritt();
+            if (typeof skSpielerBeitritt === 'function') skSpielerBeitritt();
         });
 
         hostConnection.on('close', () => {
@@ -900,6 +939,9 @@ function joinMultiplayerSession(codeArg) {
             clearMultiplayerSession();
             if (typeof tischmitteGetrennt === 'function') tischmitteGetrennt();
             if (typeof gruppeGetrennt === 'function') gruppeGetrennt();
+            if (typeof questeGetrennt === 'function') questeGetrennt();
+            if (typeof schiffGetrennt === 'function') schiffGetrennt();
+            if (typeof skSpielerGetrennt === 'function') skSpielerGetrennt();
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
@@ -925,6 +967,16 @@ function joinMultiplayerSession(codeArg) {
                 // erledigt in tischmitte.js
             } else if (payload && typeof gruppeNachrichtVerarbeiten === 'function' && gruppeNachrichtVerarbeiten(payload)) {
                 // erledigt in gruppe.js
+            } else if (payload && typeof eingriffNachrichtVerarbeiten === 'function' && eingriffNachrichtVerarbeiten(payload)) {
+                // erledigt in eingriff.js
+            } else if (payload && typeof questeNachrichtVerarbeiten === 'function' && questeNachrichtVerarbeiten(payload)) {
+                // erledigt in quests.js
+            } else if (payload && typeof schiffNachrichtVerarbeiten === 'function' && schiffNachrichtVerarbeiten(payload)) {
+                // erledigt in schiffsinventar.js
+            } else if (payload && typeof skNachrichtVerarbeiten === 'function' && skNachrichtVerarbeiten(payload)) {
+                // erledigt in seekampf.js
+            } else if (payload && payload.type === 'hausregeln') {
+                if (typeof hausregelnEmpfangen === 'function') hausregelnEmpfangen(payload.regeln);
             } else if (payload && payload.type === 'customSound') {
                 // Privater Sound des SL, kommt direkt per WebRTC an - existiert nur für die
                 // Dauer der Wiedergabe im Speicher, wird nirgends gespeichert oder veröffentlicht.

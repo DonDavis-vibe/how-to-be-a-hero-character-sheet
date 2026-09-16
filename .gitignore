@@ -13,6 +13,8 @@ desktop.ini
 *.log
 *.tmp
 node_modules/
+__pycache__/
+*.pyc
 
 # Eigene Sounds und Charakterdaten bleiben lokal
 custom_sound.*
@@ -20,3 +22,9 @@ mein_charakter*.json
 
 # Einmal-Werkzeug zum Bereinigen der History (PII im Klartext) - nach Gebrauch loeschen
 /.scrub/
+
+# Rohdaten der Spielgruppen fuer die Regelpakete (privat, nur lokal fuer den Konverter)
+/hausregeln/quellen/
+
+# Rohdaten der Zufallsgenerator-Tabellen (privat, nur lokal fuer den Konverter)
+/randomizer/quellen/

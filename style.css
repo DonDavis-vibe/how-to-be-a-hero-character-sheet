@@ -1,24 +1,48 @@
 :root {
-    --bg-color: #0f172a;
-    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    
+    /* Zeitreise (Standard-Theme): tiefes Void-Blau statt des reinen
+       Tailwind-slate-900, damit es nicht 1:1 wie das Standard-Dark-Mode-Preset
+       jedes KI-Tutorials aussieht - liegt nah an der Durchschnittsfarbe von
+       assets/bg.jpg, damit nichts bricht. */
+    --bg-color: #0b1220;
+    --bg-gradient: linear-gradient(135deg, #0b1220 0%, #142035 100%);
+
     --glass-bg: rgba(30, 41, 59, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    
+
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    
+
     --color-action: #f43f5e; /* Red-ish for Handeln */
     --color-knowledge: #3b82f6; /* Blue for Wissen */
     --color-social: #10b981; /* Green for Soziales */
-    
+
     --color-heal: #10b981;
     --color-dmg: #ef4444;
-    --color-accent: #8b5cf6;
-    
+    /* Eisiges Riss-Blau statt generischem Violett - passt zum "Wabernde Risse
+       im Raum-Zeit-Kontinuum"-Effekt dieses Themes (siehe startTimeTravelFx in
+       app.js, der schon rgba(150,200,255,...) für die Ripples nutzt) statt
+       einer beliebigen zweiten Farbe daneben. Nur dieses Theme betroffen -
+       alle anderen 12 Themes überschreiben --color-accent selbst. */
+    --color-accent: #57c2f0;
+
     --font-main: 'Outfit', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+
+    /* Seekarten-Farben für die Seekampf-Karte (battlemap.js, Canvas-Modul aus
+       dem Schwesterprojekt demonslayer) - bewusst FEST statt pro Vibe-Theme
+       überschrieben, damit die Karte immer als dunkle Seekarte lesbar bleibt,
+       egal welches Farbthema gerade aktiv ist. */
+    --karte-blatt: #0b1a24;
+    --karte-tinte: #e8f1f5;
+    --karte-stempel: #f0b429;
+    --karte-mess: #57c2f0;
+    --karte-raster: rgba(200, 225, 235, 0.16);
+    --karte-schleier: rgba(200, 225, 235, 0.35);
+    --karte-beschriftung: rgba(11, 26, 36, 0.92);
+    --karte-umriss: rgba(232, 241, 245, 0.7);
+    --karte-nebelVoll: #16323f;
+    --karte-nebelHalb: rgba(22, 50, 63, 0.66);
 }
 
 .sr-only {
@@ -1268,6 +1292,78 @@ h2 {
     width: 100%;
 }
 
+/* --- Rasterinventar (Eldara-Hausregel, inventarraster.js) ------------------ */
+.ir-hint { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 1rem 0; }
+.ir-warnung { color: var(--color-dmg); }
+.ir-einstellungen { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--text-secondary); }
+.ir-einstellung { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.ir-mini-btn {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+    color: var(--text-secondary); font-size: 0.72rem; padding: 0.25rem 0.5rem; cursor: pointer;
+}
+.ir-mini-btn:hover:not(:disabled) { color: var(--text-primary); border-color: var(--color-accent); }
+.ir-mini-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ir-ruestung-block { flex-direction: column; align-items: stretch; gap: 0.5rem; width: 100%; }
+.ir-ruestung-titel { font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.ir-ruestung-titel .ir-zone-malus { color: var(--color-accent); }
+.ir-ruestung-teile { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.ir-ruestung-teil { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--text-secondary); flex: 1 1 140px; }
+.ir-ruestung-teil select { width: 100%; }
+.ir-gruppen { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1rem; }
+.ir-gruppe { flex: 1 1 280px; min-width: 240px; }
+.ir-gruppe-titel { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.ir-zone-count { font-weight: 400; text-transform: none; letter-spacing: normal; opacity: 0.7; }
+.ir-zone-malus { font-weight: 400; text-transform: none; letter-spacing: normal; color: var(--color-dmg); }
+.ir-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.ir-slot { border-radius: 12px; min-width: 0; }
+.ir-slot-breit-2 { grid-column: span 2; }
+.ir-slot-breit-3 { grid-column: span 3; }
+.ir-slot-leer {
+    display: flex; align-items: center; justify-content: center; min-height: 84px;
+    border: 1px dashed rgba(255,255,255,0.18); color: rgba(255,255,255,0.25); font-size: 1.3rem;
+    transition: border-color 0.2s, color 0.2s;
+}
+.ir-slot-over { border-color: var(--color-accent) !important; color: var(--color-accent) !important; }
+.ir-slot:not(.ir-slot-leer).ir-slot-over .ir-karte { outline: 2px dashed var(--color-accent); outline-offset: 2px; }
+.ir-karte { margin: 0; cursor: grab; gap: 0.4rem; padding: 0.6rem; }
+.ir-karte:active { cursor: grabbing; }
+.ir-name {
+    width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.15);
+    color: var(--accent-blue); font-weight: 600; font-size: 0.9rem; padding: 0.15rem 0; outline: none; min-width: 0;
+}
+.ir-name-reihe { display: flex; align-items: center; gap: 0.3rem; width: 100%; }
+.ir-name-reihe .ir-name { flex: 1; }
+.ir-waffe-icon { color: var(--color-dmg); font-size: 0.85rem; flex-shrink: 0; }
+.ir-karte-waffe { border-left: 2px solid var(--color-dmg); }
+.ir-waffen-reihe { gap: 0.4rem; }
+.ir-schaden-input { flex: 1; min-width: 0; font-size: 0.8rem; padding: 0.3rem 0.5rem; color: var(--color-dmg); font-weight: 600; }
+.ir-wuerfeln-btn { color: var(--color-dmg); flex-shrink: 0; }
+.ir-waffe-check { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; flex: 0 0 auto; }
+.ir-input-schaden { flex: 1 1 140px; }
+.ir-karte-reihe { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; width: 100%; }
+.ir-karte-reihe .item-amount-wrapper { margin-right: auto; }
+.ir-karte .btn-delete-icon { font-size: 0.85rem; }
+.ir-desc-toggle { font-size: 0.75rem; padding: 0; align-self: flex-start; }
+.ir-groesse-select {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px;
+    color: var(--text-secondary); font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.2rem; cursor: pointer; flex-shrink: 0; max-width: 46px;
+}
+.ir-groesse-select:hover { color: var(--text-primary); border-color: var(--color-accent); }
+.ir-groesse-select option { background: #0f172a; color: #f8fafc; }
+.ir-form { display: flex; flex-wrap: wrap; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.2); }
+.ir-input {
+    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+    padding: 0.5rem; color: white; outline: none; font-family: inherit;
+}
+.ir-input-groesse { flex: 0 1 110px; }
+.ir-input-menge { flex: 0 1 80px; }
+.ir-input-desc { flex: 1 1 100%; resize: vertical; min-height: 40px; }
+.ir-add-btn {
+    flex: 1 1 100%; width: 100%; background: var(--accent-blue); color: white; border: none;
+    border-radius: 4px; padding: 0.5rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s;
+}
+.ir-add-btn:hover { opacity: 0.85; }
+
 .weapon-dmg-wrapper {
     display: flex;
     align-items: center;
@@ -1711,34 +1807,116 @@ body.theme-medieval {
 
 
 /* Footer Styling */
-.footer-disclaimer {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.85rem;
-    padding: 20px;
-    margin-top: 30px;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    line-height: 1.5;
+.site-footer {
     position: relative;
     z-index: 10;
+    margin-top: 30px;
+    padding: 24px 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid var(--glass-border);
     backdrop-filter: blur(3px);
 }
 
-.footer-disclaimer strong {
-    color: #ffffff;
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr 1fr 1.5fr;
+    gap: 26px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.footer-disclaimer a {
-    color: #66b3ff;
+.footer-col { display: flex; flex-direction: column; }
+
+.footer-col h4 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin: 0 0 8px 0;
+    font-weight: 700;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.footer-brand-icon { width: 24px; height: auto; }
+
+.footer-tagline {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    max-width: 42ch;
+    margin: 0;
+}
+
+.footer-meta {
+    margin-top: 10px;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
     text-decoration: none;
-    font-weight: bold;
-    transition: color 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
 }
 
-.footer-disclaimer a:hover {
-    color: #ffffff;
+.footer-link-btn { width: fit-content; }
+
+.footer-link:hover { color: var(--color-accent); }
+
+.footer-link-ext { font-size: 0.65rem; opacity: 0.5; margin-left: 2px; }
+
+.footer-col-legal {
+    font-size: 0.72rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    border-left: 1px solid var(--glass-border);
+    padding-left: 20px;
+}
+
+.footer-col-legal p { margin: 0 0 8px 0; }
+
+.footer-col-legal strong { color: var(--text-primary); }
+
+.footer-col-legal a {
+    color: var(--text-secondary);
     text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.footer-col-legal a:hover { color: var(--color-accent); }
+
+.footer-legal-links { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 4px !important; }
+
+.footer-legal-links a { font-size: 0.75rem; text-decoration: none; }
+
+.footer-legal-links a:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 18px; }
+    .footer-col-legal { border-left: 0; padding-left: 0; border-top: 1px solid var(--glass-border); padding-top: 14px; }
 }
 
 @keyframes emberRise {
@@ -2101,24 +2279,10 @@ body.theme-ultracore {
     vertical-align: middle;
 }
 
-/* Dezenter Support-Link im Footer - bewusst unauffälliger als die anderen
-   Links, damit er nicht wie ein weiterer Pflichthinweis wirkt. */
-.footer-support {
-    margin-top: 10px;
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.55);
-}
-.footer-support a {
-    color: rgba(255, 255, 255, 0.65);
-    text-decoration: none;
-    font-weight: normal;
-}
-.footer-support a:hover {
-    color: #ffdd57;
-    text-decoration: underline;
-}
+
 /* ============================================================
-   Erweiterungen: Tischmitte, Gruppe (tischmitte.js / gruppe.js)
+   Erweiterungen 2.0: Hausregeln, Talentbaum, Tischmitte, Gruppe
+   (hausregeln.js / talentbaum.js / tischmitte.js / gruppe.js)
 
    Alles hier hängt an den Theme-Variablen (--color-accent, --glass-border,
    --text-*) und an .card-layout, damit die 13 Vibes auch die neuen Teile
@@ -2130,7 +2294,7 @@ body.theme-ultracore {
 
 /* Karten-Grundoptik wie beim Inventar (.inv-item.card-layout); die Themes
    überschreiben .card-layout mit ihrer eigenen Fläche */
-.tm-item, .gr-spieler {
+.tm-item, .gr-spieler, .tb-ast, .hr-paket-info {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -2177,12 +2341,121 @@ body.theme-ultracore {
 .x-input:focus, .x-select:focus { border-color: var(--color-accent); }
 .x-select option { background: #0f172a; color: #f8fafc; }
 
+/* Sondertabellen-Knopf am Talent (z.B. Kochen, Zechen) */
+.btn-skill-tabelle {
+    background: none; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px;
+    color: var(--color-accent); width: 22px; height: 22px; font-size: 0.65rem;
+    cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+.btn-skill-tabelle:hover { border-color: var(--color-accent); }
+
+/* --- Hausregeln-Modal ----------------------------------------------------- */
+.hausregeln-modal { max-width: 640px; max-height: 90vh; overflow-y: auto; }
+.hausregeln-modal h3 { color: var(--color-accent); }
+.hausregeln-modal h4 { margin: 1.1rem 0 0.4rem; color: var(--color-accent); font-size: 0.95rem; font-weight: 600; }
+.hr-hint { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0.3rem 0; }
+.hr-dim { color: var(--text-secondary); font-size: 0.85rem; }
+.hr-select { flex: 1; min-width: 220px; padding: 0.5rem; font-size: 0.9rem; }
+.hr-paket-info { padding: 0.7rem 0.9rem; font-size: 0.9rem; line-height: 1.5; border-radius: 8px; }
+.hr-check { display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer; padding: 0.35rem 0; font-size: 0.88rem; line-height: 1.4; }
+.hr-check input { width: 18px; height: 18px; margin-top: 0.1rem; flex-shrink: 0; cursor: pointer; }
+.hr-footer { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 1.2rem; padding-top: 0.9rem; border-top: 1px solid var(--glass-border); }
+.hr-primary { border-color: var(--color-accent) !important; }
+
+/* --- Talentbaum-Abschnitt auf dem Bogen ----------------------------------- */
+.talentbaum-section { margin-top: 2rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); }
+.talentbaum-section .cat-title { margin-bottom: 0.8rem; }
+.talentbaum-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+.tb-kopf { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.6rem; }
+.tb-punkte { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tb-pill {
+    font-family: var(--font-mono); font-size: 0.78rem; white-space: nowrap;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+    padding: 0.25rem 0.6rem; border-radius: 6px; color: var(--text-primary);
+}
+.tb-pill.tb-ueber { color: var(--color-dmg); border-color: var(--color-dmg); }
+.tb-auswahl { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.tb-select { flex: 1; min-width: 150px; }
+.tb-select-wesen { border-color: var(--color-accent); }
+.tb-wesen-effekte { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+/* Wesen-Boni/-Mali in der Optik der Status-Badges */
+.tb-effekt { font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 12px; line-height: 1.3; max-width: 100%; cursor: help; border: 1px solid; }
+.tb-effekt-buff { background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.6); color: #86efac; }
+.tb-effekt-debuff { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.6); color: #fca5a5; }
+
+.tb-baeume { display: flex; gap: 0.8rem; overflow-x: auto; padding-bottom: 0.5rem; }
+.tb-ast {
+    flex: 1 1 0; min-width: 200px; border-radius: 12px; padding: 0.8rem 0.6rem;
+    display: flex; flex-direction: column; align-items: center;
+    border-top-width: 4px; border-top-color: var(--color-accent);
+}
+.tb-ast-wesen { border-top-color: var(--color-action); }
+.tb-ast-titel { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; text-align: center; color: var(--text-primary); }
+/* Rang/SP je Ast als schlichte Textzeile statt eigener Badges - taucht bis zu
+   vier Mal auf dem Bogen auf, eine Pille je Zahl summierte sich schnell zu
+   einer Wand aus Kapseln. */
+.tb-ast-stand { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); text-align: center; margin-bottom: 0.6rem; }
+.tb-ast-stand .tb-ueber { color: var(--color-dmg); font-weight: 700; }
+.tb-rang { width: 100%; }
+.tb-rang-label { font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; text-align: center; margin-bottom: 0.3rem; }
+.tb-rang-knoten { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+.tb-verbinder { width: 1px; height: 14px; background: var(--glass-border); margin: 0.3rem auto; }
+
+.tb-node {
+    width: 80px; min-height: 58px;
+    background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); border-radius: 8px;
+    padding: 0.35rem 0.3rem; cursor: pointer; user-select: none;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: border-color 0.15s, background 0.15s;
+}
+.tb-node:hover { border-color: var(--text-secondary); background: rgba(255,255,255,0.05); }
+.tb-node-aktiv { border-color: var(--color-accent); }
+.tb-node-max { border-color: var(--color-accent); background: rgba(255,255,255,0.06); }
+.tb-node-max .tb-node-level { color: var(--color-accent); }
+.tb-node-gesperrt { opacity: 0.35; cursor: not-allowed; }
+.tb-node-gesperrt:hover { border-color: var(--glass-border); background: rgba(0,0,0,0.25); }
+.tb-node-kopf { display: flex; align-items: flex-start; gap: 0.25rem; }
+.tb-node-name { font-size: 0.7rem; font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; hyphens: auto; }
+.tb-art { font-size: 0.6rem; color: var(--text-secondary); flex-shrink: 0; margin-top: 1px; }
+.tb-art-aktiv { color: var(--color-action); }
+.tb-node-fuss { display: flex; align-items: center; gap: 0.2rem; margin-top: 0.3rem; }
+.tb-node-level { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); flex: 1; }
+.tb-mini-minus { font-weight: 700; font-size: 0.8rem; }
+
+.tb-details { margin-top: 0.8rem; }
+.tb-details > summary { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-weight: 600; font-size: 0.9rem; }
+.tb-refresh { margin-left: auto; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; }
+/* Schlichte Zeilenliste mit Trennlinie statt eigener Karte je Skill - das
+   sind hier potenziell viele Einträge, nicht jeder braucht eine Card-Optik. */
+.tb-gelernt-liste { margin-top: 0.5rem; display: flex; flex-direction: column; }
+.tb-gelernt {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.2rem;
+    font-size: 0.85rem; border-bottom: 1px solid var(--glass-border);
+}
+.tb-gelernt:last-child { border-bottom: none; }
+.tb-gelernt-verbraucht { opacity: 0.45; }
+.tb-gelernt-verbraucht .tb-gelernt-text > div:first-child { text-decoration: line-through; }
+.tb-gelernt-verwaist { border-bottom-style: dashed; }
+.tb-gelernt-text { flex: 1; min-width: 0; }
+.tb-gelernt-detail { font-size: 0.75rem; }
+.tb-dim { color: var(--text-secondary); font-size: 0.78rem; }
+.tb-check { background: none; border: none; color: var(--color-accent); font-size: 1.1rem; cursor: pointer; padding: 0; flex-shrink: 0; }
+.tb-tabellen { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.8rem; }
+.tb-tabelle-btn { font-size: 0.8rem; padding: 0.3rem 0.7rem; border-radius: 6px; }
+.tb-hinweis-box { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; font-size: 0.9rem; color: var(--text-secondary); }
+.tb-hinweis-box > i { color: var(--color-accent); font-size: 1.3rem; }
+
+@media (max-width: 700px) {
+    .tb-baeume { flex-direction: column; }
+    .tb-ast { min-width: 0; }
+}
+
 /* --- Tischmitte ----------------------------------------------------------- */
 
 /* SL-Panel im Dashboard: gleiche Optik wie die Notizen-Box darunter */
-.gm-tischmitte { background: rgba(0,0,0,0.3); padding: 1.2rem 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border); }
-.gm-tischmitte .tm-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
-.gm-tischmitte .tm-title { font-weight: bold; color: #fbbf24; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+.gm-tischmitte, .gm-nscliste, .gm-quests, .gm-schiff, .gm-seekampf { background: rgba(0,0,0,0.3); padding: 1.2rem 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border); }
+.gm-tischmitte .tm-head, .gm-schiff .tm-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+.gm-tischmitte .tm-title, .gm-schiff .tm-title { font-weight: bold; color: #fbbf24; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
 .tm-head-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .tm-form {
     display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
@@ -2195,7 +2468,7 @@ body.theme-ultracore {
 .tm-input-menge { flex: 0 0 70px; text-align: center; }
 .tm-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
 .tm-item { padding: 0.5rem 0.7rem; border-radius: 8px; }
-.gm-tischmitte .tm-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
+.gm-tischmitte .tm-item, .gm-schiff .tm-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; }
 .gm-tischmitte .tm-item-hidden { border-style: dashed; opacity: 0.75; }
 .tm-item-kopf { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .tm-art-icon { color: var(--text-secondary); width: 1.1rem; text-align: center; }
@@ -2219,6 +2492,63 @@ body.theme-ultracore {
 .tm-ablegen { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; margin-top: 0.8rem; padding-top: 0.7rem; border-top: 1px dashed var(--glass-border); }
 .tm-select { flex: 1; min-width: 160px; }
 
+/* --- NSC-Liste (SL-Übersicht über eigene NPCs) ---------------------------- */
+.gm-nscliste .nsc-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+.nsc-title { font-weight: bold; color: #fbbf24; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+.nsc-head-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.nsc-form { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.nsc-input { flex: 1 1 140px; }
+.nsc-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
+.gm-nscliste .nsc-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.55rem 0.75rem; }
+.nsc-item-kopf { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.nsc-name { font-weight: 600; flex: 1; min-width: 80px; }
+.nsc-badge {
+    font-size: 0.72rem; color: var(--text-secondary); background: rgba(255,255,255,0.06);
+    border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.1rem 0.55rem; white-space: nowrap;
+}
+.nsc-item-details { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.nsc-notiz { display: block; width: 100%; margin-top: 0.5rem; resize: none; overflow: hidden; min-height: 2.1rem; font-size: 0.82rem; font-family: var(--font-main); }
+
+/* --- Quest-Logbuch --------------------------------------------------------- */
+.gm-quests .qs-head, .quest-section .qs-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+.qs-title { font-weight: bold; color: #fbbf24; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+.qs-form { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.qs-input { flex: 1 1 140px; }
+.qs-input-desc { flex: 2 1 200px; }
+.qs-hint { font-size: 0.78rem; color: var(--text-secondary); margin: 0.6rem 0 0; line-height: 1.4; }
+.qs-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.8rem; }
+.gm-quests .qs-item { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.6rem 0.8rem; }
+.gm-quests .qs-item-hidden { border-style: dashed; opacity: 0.8; }
+.qs-item-kopf { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.qs-name { font-weight: 700; flex: 1; min-width: 100px; }
+.qs-beschreibung { display: block; width: 100%; margin-top: 0.5rem; resize: none; overflow: hidden; min-height: 2.1rem; font-size: 0.85rem; font-family: var(--font-main); }
+.qs-item-desc { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.4rem; white-space: pre-wrap; }
+.qs-teil { margin-top: 0.7rem; padding-top: 0.6rem; border-top: 1px dashed var(--glass-border); }
+.qs-teil-titel { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-secondary); margin-bottom: 0.4rem; }
+.qs-teil-zeile { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; }
+.qs-teil-text { flex: 1; font-size: 0.85rem; min-width: 0; }
+.qs-teil-versteckt { opacity: 0.55; font-style: italic; }
+.qs-ziel-check { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0; cursor: pointer; }
+.qs-ziel-check input { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--color-accent); }
+.qs-ziel-erledigt { text-decoration: line-through; opacity: 0.65; }
+.qs-teil-add { display: flex; gap: 0.4rem; margin-top: 0.3rem; }
+.qs-teil-input { flex: 1; font-size: 0.82rem; padding: 0.32rem 0.5rem; }
+
+/* Spieler-Ansicht: kein Bearbeiten, nur Anzeigen - dafür ohne die versteckte-Optik */
+.quest-section { margin-top: 2rem; }
+.quest-section .cat-title { margin: 0; }
+.quest-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+.quest-section .qs-list { margin-top: 0.8rem; }
+.qs-teil-zeile-spieler { gap: 0.6rem; }
+.qs-teil-zeile-spieler i { color: var(--text-secondary); width: 1rem; text-align: center; }
+
+.seekampf-section { margin-top: 2rem; }
+.seekampf-section .cat-title { margin: 0; }
+.seekampf-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+.qs-ziel-icon-erledigt { color: var(--color-heal) !important; }
+.qs-hinweise-liste { margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); }
+.qs-hinweise-liste li { padding: 0.1rem 0; }
+
 /* --- Gruppenübersicht für Spieler ----------------------------------------- */
 .gruppe-panel { padding: 1.2rem 1.5rem; }
 .gruppe-panel h3 { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; margin: 0; }
@@ -2240,3 +2570,201 @@ body.theme-ultracore {
 .gr-balken-fuellung { height: 100%; transition: width 0.3s ease; }
 .gr-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.4rem; }
 .gr-tags .status-badge { cursor: default; font-size: 0.7rem; padding: 0.05rem 0.45rem; box-shadow: none; }
+
+
+/* --- SL-Eingriff (eingriff.js) -------------------------------------------- */
+.eingriff-modal { max-width: 560px; }
+.eingriff-modal h3 { color: var(--color-accent); }
+.eingriff-modal h4 { margin: 1.1rem 0 0.4rem; color: var(--color-accent); font-size: 0.95rem; font-weight: 600; }
+.eg-still { margin-top: 0.3rem; }
+.eg-zeile { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; margin-top: 0.4rem; }
+.eg-zeile .x-input, .eg-zeile .x-select { flex: 1 1 140px; }
+.eg-zeile .eg-klein { flex: 0 1 130px; }
+.eg-zeile .tool-btn { flex: 0 0 auto; }
+.eg-status-liste { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+.eg-st-weg { background: none; border: none; color: inherit; cursor: pointer; font-size: 0.75rem; padding: 0 0 0 0.3rem; opacity: 0.7; }
+.eg-st-weg:hover { opacity: 1; }
+.gm-eingriff-btn { margin-left: auto; height: 26px; font-size: 0.75rem; padding: 0 0.5rem; }
+
+
+/* --- Zufallsgenerator (randomizer.js) --------------------------------------
+   Bewusst als prominente Karte in der breiten Hauptspalte des Dashboards
+   (nicht in der schmalen Seitenleiste) - der SL soll beim Würfeln möglichst
+   viele Tabellen auf einen Blick sehen, statt sich durch eine Liste zu
+   scrollen. Kennfarbe Türkis/Cyan (#22d3ee) grenzt es von Gold (Würfel-Box),
+   Blau (Spieler-Wurf) und Grün (Tischmitte) ab - war vorher generisches
+   AI-Violett (#a78bfa), bewusst rausgeworfen. Das Dashboard bleibt absichtlich
+   unabhängig vom Charakterbogen-Vibe-Theme (fixe Farbcodierung je Kachel), das
+   hier ist also kein --color-accent-Fall. */
+.gm-randomizer {
+    background: rgba(19, 78, 84, 0.16);
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+}
+.rz-details > summary { list-style: none; cursor: pointer; outline: none; }
+.rz-details > summary::-webkit-details-marker { display: none; }
+.rz-titelzeile { display: flex; align-items: center; gap: 0.8rem; }
+.rz-titelzeile .x-chevron { font-size: 0.85rem; opacity: 0.7; }
+.rz-titel-icon { font-size: 1.5rem; color: #22d3ee; flex-shrink: 0; }
+.rz-titel { font-weight: 800; color: var(--text-primary); font-size: 1.25rem; }
+.rz-untertitel { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.1rem; }
+.rz-titelzeile .help-icon { margin-left: auto; }
+.rz-body { margin-top: 1.1rem; display: flex; flex-direction: column; gap: 1.1rem; }
+
+.rz-generatoren-reihe { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.rz-block {
+    background: rgba(0,0,0,0.22); border: 1px solid var(--glass-border); border-radius: 8px;
+    padding: 0.9rem 1rem;
+}
+.rz-block-kopf { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.7rem; }
+.rz-block-kopf .rz-block-titel { margin-bottom: 0; }
+.rz-block-titel { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+.rz-zeile { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.rz-btn-primary { background: rgba(34,211,238,0.22) !important; border-color: #22d3ee !important; font-weight: 700; }
+.rz-nsc-kopf { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.4rem; }
+.rz-badge {
+    font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    color: #22d3ee; background: rgba(34,211,238,0.12); border: 1px solid rgba(34,211,238,0.3);
+    border-radius: 999px; padding: 0.15rem 0.6rem; white-space: nowrap;
+}
+.rz-nsc-hint { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0 0 0.8rem 0; }
+.rz-kriterien-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.7rem; margin-bottom: 0.9rem; }
+.rz-feld { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.rz-feld label { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-secondary); }
+.rz-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.rz-tab {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-secondary);
+    padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: inherit;
+}
+.rz-tab-aktiv { background: rgba(34,211,238,0.18); border-color: #22d3ee; color: var(--text-primary); font-weight: 600; }
+.rz-kategorien-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.9rem 1.4rem; }
+.rz-kat { min-width: 0; }
+.rz-kat-label { font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.rz-tabelle-btn { font-size: 0.78rem; padding: 0.3rem 0.6rem; border-radius: 6px; }
+.rz-ergebnis-box {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(34, 211, 238, 0.35); border-radius: 8px;
+    padding: 1.1rem 1.3rem; min-height: 3rem;
+}
+.rz-quelle { font-size: 0.72rem; color: #22d3ee; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; font-weight: 700; }
+.rz-ergebnis-text { font-size: 1.1rem; line-height: 1.6; }
+.rz-neben { opacity: 0.7; font-size: 0.85em; }
+.rz-attribution { font-size: 0.68rem; color: var(--text-secondary); margin-top: 0.6rem; font-style: italic; }
+.rz-ergebnis-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.rz-ergebnis-actions .tool-btn { font-size: 0.8rem; padding: 0.35rem 0.7rem; }
+
+/* --- Seekampf (Eldara-Hausregel, seekampf.js + battlemap.js) --------------- */
+.sk-karten-werkzeuge { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
+.sk-karten-werkzeuge .tool-btn { font-size: 0.78rem; padding: 0.35rem 0.7rem; }
+.tool-btn-aktiv { border-color: var(--color-accent) !important; color: var(--text-primary) !important; }
+.sk-canvas {
+    width: 100%; height: 420px; display: block; border-radius: 8px;
+    border: 1px solid var(--panel-border); background: var(--karte-blatt); touch-action: none; cursor: grab;
+}
+.sk-mal-art { max-width: 200px; }
+.sk-mal-farbe { width: 34px; height: 34px; padding: 2px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: transparent; cursor: pointer; }
+.sk-raster-farben { display: inline-flex; align-items: center; gap: 0.3rem; }
+.sk-raster-farbpunkt { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; display: inline-block; }
+.sk-raster-farbpunkt-aktiv { border-color: var(--color-accent); }
+.sk-raster-feld { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--text-secondary); }
+.sk-num-stepper { display: inline-flex; align-items: stretch; }
+.sk-num-stepper button {
+    flex: none; width: 1.6rem; padding: 0; line-height: 1; font-size: 0.95rem;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-secondary); cursor: pointer;
+}
+.sk-num-stepper button:hover:not(:disabled) { background: rgba(255,255,255,0.15); color: var(--text-primary); }
+.sk-num-stepper button:disabled { opacity: 0.3; cursor: not-allowed; }
+.sk-num-stepper button:first-child { border-radius: 4px 0 0 4px; border-right: 0; }
+.sk-num-stepper button:last-child { border-radius: 0 4px 4px 0; border-left: 0; }
+.sk-num-stepper input[type="number"] { width: 3.4rem; flex: none; border-radius: 0; text-align: center; }
+.sk-marker-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+.sk-marker-liste { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.sk-kopfzeile { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; margin: 1rem 0; }
+.sk-wind-anzeige, .sk-runde-anzeige { display: flex; align-items: center; gap: 0.7rem; font-size: 0.85rem; }
+.sk-kompass { width: 36px; height: 36px; flex-shrink: 0; transition: transform 0.4s; }
+.sk-initiative-leiste { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.sk-init-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 20px;
+    padding: 0.25rem 0.7rem; font-size: 0.78rem; color: var(--text-secondary);
+}
+.sk-init-chip-aktiv { background: rgba(87,194,240,0.18); border-color: var(--color-accent); color: var(--text-primary); font-weight: 700; }
+.sk-vorschlaege {
+    background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.3); border-radius: 8px;
+    padding: 0.7rem 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem;
+}
+.sk-vorschlaege-titel { font-size: 0.82rem; font-weight: 700; color: #f0b429; }
+.sk-vorschlag-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
+.sk-vorschlag-zeile span { flex: 1 1 160px; }
+.sk-neu-form { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.2rem; }
+.sk-neu-form .sk-input:first-child { flex: 1 1 180px; }
+.sk-input {
+    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+    padding: 0.45rem 0.6rem; color: white; outline: none; font-family: inherit; font-size: 0.85rem;
+}
+.sk-input:focus { border-color: var(--color-accent); }
+.sk-input option { background: #0f172a; color: #f8fafc; }
+.sk-input-schmal { max-width: 90px; }
+.sk-add-btn {
+    background: rgba(87,194,240,0.15); border: 1px solid var(--color-accent); color: var(--text-primary);
+    border-radius: 6px; padding: 0.45rem 0.9rem; cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.sk-add-btn:hover { background: rgba(87,194,240,0.28); }
+.sk-einheiten-liste { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1rem; }
+.sk-einheit {
+    background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); border-left: 4px solid var(--sk-farbe, var(--color-accent));
+    border-radius: 8px; padding: 0.8rem 1rem;
+}
+.sk-einheit-amzug { box-shadow: 0 0 0 2px var(--color-accent) inset; }
+.sk-einheit-gesunken { opacity: 0.6; }
+.sk-einheit-kopf { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.sk-farbpunkt { width: 10px; height: 10px; border-radius: 50%; background: var(--sk-farbe, var(--color-accent)); flex-shrink: 0; }
+.sk-einheit-kopf .sk-name { flex: 1 1 140px; font-weight: 600; }
+.sk-name-anzeige { flex: 1 1 140px; font-weight: 600; }
+.sk-besitzer-zeile { display: flex; flex-direction: column; gap: 0.35rem; margin: -0.2rem 0 0.6rem 0; }
+.sk-besitzer-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.sk-besitzer-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px;
+    color: var(--text-secondary); font-size: 0.75rem; padding: 0.25rem 0.7rem; cursor: pointer; font-family: inherit;
+}
+.sk-besitzer-chip:hover { border-color: var(--color-accent); color: var(--text-primary); }
+.sk-besitzer-chip-aktiv { background: rgba(87,194,240,0.18); border-color: var(--color-accent); color: var(--text-primary); font-weight: 600; }
+.sk-struktur-zeile { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.sk-struktur-bar { flex: 1 1 100px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow: hidden; min-width: 60px; }
+.sk-struktur-fill { height: 100%; background: linear-gradient(90deg, var(--color-heal), var(--color-accent)); transition: width 0.3s; }
+.sk-struktur-zahl { font-size: 0.8rem; white-space: nowrap; display: flex; align-items: center; gap: 0.3rem; }
+.sk-struktur-max { width: 55px; }
+.sk-werte-zeile { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.5rem; font-size: 0.78rem; color: var(--text-secondary); }
+.sk-werte-zeile label { display: flex; flex-direction: column; gap: 0.2rem; }
+.sk-werte-input { width: 80px; }
+.sk-effekte { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.5rem; }
+.sk-badge {
+    background: color-mix(in srgb, var(--sk-farbe, #f0b429) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--sk-farbe, #f0b429) 40%, transparent);
+    color: var(--sk-farbe, #f0b429);
+    border-radius: 20px; padding: 0.2rem 0.6rem; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.sk-badge .sk-farbpunkt { width: 8px; height: 8px; }
+.sk-badge-x { background: none; border: none; color: inherit; cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; opacity: 0.7; }
+.sk-badge-x:hover { opacity: 1; }
+.sk-aktionen summary { cursor: pointer; font-size: 0.8rem; color: var(--color-accent); user-select: none; margin-top: 0.3rem; }
+.sk-aktion-zeile { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0; }
+.sk-mini-btn {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+    color: var(--text-secondary); font-size: 0.75rem; padding: 0.3rem 0.6rem; cursor: pointer; white-space: nowrap;
+}
+.sk-mini-btn:hover { color: var(--text-primary); border-color: var(--color-accent); }
+.sk-manoever-referenz { margin-bottom: 1rem; }
+.sk-manoever-referenz summary { cursor: pointer; font-size: 0.85rem; color: var(--text-secondary); padding: 0.4rem 0; }
+.sk-manoever-liste { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.8rem; margin-top: 0.6rem; }
+.sk-manoever-karte { background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.6rem 0.8rem; }
+.sk-manoever-kopf { display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; margin-bottom: 0.3rem; }
+.sk-log-details summary { cursor: pointer; font-size: 0.85rem; color: var(--text-secondary); padding: 0.4rem 0; }
+.sk-log { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem; }
+.sk-log-zeile { font-size: 0.78rem; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.3rem; }
+.sk-log-zeile b { color: var(--text-primary); }
+
+@media (max-width: 700px) {
+    .sk-canvas { height: 300px; }
+    .rz-generatoren-reihe, .rz-kategorien-grid { grid-template-columns: 1fr; }
+}
