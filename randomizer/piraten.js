@@ -70,6 +70,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Vasko"
+    },
+    {
+     "haupt": "Ansel"
+    },
+    {
+     "haupt": "Bastiaan"
+    },
+    {
+     "haupt": "Cassian"
+    },
+    {
+     "haupt": "Dov"
+    },
+    {
+     "haupt": "Emeric"
+    },
+    {
+     "haupt": "Fabius"
+    },
+    {
+     "haupt": "Gunnar"
+    },
+    {
+     "haupt": "Hollis"
+    },
+    {
+     "haupt": "Ilias"
+    },
+    {
+     "haupt": "Jaro"
+    },
+    {
+     "haupt": "Kaspar"
+    },
+    {
+     "haupt": "Loris"
+    },
+    {
+     "haupt": "Magnus"
+    },
+    {
+     "haupt": "Nando"
+    },
+    {
+     "haupt": "Otto"
+    },
+    {
+     "haupt": "Perico"
+    },
+    {
+     "haupt": "Ruben"
+    },
+    {
+     "haupt": "Silvano"
+    },
+    {
+     "haupt": "Tycho"
+    },
+    {
+     "haupt": "Wim"
     }
    ]
   },
@@ -136,6 +196,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Vika"
+    },
+    {
+     "haupt": "Amara"
+    },
+    {
+     "haupt": "Bianca"
+    },
+    {
+     "haupt": "Celestina"
+    },
+    {
+     "haupt": "Dagny"
+    },
+    {
+     "haupt": "Estelle"
+    },
+    {
+     "haupt": "Fiora"
+    },
+    {
+     "haupt": "Giulia"
+    },
+    {
+     "haupt": "Hanne"
+    },
+    {
+     "haupt": "Ilse"
+    },
+    {
+     "haupt": "Jovana"
+    },
+    {
+     "haupt": "Katla"
+    },
+    {
+     "haupt": "Lucienne"
+    },
+    {
+     "haupt": "Marisol"
+    },
+    {
+     "haupt": "Noor"
+    },
+    {
+     "haupt": "Odalys"
+    },
+    {
+     "haupt": "Perpetua"
+    },
+    {
+     "haupt": "Rozalind"
+    },
+    {
+     "haupt": "Solvi"
+    },
+    {
+     "haupt": "Talia"
+    },
+    {
+     "haupt": "Yvaine"
     }
    ]
   },
@@ -202,6 +322,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Gischtfaust"
+    },
+    {
+     "haupt": "Fassbrecher"
+    },
+    {
+     "haupt": "Klippenreiter"
+    },
+    {
+     "haupt": "Sturmklaue"
+    },
+    {
+     "haupt": "Brackwasser"
+    },
+    {
+     "haupt": "Tauwerk"
+    },
+    {
+     "haupt": "Riffhals"
+    },
+    {
+     "haupt": "Windfänger"
+    },
+    {
+     "haupt": "Galgenlicht"
+    },
+    {
+     "haupt": "Segeltuch"
+    },
+    {
+     "haupt": "Rumfass"
+    },
+    {
+     "haupt": "Kompassbruch"
+    },
+    {
+     "haupt": "Masttreiber"
+    },
+    {
+     "haupt": "Kielspalter"
+    },
+    {
+     "haupt": "Wrackfund"
+    },
+    {
+     "haupt": "Sturmsegel"
+    },
+    {
+     "haupt": "Ankerkette"
+    },
+    {
+     "haupt": "Blaufeuer"
+    },
+    {
+     "haupt": "Flaschenpost"
+    },
+    {
+     "haupt": "Schaumkrone"
+    },
+    {
+     "haupt": "Harpunhand"
     }
    ]
   },
@@ -268,6 +448,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Perlenauge"
+    },
+    {
+     "haupt": "der Fassgeborene"
+    },
+    {
+     "haupt": "die Sturmreiterin"
+    },
+    {
+     "haupt": "Salzblut"
+    },
+    {
+     "haupt": "der Namenlose Steuermann"
+    },
+    {
+     "haupt": "die Knochensammlerin"
+    },
+    {
+     "haupt": "Windgeflüster"
+    },
+    {
+     "haupt": "der Mann ohne Schatten"
+    },
+    {
+     "haupt": "die Letzte Ankerin"
+    },
+    {
+     "haupt": "Seebeisser"
+    },
+    {
+     "haupt": "der Gehängte Kompass"
+    },
+    {
+     "haupt": "die Frau mit dem gläsernen Auge"
+    },
+    {
+     "haupt": "Sturmpakt"
+    },
+    {
+     "haupt": "der Verlorene Lotse"
+    },
+    {
+     "haupt": "die Aalzunge"
+    },
+    {
+     "haupt": "Rattenkönig"
+    },
+    {
+     "haupt": "die Möwenjägerin"
+    },
+    {
+     "haupt": "der Wellensänger"
+    },
+    {
+     "haupt": "Schwarzflosse"
+    },
+    {
+     "haupt": "die Gezeitenhexe"
+    },
+    {
+     "haupt": "Nebelfahrer"
     }
    ]
   },

@@ -72,6 +72,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Tobin"
+    },
+    {
+     "haupt": "Doran"
+    },
+    {
+     "haupt": "Fenwick"
+    },
+    {
+     "haupt": "Garrik"
+    },
+    {
+     "haupt": "Hollis"
+    },
+    {
+     "haupt": "Ivar"
+    },
+    {
+     "haupt": "Jorund"
+    },
+    {
+     "haupt": "Kellan"
+    },
+    {
+     "haupt": "Lucan"
+    },
+    {
+     "haupt": "Merrick"
+    },
+    {
+     "haupt": "Nolan"
+    },
+    {
+     "haupt": "Osric"
+    },
+    {
+     "haupt": "Perrin"
+    },
+    {
+     "haupt": "Quill"
+    },
+    {
+     "haupt": "Roderic"
+    },
+    {
+     "haupt": "Stellan"
+    },
+    {
+     "haupt": "Torvin"
+    },
+    {
+     "haupt": "Ulric"
+    },
+    {
+     "haupt": "Varek"
+    },
+    {
+     "haupt": "Wystan"
+    },
+    {
+     "haupt": "Yorick"
     }
    ]
   },
@@ -138,6 +198,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Tova"
+    },
+    {
+     "haupt": "Aveline"
+    },
+    {
+     "haupt": "Brynn"
+    },
+    {
+     "haupt": "Celia"
+    },
+    {
+     "haupt": "Daria"
+    },
+    {
+     "haupt": "Elin"
+    },
+    {
+     "haupt": "Fiora"
+    },
+    {
+     "haupt": "Greta"
+    },
+    {
+     "haupt": "Helvi"
+    },
+    {
+     "haupt": "Isolde"
+    },
+    {
+     "haupt": "Juna"
+    },
+    {
+     "haupt": "Kyra"
+    },
+    {
+     "haupt": "Liora"
+    },
+    {
+     "haupt": "Miren"
+    },
+    {
+     "haupt": "Noor"
+    },
+    {
+     "haupt": "Orsa"
+    },
+    {
+     "haupt": "Perrine"
+    },
+    {
+     "haupt": "Quenna"
+    },
+    {
+     "haupt": "Riona"
+    },
+    {
+     "haupt": "Sable"
+    },
+    {
+     "haupt": "Thalia"
     }
    ]
   },
@@ -207,6 +327,66 @@ randomizerPaketRegistrieren({
     },
     {
      "haupt": "Davis"
+    },
+    {
+     "haupt": "Wolfsherz"
+    },
+    {
+     "haupt": "Bergquell"
+    },
+    {
+     "haupt": "Distelfeld"
+    },
+    {
+     "haupt": "Rabenstein"
+    },
+    {
+     "haupt": "Moosgrund"
+    },
+    {
+     "haupt": "Eisenhauer"
+    },
+    {
+     "haupt": "Sturmwald"
+    },
+    {
+     "haupt": "Nebelklinge"
+    },
+    {
+     "haupt": "Dornfeld"
+    },
+    {
+     "haupt": "Lichtmoor"
+    },
+    {
+     "haupt": "Schattental"
+    },
+    {
+     "haupt": "Kaltwasser"
+    },
+    {
+     "haupt": "Rauchfeld"
+    },
+    {
+     "haupt": "Wildgrund"
+    },
+    {
+     "haupt": "Steinbach"
+    },
+    {
+     "haupt": "Fuchsbau"
+    },
+    {
+     "haupt": "Hartwig"
+    },
+    {
+     "haupt": "Moosberg"
+    },
+    {
+     "haupt": "Ravenscroft"
+    },
+    {
+     "haupt": "Winterbourne"
     }
    ]
   },

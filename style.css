@@ -831,9 +831,14 @@ h2 {
 .activity-log-container summary::marker, .activity-log-container summary::-webkit-details-marker { display: none; content: ""; }
 .activity-log-container summary:hover h3, .activity-log-container summary:hover .toggle-icon { color: white !important; }
 .activity-log-container[open] summary .toggle-icon { transform: rotate(180deg); }
-.activity-log-container ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto; padding-right: 0.5rem; margin-top: 0.75rem; }
-.activity-log-container ul::-webkit-scrollbar { width: 4px; }
-.activity-log-container ul::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+.activity-log-container ul {
+    list-style: none; display: flex; flex-direction: column; gap: 0.5rem; max-height: 280px; overflow-y: auto;
+    padding-right: 0.6rem; margin-top: 0.75rem; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.35) transparent;
+}
+.activity-log-container ul::-webkit-scrollbar { width: 7px; }
+.activity-log-container ul::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+.activity-log-container ul::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.35); border-radius: 4px; }
+.activity-log-container ul::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.55); }
 
 .activity-entry { display: flex; align-items: flex-start; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; animation: slideIn 0.3s ease-out; line-height: 1.3;}
 .activity-time { font-size: 0.8rem; opacity: 0.7; min-width: 40px; }
@@ -2747,6 +2752,8 @@ body.theme-ultracore {
 .sk-badge .sk-farbpunkt { width: 8px; height: 8px; }
 .sk-badge-x { background: none; border: none; color: inherit; cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; opacity: 0.7; }
 .sk-badge-x:hover { opacity: 1; }
+.sk-badge-groesse { background: none; border: 1px solid currentColor; color: inherit; cursor: pointer; font-size: 0.7rem; line-height: 1; width: 15px; height: 15px; border-radius: 50%; padding: 0; opacity: 0.7; display: inline-flex; align-items: center; justify-content: center; }
+.sk-badge-groesse:hover { opacity: 1; }
 .sk-aktionen summary { cursor: pointer; font-size: 0.8rem; color: var(--color-accent); user-select: none; margin-top: 0.3rem; }
 .sk-aktion-zeile { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0; }
 .sk-mini-btn {
@@ -2768,3 +2775,16 @@ body.theme-ultracore {
     .sk-canvas { height: 300px; }
     .rz-generatoren-reihe, .rz-kategorien-grid { grid-template-columns: 1fr; }
 }
+
+/* --- SL-Dashboard: sortierbare Panel-Reihenfolge (gmlayout.js) ------------- */
+.gm-panels-spalte { display: flex; flex-direction: column; gap: 2rem; }
+.gm-panel-slot { position: relative; transition: opacity 0.15s; }
+.gm-panel-slot-ziehend { opacity: 0.35; }
+.gm-panel-griff {
+    display: flex; align-items: center; justify-content: center;
+    height: 18px; margin-bottom: 0.35rem; border-radius: 6px;
+    color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.03);
+    cursor: grab; font-size: 0.8rem; transition: color 0.15s, background 0.15s;
+}
+.gm-panel-griff:hover { color: var(--color-accent); background: rgba(255,255,255,0.08); }
+.gm-panel-griff:active { cursor: grabbing; }

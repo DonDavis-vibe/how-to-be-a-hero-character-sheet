@@ -28,3 +28,7 @@ mein_charakter*.json
 
 # Rohdaten der Zufallsgenerator-Tabellen (privat, nur lokal fuer den Konverter)
 /randomizer/quellen/
+
+# Roh-Bildgenerierungen fuer Kartensymbole (unbearbeitet, gross) - das fertige
+# Ergebnis steckt kleingerechnet in seekampf-icons.js
+/hausregeln/map/

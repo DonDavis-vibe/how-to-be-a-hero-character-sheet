@@ -80,6 +80,11 @@ const SK_RASTER_FARBEN = [
 // eigene, kleinere Kartentoken (skFreieSpawnPosition/addFigur), aber KEIN
 // Eintrag in seekampf.einheiten - tauchen daher weder in der Einheiten-Liste
 // noch in Initiative/Kampf-Log-Mechanik auf, nur als Orientierung auf der Karte.
+const SK_MARKER_GROESSE_STANDARD = 0.75;
+const SK_MARKER_GROESSE_SCHRITT = 0.2;
+const SK_MARKER_GROESSE_MIN = 0.35;
+const SK_MARKER_GROESSE_MAX = 3;
+
 const SK_MARKER_TYPEN = {
     riff: { label: 'Riff / Untiefe', farbe: '#8b5e34', icon: '🪨' },
     insel: { label: 'Insel', farbe: '#4ade80', icon: '🏝️' },
@@ -119,13 +124,22 @@ function skIconBild(icon, farbe) {
     return dataUrl;
 }
 
+// Echtes Artwork (von der Gruppe generiert, siehe seekampf-icons.js) statt
+// Emoji, wo vorhanden - auf transparentem Grund, OHNE gebackene Farbe. Den
+// farbigen Ring um das Porträt malt battlemap.js selbst anhand von f.farbe
+// (siehe zeichneFigur()), bleibt also ein schlanker, gleichbleibender Rahmen
+// statt mit der vollen Kreisfläche mitzuskalieren - beim Größer/Kleiner-
+// Stellen wächst/schrumpft dadurch sichtbar das Icon, nicht der Ring. Emoji-
+// Fallback bleibt für den Fall, dass mal ein Icon fehlt.
 function skMarkerBild(typ) {
     const info = SK_MARKER_TYPEN[typ] || SK_MARKER_TYPEN.sonstiges;
-    return skIconBild(info.icon, info.farbe);
+    const vorgerendert = typeof SK_ICON_DATENURLS !== 'undefined' ? SK_ICON_DATENURLS[typ] : null;
+    return vorgerendert || skIconBild(info.icon, info.farbe);
 }
 
 function skSchiffBild(farbe) {
-    return skIconBild(SK_SCHIFF_ICON, farbe);
+    const vorgerendert = typeof SK_ICON_DATENURLS !== 'undefined' ? SK_ICON_DATENURLS.schiff : null;
+    return vorgerendert || skIconBild(SK_SCHIFF_ICON, farbe);
 }
 
 // Manöver-Referenz (S.4f, rw41.txt Zeile ~187-244) - Wurf&Effekt-Spalte
@@ -358,11 +372,15 @@ function skMarkerHinzufuegen() {
     const name = (nameEl && nameEl.value.trim()) || info.label;
 
     const id = 'skm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-    seekampf.marker.push({ id, name, farbe: info.farbe, typ });
+    seekampf.marker.push({ id, name, farbe: info.farbe, typ, groesse: SK_MARKER_GROESSE_STANDARD });
     if (skMap) {
         const pos = skFreieSpawnPosition();
-        skMap.addFigur({ id, name, farbe: info.farbe, x: pos.x, y: pos.y, groesse: 0.75 });
+        skMap.addFigur({ id, name, farbe: info.farbe, x: pos.x, y: pos.y, groesse: SK_MARKER_GROESSE_STANDARD });
         skMap.setFigurBild(id, skMarkerBild(typ));
+        // addFigur() hängt neue Marker ans Array-Ende (= oben) - ohne diesen
+        // Sortier-Reset läge ein frisch gesetzter Marker über bereits vorhandenen
+        // Schiffen, statt wie gewollt darunter.
+        skFigurenZOrdnen(skMap, seekampf.einheiten);
     }
     if (nameEl) nameEl.value = '';
     skSichern();
@@ -374,6 +392,20 @@ function skMarkerEntfernen(id) {
     if (!m) return;
     seekampf.marker = seekampf.marker.filter(x => x.id !== id);
     if (skMap) skMap.removeFigur(id);
+    skSichern();
+    renderSeekampfGm();
+}
+
+// Größe eines einzelnen Markers anpassen (große Insel vs. kleine Insel, großes
+// vs. kleines Riff, ...) - battlemap.js kennt groesse längst pro Figur und
+// synct sie ganz normal mit (im Gegensatz zum Porträt-Bild), hier fehlte nur
+// ein Regler dafür.
+function skMarkerGroesseAendern(id, delta) {
+    const m = skMarker(id);
+    if (!m) return;
+    const basis = m.groesse || SK_MARKER_GROESSE_STANDARD;
+    m.groesse = Math.max(SK_MARKER_GROESSE_MIN, Math.min(SK_MARKER_GROESSE_MAX, Math.round((basis + delta) * 100) / 100));
+    if (skMap) skMap.setFigurGroesse(id, m.groesse);
     skSichern();
     renderSeekampfGm();
 }
@@ -621,7 +653,7 @@ function skFigurenAbgleichen() {
     seekampf.marker.forEach(m => {
         if (!skMap.figuren.some(f => f.id === m.id)) {
             const pos = skFreieSpawnPosition();
-            skMap.addFigur({ id: m.id, name: m.name, farbe: m.farbe, x: pos.x, y: pos.y, groesse: 0.75 });
+            skMap.addFigur({ id: m.id, name: m.name, farbe: m.farbe, x: pos.x, y: pos.y, groesse: m.groesse || SK_MARKER_GROESSE_STANDARD });
         }
         // setFigurBild() ist bewusst NICHT Teil des persistierten Kartenzustands
         // (battlemap.js) - nach jedem Neuladen/Sync erneut zuweisen (dedupliziert
@@ -629,6 +661,21 @@ function skFigurenAbgleichen() {
         skMap.setFigurBild(m.id, skMarkerBild(m.typ || 'sonstiges'));
     });
     skMap.figuren.slice().forEach(f => { if (!skEinheit(f.id) && !skMarker(f.id)) skMap.removeFigur(f.id); });
+    skFigurenZOrdnen(skMap, seekampf.einheiten);
+}
+
+// Schiffe sollen nie unter einem großen Riff/einer großen Insel verschwinden.
+// battlemap.js zeichnet Figuren schlicht in Array-Reihenfolge (später = oben);
+// addFigur() hängt neue Einträge nur ans Ende an, ohne Rücksicht auf Schiff
+// vs. Marker. figuren ist ein Live-Getter auf das interne Array (siehe
+// battlemap.js), daher reicht ein stabiler Sort + Neuzeichnen hier, ohne
+// battlemap.js selbst anzufassen - einheitenListe kommt je nach Seite aus
+// seekampf.einheiten (SL) oder skSpieler.einheiten (Spieler).
+function skFigurenZOrdnen(karte, einheitenListe) {
+    if (!karte) return;
+    const schiffIds = new Set((einheitenListe || []).map(e => e.id));
+    karte.figuren.sort((a, b) => (schiffIds.has(a.id) ? 1 : 0) - (schiffIds.has(b.id) ? 1 : 0));
+    karte.zeichnen();
 }
 
 function skKarteInitialisieren(canvas) {
@@ -957,7 +1004,10 @@ function renderSeekampfGm() {
             </select>
             <button class="sk-mini-btn" onclick="skMarkerHinzufuegen()"><i class="fa-solid fa-location-dot"></i> Marker setzen</button>
             ${seekampf.marker.length ? `<div class="sk-marker-liste">
-                ${seekampf.marker.map(m => `<span class="sk-badge" style="--sk-farbe:${escapeHtml(m.farbe)}"><span class="sk-farbpunkt" style="background:${escapeHtml(m.farbe)}"></span>${escapeHtml(m.name)} <button class="sk-badge-x" onclick="skMarkerEntfernen('${m.id}')" title="Marker entfernen">×</button></span>`).join('')}
+                ${seekampf.marker.map(m => `<span class="sk-badge" style="--sk-farbe:${escapeHtml(m.farbe)}"><span class="sk-farbpunkt" style="background:${escapeHtml(m.farbe)}"></span>${escapeHtml(m.name)}
+                    <button class="sk-badge-groesse" onclick="skMarkerGroesseAendern('${m.id}', -${SK_MARKER_GROESSE_SCHRITT})" title="Kleiner">−</button>
+                    <button class="sk-badge-groesse" onclick="skMarkerGroesseAendern('${m.id}', ${SK_MARKER_GROESSE_SCHRITT})" title="Größer">+</button>
+                    <button class="sk-badge-x" onclick="skMarkerEntfernen('${m.id}')" title="Marker entfernen">×</button></span>`).join('')}
             </div>` : ''}
         </div>
 
@@ -1029,6 +1079,7 @@ function skEmpfangen(payload) {
             skSpielerMap.addFigur({ id: e.id, besitzer: gehoertMir ? meinPeer : null });
         });
         skSpieler.marker.forEach(m => skSpielerMap.setFigurBild(m.id, skMarkerBild(m.typ || 'sonstiges')));
+        skFigurenZOrdnen(skSpielerMap, skSpieler.einheiten);
     }
 }
 

@@ -257,6 +257,21 @@ function rzNscHaltungen() {
     return original.tabellen.npc_haltungen.eintraege.map(e => e.haupt);
 }
 
+// Kleines Easter-Egg fürs Team: ganz selten (~1:200), und nur wenn der SL
+// wirklich jede Achse dem Zufall überlässt (kein Ort/Geschlecht/Haltung/
+// Wesen-Modus festgenagelt) unter dem Eldara-Paket, "würfelt" der Zufalls-
+// generator statt eines normalen NSC den Kartenzeichner der Runde persönlich.
+// Rein Flavor, keine Mechanik dahinter - genau wie ein normaler NSC-Wurf auch.
+const RZ_EASTER_EGG_DON_DAVIS = {
+    name: 'Don Davis',
+    rolle: 'Der Kartenzeichner – zieht heimlich die Fäden im Hintergrund',
+    ort: 'Tief im dunklen Schiffsrumpf, wo ihn niemand vermutet',
+    haltung: 'Freundlich, aber auffällig zurückhaltend – beobachtet lieber, als sich einzumischen',
+    auffaelligkeit: 'Ein mächtiger Bart, eines Kapitäns würdig. Tätowierungen am ganzen Körper – findet seine Körperteile nach jedem Gefecht mühelos wieder. Seine Karten sind immer verdächtig aktuell – fast so, als hätte er die Geschichte schon einmal miterlebt.',
+    motivation: 'Fortschritt kann nur erreicht werden, wenn Wissen allen frei zugänglich gemacht wird',
+    wesen: 'Geist'
+};
+
 // Kompletter NSC: Name + Trefferort/Rolle + Haltung + Auffälligkeit + Motivation
 // (Sprachbausteine immer aus dem "Allgemein"-Paket, unabhängig von der gewählten
 // Namensquelle) + optional ein Wesen/Monster mit passender Eigenschaft (nur wenn
@@ -265,6 +280,31 @@ function rzNscHaltungen() {
 function rzWuerfelNSC() {
     const original = randomizerPaketeGeladen.original;
     const eldora = randomizerPaketeGeladen.eldora;
+
+    const komplettZufaellig = !randomizerNscOrt && randomizerNscGeschlecht === 'zufaellig'
+        && !randomizerNscHaltung && randomizerNscWesenModus === 'zufaellig';
+    if (eldora && komplettZufaellig && Math.random() < 1 / 200) {
+        const d = RZ_EASTER_EGG_DON_DAVIS;
+        randomizerErgebnisAktuell = {
+            htmlAusgabe: [
+                `<strong>${escapeHtml(d.name)}</strong>`,
+                `${escapeHtml(d.rolle)} <span class="rz-neben">(${escapeHtml(d.ort)})</span>`,
+                `Haltung: ${escapeHtml(d.haltung)}`,
+                `Auffällig: ${escapeHtml(d.auffaelligkeit)}`,
+                `Motivation: ${escapeHtml(d.motivation)}`,
+                `<strong>Wesen: ${escapeHtml(d.wesen)}</strong>`
+            ].join('<br>'),
+            textAusgabe: [
+                d.name, `${d.rolle} (${d.ort})`, `Haltung: ${d.haltung}`,
+                `Auffällig: ${d.auffaelligkeit}`, `Motivation: ${d.motivation}`, `Wesen: ${d.wesen}`
+            ].join(' · '),
+            quelle: 'NSC', tischmitteBereit: false, nscBereit: true,
+            nscVorlage: Object.assign({}, d)
+        };
+        randomizerLetzteAktion = rzWuerfelNSC;
+        renderRandomizerGm();
+        return;
+    }
 
     let namensquelle = randomizerNamensquelle;
     if (namensquelle === 'zufaellig') {

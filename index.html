@@ -493,9 +493,11 @@
     <script src="inventarraster.js"></script>
     <script src="schiffsinventar.js"></script>
     <script src="battlemap.js"></script>
+    <script src="seekampf-icons.js"></script>
     <script src="seekampf.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
+    <script src="gmlayout.js"></script>
 <div id="crit-fail-overlay"></div>
 
     <!-- Discord Modal -->
@@ -694,6 +696,13 @@
                     <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('gmSync')" title="Hilfe zum Theme Sync"></i>
                 </div>
 
+                <!-- Gruppe: Panel-Reihenfolge (gmlayout.js) -->
+                <div class="gm-group">
+                    <span class="gm-group-label"><i class="fa-solid fa-grip-lines"></i> Layout</span>
+                    <button class="gm-btn" onclick="gmPanelReihenfolgeZuruecksetzen()" title="Panels wieder in die Standard-Reihenfolge bringen"><i class="fa-solid fa-rotate-left"></i> Reihenfolge zurücksetzen</button>
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmLayout')" title="Hilfe zum Umsortieren der Panels"></i>
+                </div>
+
                 <!-- Gruppe: Sound -->
                 <div class="gm-group">
                     <span class="gm-group-label"><i class="fa-solid fa-volume-high"></i> Sound</span>
@@ -823,44 +832,75 @@
                 </ul>
             </div>
 
-            <!-- Right: Players & General Notes -->
-            <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Right: Players & General Notes - jedes Panel steckt in einem
+                 .gm-panel-slot mit Ziehgriff (gmlayout.js), damit der SL die
+                 Reihenfolge per Drag & Drop selbst festlegen kann. Die
+                 render*Gm()-Funktionen der einzelnen Module fassen weiterhin
+                 nur ihr eigenes inneres <div id="gm-..."> an, wissen nichts
+                 vom Umsortieren - gmlayout.js beobachtet nur dessen
+                 style.display, um den Slot mit auszublenden. -->
+            <div class="gm-panels-spalte" id="gm-panels-spalte">
 
                 <!-- Player Cards Grid -->
-                <div id="gm-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr)); gap: 1.5rem; align-items: start;">
-                    <!-- Player Cards go here -->
+                <div class="gm-panel-slot" data-panel="spieler">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr)); gap: 1.5rem; align-items: start;">
+                        <!-- Player Cards go here -->
+                    </div>
                 </div>
 
                 <!-- Zufallsgenerator: SL-Vorbereitungswerkzeug (randomizer.js) - bewusst
                      prominent in der breiten Hauptspalte statt in der schmalen
                      Seitenleiste, damit man beim Würfeln alle Tabellen im Blick hat.
                      Unterhalb der Charakterbögen, damit die Spielerübersicht beim
-                     Öffnen des Dashboards zuerst kommt. -->
-                <div id="gm-randomizer" class="gm-randomizer"></div>
+                     Öffnen des Dashboards zuerst kommt (Standard-Reihenfolge - der SL
+                     kann das per Drag & Drop ändern, siehe gmlayout.js). -->
+                <div class="gm-panel-slot" data-panel="randomizer">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-randomizer" class="gm-randomizer"></div>
+                </div>
 
                 <!-- NSC-Liste: SL-Übersicht über eigene NPCs, manuell oder aus dem
                      Zufallsgenerator übernommen (nscliste.js) -->
-                <div id="gm-nscliste" class="gm-nscliste"></div>
+                <div class="gm-panel-slot" data-panel="nscliste">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-nscliste" class="gm-nscliste"></div>
+                </div>
 
                 <!-- Quest-Logbuch: Quests vor/während der Runde anlegen und gezielt
                      mit der Gruppe teilen (quests.js) -->
-                <div id="gm-quests" class="gm-quests"></div>
+                <div class="gm-panel-slot" data-panel="quests">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-quests" class="gm-quests"></div>
+                </div>
 
                 <!-- Schiffs-Inventar: geteilter Vorrat der Crew, nur bei aktivem
                      Eldara-Regelpaket (schiffsinventar.js) -->
-                <div id="gm-schiff" class="gm-schiff"></div>
+                <div class="gm-panel-slot" data-panel="schiff">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-schiff" class="gm-schiff"></div>
+                </div>
 
                 <!-- Seekampf: taktischer Kampf-Tracker mit Karte (battlemap.js +
                      seekampf.js), SL-only, nur bei aktivem Eldara-Regelpaket -->
-                <div id="gm-seekampf" class="gm-seekampf"></div>
+                <div class="gm-panel-slot" data-panel="seekampf">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-seekampf" class="gm-seekampf"></div>
+                </div>
 
                 <!-- Tischmitte: Loot vorbereiten, verstecken, aufdecken (tischmitte.js) -->
-                <div id="gm-tischmitte" class="gm-tischmitte"></div>
+                <div class="gm-panel-slot" data-panel="tischmitte">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-tischmitte" class="gm-tischmitte"></div>
+                </div>
 
                 <!-- General GM Notes -->
-                <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border);">
-                    <div style="font-weight: bold; margin-bottom: 0.8rem; color: #fbbf24; font-size: 1.1rem;"><i class="fa-solid fa-book-journal-whills"></i> Allgemeine SL-Notizen</div>
-                    <textarea id="gm-general-notes" oninput="saveGmGeneralNotes(this.value)" placeholder="Hier kannst du gruppenübergreifende Kampagnen-Notizen, NPCs oder Plot-Ideen festhalten..." style="width: 100%; height: 250px; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 1rem; border-radius: 4px; resize: vertical; outline: none; font-family: inherit; line-height: 1.5;"></textarea>
+                <div class="gm-panel-slot" data-panel="notizen">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-notes-panel" style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border);">
+                        <div style="font-weight: bold; margin-bottom: 0.8rem; color: #fbbf24; font-size: 1.1rem;"><i class="fa-solid fa-book-journal-whills"></i> Allgemeine SL-Notizen</div>
+                        <textarea id="gm-general-notes" oninput="saveGmGeneralNotes(this.value)" placeholder="Hier kannst du gruppenübergreifende Kampagnen-Notizen, NPCs oder Plot-Ideen festhalten..." style="width: 100%; height: 250px; background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: white; padding: 1rem; border-radius: 4px; resize: vertical; outline: none; font-family: inherit; line-height: 1.5;"></textarea>
+                    </div>
                 </div>
             </div>
 
