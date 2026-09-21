@@ -115,15 +115,21 @@ TALENTBAUM_REGELN = {
     'anzahlHauptbaeume': 3,
     'anzahlWesen': 1,
     'maxLevel': 3,
-    # Kosten im Baum: erstes Level eines Skills = 1 Rangpunkt (aus dem
-    # GEMEINSAMEN Rangpunkte-Topf alle Bäume), jedes weitere Level = 1
-    # Skillpunkt AUS DEM SP-TOPF DIESES ASTS (RW 4.1 S.17f).
-    'kosten': {'erstesLevel': 'rangpunkt', 'weiteresLevel': 'skillpunkt'},
-    # Höheren Rang freischalten: mind. `benoetigt` Skillpunkte DIESES Asts auf
-    # Skills des Rangs darunter ausgegeben (RW 4.1 S.17, wörtlich "mindestens 2
-    # Skillpunkte auf dem Rang darunter verteilt"). 'imAst'/'frei' bleiben als
-    # Alternativen für andere Pakete nutzbar, falls eine Runde etwas anderes
-    # will - für Eldara gilt 'vorRang'.
+    # Kosten im Baum: JEDES Level eines Skills (auch das erste) = 1
+    # Skillpunkt AUS DEM SP-TOPF DIESES ASTS. Rangpunkte (der gemeinsame Topf
+    # über alle Bäume) bezahlen ausschließlich Besondere Eigenschaften, nie
+    # Skills - korrigiert 2026-09-21 nach Bug-Report von JohoSaft (Discord),
+    # vorher fälschlich 'erstesLevel': 'rangpunkt'. Feld selbst ist nur
+    # Dokumentation, talentbaum.js liest es nicht (Logik ist dort fest
+    # verdrahtet).
+    'kosten': {'jedesLevel': 'skillpunkt'},
+    # Höheren Rang freischalten: KUMULATIV mind. `benoetigt * (rang - 1)`
+    # Skillpunkte DIESES Asts insgesamt ausgegeben, egal auf welche Skills
+    # des Asts verteilt (RW 4.1 S.17, wörtlich "mindestens 2 Skillpunkte auf
+    # dem Rang darunter verteilt" - vom SL präzisiert auf 2/4/6 für Rang
+    # 2/3/4 statt "genau 2 am jeweiligen Vor-Rang", korrigiert 2026-09-21).
+    # 'imAst'/'frei' bleiben als Alternativen für andere Pakete nutzbar,
+    # falls eine Runde etwas anderes will - für Eldara gilt 'vorRang'.
     'freischaltung': {'modus': 'vorRang', 'benoetigt': 2},
 }
 

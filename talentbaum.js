@@ -12,13 +12,18 @@
 //     - beides GILT NUR FÜR DIESEN AST, kein gemeinsamer Topf über alle Bäume.
 //   - Rangpunkte (RP) sind dagegen EIN gemeinsamer Topf: 1 RP je Rangaufstieg
 //     in einem der DREI Hauptbäume (Wesen zählt nicht mit), max. 12 insgesamt.
-//     RP bezahlt entweder das erste Level eines Skills (in jedem Ast,
-//     Wesen eingeschlossen) oder eine "Besondere Eigenschaft".
-//   - Skillpunkte (SP) eines Asts bezahlen nur das 2./3. Level von SKILLS
-//     DESSELBEN Asts.
-//   - Höheren Rang in einem Ast freischalten: mind. `benoetigt` SP DIESES
-//     Asts auf Skills des Rangs darunter ausgegeben (RW: "mindestens 2
-//     Skillpunkte auf dem Rang darunter verteilt").
+//     RP bezahlt AUSSCHLIESSLICH "Besondere Eigenschaften" - Skills in einem
+//     Talentbaum kosten NIE Rangpunkte (korrigiert 2026-09-21 nach Bug-Report
+//     von JohoSaft/Discord - vorher fälschlich: erstes Skill-Level = 1 RP).
+//   - Skillpunkte (SP) eines Asts bezahlen JEDES Level eines Skills DESSELBEN
+//     Asts, auch das erste (nicht nur 2./3. Level - selbe Korrektur).
+//   - Höheren Rang in einem Ast freischalten: kumulativ mindestens
+//     `benoetigt * (rang - 1)` SP DIESES Asts ausgegeben, über ALLE seine
+//     Skills verteilt egal welchen Rangs (RW: "mindestens 2 Skillpunkte auf
+//     dem Rang darunter verteilt" - vom SL präzisiert: nicht "genau 2 am
+//     Vor-Rang", sondern kumulativ 2/4/6 für Rang 2/3/4 bei benoetigt=2, z.B.
+//     dürfen für Rang 3→4 auch zwei Rang-1-Skills auf Level 3 gebracht
+//     worden sein).
 //   - Kreuz-Leveln: hat ein Charakter denselben Skill-Namen in zwei gewählten
 //     Ästen gelernt, gilt sein EFFEKTIVES Level als Summe beider Käufe.
 //   - Wesen/Monster ist ein vierter, separater Ast: sein "Attribut-Grundwert"
@@ -120,8 +125,10 @@ function tbRangFuerWert(wert, kostenStaffel) {
     return stufen.length; // über der letzten Schwelle -> höchster Rang
 }
 
-// Rang/Skillpunkte EINES Asts. spAusgegeben zählt nur Level 2+ (Level 1 kostet
-// einen Rangpunkt aus dem gemeinsamen Topf, siehe tbGesamtOekonomie).
+// Rang/Skillpunkte EINES Asts. spAusgegeben zählt JEDES Level voll (auch das
+// erste) - Rangpunkte bezahlen Skills nicht mehr, siehe tbGesamtOekonomie
+// und den Bug-Report vom 2026-09-21 (JohoSaft, Discord): Skills werden rein
+// mit Skillpunkten gelernt, Level 1 kostet also genauso 1 SP wie Level 2/3.
 function tbAstOekonomie(ast, h, regeln, appDataObj) {
     const wert = tbAstWert(ast, h, regeln, appDataObj);
     const rang = tbRangFuerWert(wert, regeln.kostenStaffelQuelle);
@@ -129,28 +136,33 @@ function tbAstOekonomie(ast, h, regeln, appDataObj) {
     const skillpunkte = schwellen.filter(t => wert >= t).length;
     let spAusgegeben = 0;
     regeln.skills.filter(s => s.ast === ast).forEach(s => {
-        const lvl = parseInt(h.gelernt[tbSchluessel(s)]) || 0;
-        if (lvl > 0) spAusgegeben += lvl - 1;
+        spAusgegeben += parseInt(h.gelernt[tbSchluessel(s)]) || 0;
     });
     return { wert, rang, skillpunkte, spAusgegeben, spFrei: skillpunkte - spAusgegeben };
 }
 
 // Gemeinsamer Rangpunkte-Topf: 1 RP je erreichtem Rang in einem der DREI
-// Hauptbäume (nicht Wesen), ausgegeben für jedes erste Skill-Level (überall,
-// Wesen eingeschlossen) und jeden Eigenschaften-Pick.
+// Hauptbäume (nicht Wesen). Bezahlt AUSSCHLIESSLICH Besondere Eigenschaften -
+// Skills in einem Talentbaum kosten nie Rangpunkte, nur Skillpunkte (siehe
+// tbAstOekonomie).
 function tbGesamtOekonomie(h, regeln, appDataObj) {
     const rangpunkte = h.hauptbaeume.filter(Boolean)
         .reduce((summe, ast) => summe + tbAstOekonomie(ast, h, regeln, appDataObj).rang, 0);
 
     let rpAusgegeben = 0;
-    Object.values(h.gelernt).forEach(level => { if ((parseInt(level) || 0) > 0) rpAusgegeben += 1; });
     Object.values(h.eigenschaften).forEach(stufe => { rpAusgegeben += Math.max(0, parseInt(stufe) || 0); });
 
     return { rangpunkte, rpAusgegeben, rpFrei: rangpunkte - rpAusgegeben };
 }
 
-// Höheren Rang in `ast` freischalten: mind. `benoetigt` Skillpunkte DIESES
-// Asts auf Skills des Rangs darunter ausgegeben (RW 4.1 S.17).
+// Höheren Rang in `ast` freischalten: mindestens `benoetigt * (rang - 1)`
+// Skillpunkte DIESES Asts müssen insgesamt ausgegeben sein - kumulativ über
+// ALLE Skills des Asts (egal welchen Rangs, egal wie verteilt), nicht nur
+// die des Rangs direkt darunter. Bei Standard-benoetigt=2: Rang 2 braucht 2,
+// Rang 3 braucht 4, Rang 4 braucht 6 insgesamt (SL-bestätigt 2026-09-21,
+// JohoSaft/Discord - z.B. dürfen für den Sprung von Rang 3 auf 4 auch zwei
+// Rang-1-Skills auf Level 3 gebracht worden sein, statt zwingend Rang-3-
+// Skills zu leveln).
 function tbRangFreigeschaltet(ast, rang, h, regeln, appDataObj) {
     if (rang <= 1) return true;
     const f = regeln.freischaltung || {};
@@ -164,14 +176,12 @@ function tbRangFreigeschaltet(ast, rang, h, regeln, appDataObj) {
         return regeln.skills.some(s => s.ast === ast && s.rang === rang &&
             Object.keys(h.gelernt).some(k => k !== tbSchluessel(s) && k.endsWith('::' + s.name) && (parseInt(h.gelernt[k]) || 0) > 0));
     }
-    // 'vorRang' (Regelwerk): Skillpunkte DIESES Asts, die auf Skills des
-    // Vor-Rangs verteilt wurden (nur Level 2+, siehe tbAstOekonomie).
-    let spAufVorRang = 0;
-    regeln.skills.filter(s => s.ast === ast && s.rang === rang - 1).forEach(s => {
-        const lvl = parseInt(h.gelernt[tbSchluessel(s)]) || 0;
-        if (lvl > 0) spAufVorRang += lvl - 1;
+    // 'vorRang' (Regelwerk, korrigiert): kumulative Skillpunkte im ganzen Ast.
+    let spGesamt = 0;
+    regeln.skills.filter(s => s.ast === ast).forEach(s => {
+        spGesamt += parseInt(h.gelernt[tbSchluessel(s)]) || 0;
     });
-    return spAufVorRang >= benoetigt;
+    return spGesamt >= benoetigt * (rang - 1);
 }
 
 function tbFreigeschaltet(skill, h, regeln, appDataObj) {
@@ -264,13 +274,8 @@ function tbLernen(schluessel) {
         tbHinweis('Noch gesperrt – erst die Voraussetzungen im Ast erfüllen.');
         return;
     }
-    if (aktuell === 0) {
-        const gesamt = tbGesamtOekonomie(h, regeln, appData);
-        if (gesamt.rpFrei < 1) { tbHinweis('Kein Rangpunkt frei. Rangpunkte entstehen aus Rangaufstiegen in deinen Hauptbäumen.'); return; }
-    } else {
-        const astEco = tbAstOekonomie(skill.ast, h, regeln, appData);
-        if (astEco.spFrei < 1) { tbHinweis(`Kein Skillpunkt in "${skill.ast}" frei. Skillpunkte entstehen aus erreichten Schwellen dieses Astes.`); return; }
-    }
+    const astEco = tbAstOekonomie(skill.ast, h, regeln, appData);
+    if (astEco.spFrei < 1) { tbHinweis(`Kein Skillpunkt in "${skill.ast}" frei. Skillpunkte entstehen aus erreichten Schwellen dieses Astes.`); return; }
 
     h.gelernt[schluessel] = aktuell + 1;
     if (typeof addActivityLog === 'function') {
@@ -460,7 +465,7 @@ function renderTalentbaum() {
                     const max = tbMaxLevel(s, regeln);
                     const frei = level > 0 || tbFreigeschaltet(s, h, regeln, appData);
                     const klasse = !frei ? 'tb-node-gesperrt' : (level >= max ? 'tb-node-max' : (level > 0 ? 'tb-node-aktiv' : ''));
-                    const kostenText = level === 0 ? '1 Rangpunkt (gemeinsamer Topf)' : (level < max ? `1 Skillpunkt (${ast})` : 'Max');
+                    const kostenText = level < max ? `1 Skillpunkt (${ast})` : 'Max';
                     const kreuz = effektiv > level ? `\nKreuz-Level: effektiv Lvl ${Math.min(effektiv, max)} (auch in anderem Ast gelernt)` : '';
                     const titel = `${s.name} – Rang ${s.rang}, ${s.art || 'aktiv'}${s.schadenTyp && s.schadenTyp !== 'keiner' ? ', ' + s.schadenTyp : ''}\nNächstes Level: ${kostenText}${kreuz}\n\n${tbStufenText(s, regeln)}`;
                     const stufe = (s.stufen || [])[Math.max(0, Math.min(effektiv, max) - 1)] || {};
@@ -553,7 +558,7 @@ function renderTalentbaum() {
             <h2 class="cat-title" style="margin:0"><i class="fa-solid fa-diagram-project category-icon-fa"></i> Talentbaum
                 <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('talentbaum')" title="Hilfe zum Talentbaum"></i></h2>
             <div class="tb-punkte">
-                <span class="tb-pill ${gesamt.rpFrei < 0 ? 'tb-ueber' : ''}" title="Rangpunkte: 1 je Rangaufstieg in einem deiner drei Hauptbäume. Bezahlt das erste Level eines Skills (jeder Ast) oder eine Besondere Eigenschaft."><i class="fa-solid fa-ranking-star"></i> RP ${gesamt.rpFrei} / ${gesamt.rangpunkte}</span>
+                <span class="tb-pill ${gesamt.rpFrei < 0 ? 'tb-ueber' : ''}" title="Rangpunkte: 1 je Rangaufstieg in einem deiner drei Hauptbäume. Bezahlt AUSSCHLIESSLICH Besondere Eigenschaften - Skills lernst du rein mit Skillpunkten."><i class="fa-solid fa-ranking-star"></i> RP ${gesamt.rpFrei} / ${gesamt.rangpunkte}</span>
             </div>
         </div>
         <p class="hr-hint">Skillpunkte entstehen getrennt je Ast, kein gemeinsamer Topf.</p>

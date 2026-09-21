@@ -75,22 +75,35 @@ verlieren.
 
 ---
 
-## 2. "2 Skillpunkte auf dem Rang darunter verteilt" - wie genau gezählt? — ERLEDIGT (SL bestätigt)
+## 2. "2 Skillpunkte auf dem Rang darunter verteilt" - wie genau gezählt? — ERLEDIGT (SL bestätigt), KORRIGIERT 2026-09-21
 
 RW 4.1 und RW 4.3 (S.17) sagen wortgleich: „muss dein Attribut-Grundwert dem
 entsprechenden Rang haben, und du musst mindestens 2 Skillpunkte auf dem Rang
 darunter verteilt haben." Der PDF-Text selbst klärt die genaue Zählweise
-nicht - das kam jetzt direkt vom SL: **„Du musst pro Rang 2 Skillpunkte
-ausgeben."**
+nicht - die erste SL-Antwort dazu war **„Du musst pro Rang 2 Skillpunkte
+ausgeben."**, was zunächst als "genau 2 SP am jeweiligen Vor-Rang, nicht
+kumulativ" umgesetzt wurde, UND das erste Level eines Skills kostete einen
+Rangpunkt statt eines Skillpunkts.
 
-**Umgesetzt (unverändert, schon vorher richtig):** Skillpunkte = nur die
-Punkte, die für ein *zweites oder drittes* Level eines Skills ausgegeben
-wurden (das *erste* Level kostet ja einen Rangpunkt, keinen Skillpunkt). Für
-Rang 2 in einem Baum braucht es also insgesamt mindestens 2 solcher
-Zweit-/Drittlevel-Käufe unter den Rang-1-Skills desselben Baums - egal ob auf
-einen Skill verteilt (Lvl 1→3) oder auf zwei (je Lvl 1→2). Das entspricht
-genau der SL-Antwort, `talentbaum.js` (`freischaltung: {modus: 'vorRang',
-benoetigt: 2}`) bleibt wie es ist.
+**Bug-Report von JohoSaft (Discord, 2026-09-21) - beide Annahmen falsch:**
+1. Rangpunkte werden nie zum Freischalten von Skills gebraucht, nur für
+   Besondere Eigenschaften - jedes Skill-Level (auch das erste) kostet einen
+   Skillpunkt.
+2. Der Rang-Aufstieg braucht **kumulativ** `2 × (Zielrang - 1)` Skillpunkte
+   im ganzen Ast, verteilt auf beliebige Skills egal welchen Rangs (nicht nur
+   auf den Vor-Rang beschränkt): Rang 1→2 = 2 SP, 2→3 = 4 SP, 3→4 = 6 SP
+   insgesamt. Beispiel aus dem Report: für den Sprung von Rang 3 auf 4 dürfen
+   auch zwei Rang-1-Skills auf Level 3 gebracht worden sein (2 × 3 SP = 6),
+   statt zwingend in Rang-3-Skills investieren zu müssen.
+
+**Umgesetzt:** `tbAstOekonomie()` zählt jetzt jedes Level voll als Skillpunkt
+(nicht mehr `level - 1`), `tbGesamtOekonomie()` zieht keine Rangpunkte mehr
+für gelernte Skills ab (nur noch für `eigenschaften`), und
+`tbRangFreigeschaltet()` prüft kumulative Skillpunkte über den ganzen Ast
+gegen `benoetigt * (rang - 1)` (`talentbaum.js`, `freischaltung: {modus:
+'vorRang', benoetigt: 2}` bleibt als Konfiguration bestehen, nur die Prüfung
+dahinter wurde korrigiert). Am Datenmodell/an `appData.hausregeln.gelernt`
+ändert sich nichts - reine Auswertungslogik.
 
 ---
 

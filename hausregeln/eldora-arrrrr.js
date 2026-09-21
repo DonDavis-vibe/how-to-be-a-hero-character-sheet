@@ -264,8 +264,7 @@ hausregelPaketRegistrieren({
   "anzahlWesen": 1,
   "maxLevel": 3,
   "kosten": {
-   "erstesLevel": "rangpunkt",
-   "weiteresLevel": "skillpunkt"
+   "jedesLevel": "skillpunkt"
   },
   "freischaltung": {
    "modus": "vorRang",
