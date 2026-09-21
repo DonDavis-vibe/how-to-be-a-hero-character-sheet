@@ -8,9 +8,13 @@
 // der NSC-Liste (nscliste.js) dazu. Nebel des Krieges ist eingebaut.
 //
 // Nutzt battlemap.js unverändert (siehe dort - bewusst regelsystem-
-// unabhängig gehalten). seekampf.js bleibt vorerst komplett unangetastet und
-// läuft mit seiner eigenen, separaten Schiffskarte weiter - eine spätere
-// Zusammenführung ist denkbar, aber ein eigener Schritt.
+// unabhängig gehalten). seekampf.js (Schiffsgefechte) läuft als reine Regel-/
+// Buchhaltungsschicht auf derselben geteilten Karte mit - Schiffe sind hier
+// einfach Figuren wie alle anderen (siehe skFigurenAbgleichen dort), nur
+// zusätzlich per Kapitän/Crew steuerbar. Wechselt der SL die aktive Karte,
+// verschwinden Schiffe aus der Ansicht, bis er zurückwechselt (ihre Werte
+// bleiben unangetastet) - deshalb rufen karteEinhaengen/karteWechseln/
+// karteNeu unten auch skFigurenAbgleichen() mit auf, falls vorhanden.
 //
 // Nachrichten (multiplayer.js):
 //   SL -> Spieler   { type: 'karte', karteId, name, kategorie, zuegeFrei,
@@ -132,6 +136,7 @@ function karteEinhaengen(canvas) {
     const eintrag = karten.find(k => k.id === karteAktivId);
     karteMap.applyState(eintrag.zustand, eintrag.zustand.bild);
     karteSpielerFigurenAbgleichen();
+    if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     karteFigurenPortraitsWiederherstellen();
 }
 
@@ -149,6 +154,7 @@ function karteNeu(name, kategorie) {
     if (karteMap) {
         karteMap.applyState(karteLeererZustand(), null);
         karteSpielerFigurenAbgleichen();
+        if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     }
     karteSichern();
     karteVerteilen();
@@ -163,6 +169,7 @@ function karteWechseln(id) {
     karteAktivId = id;
     karteMap.applyState(eintrag.zustand, eintrag.zustand.bild);
     karteSpielerFigurenAbgleichen();
+    if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     karteFigurenPortraitsWiederherstellen();
     karteSichern();
     karteVerteilen();
@@ -332,12 +339,16 @@ function karteAnVerbindung(conn) {
 
 // Zugvorschlag eines Spielers für seine eigene Figur - true = verarbeitet
 // (auch wenn abgelehnt, damit multiplayer.js nicht weitersucht).
+// Nur die eigene Spieler-Figur ist hier zuständig - für alles andere (z.B.
+// ein Schiff aus dem Seekampf, das über dieselbe geteilte Karte gezogen wird)
+// false zurückgeben, damit multiplayer.js an skAnfrageVerarbeiten weiterreicht
+// (dieselbe Nachricht, andere Figuren-ID-Namensräume, siehe seekampf.js).
 function karteAnfrageVerarbeiten(peerId, payload) {
     if (!payload || typeof payload !== 'object') return false;
     if (payload.type !== 'karteZugVorschlag') return false;
-    if (!karteMap || payload.karteId !== karteAktivId) return true;
+    if (!karteMap || payload.karteId !== karteAktivId) return false;
     const eigeneId = 'spieler:' + peerId;
-    if (payload.figurId !== eigeneId) return true;
+    if (payload.figurId !== eigeneId) return false;
     karteMap.addFigur({ id: eigeneId, geplantX: payload.x, geplantY: payload.y });
     renderKarteGm();
     return true;
@@ -467,6 +478,7 @@ function renderKarteGm() {
         });
     } else {
         karteSpielerFigurenAbgleichen();
+    if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     }
 
     const auswahl = document.getElementById('kt-auswahl');
@@ -487,11 +499,19 @@ function renderKarteGm() {
     dyn.innerHTML = `
         ${vorschlaege.length ? `<div class="sk-vorschlaege">
             <div class="sk-vorschlaege-titel"><i class="fa-solid fa-route"></i> Offene Zugvorschläge</div>
-            ${vorschlaege.map(v => `<div class="sk-vorschlag-zeile">
+            ${vorschlaege.map(v => {
+                // Gehört der Vorschlag zu einem Seekampf-Schiff, über die
+                // spezialisierte Funktion bestätigen (loggt "Zug von X
+                // bestätigt." im Seekampf-Log) statt der generischen.
+                const istSchiff = typeof skEinheit === 'function' && skEinheit(v.id);
+                const bestaetigenFn = istSchiff && typeof skZugBestaetigen === 'function' ? 'skZugBestaetigen' : 'karteZugBestaetigen';
+                const verwerfenFn = istSchiff && typeof skZugVerwerfen === 'function' ? 'skZugVerwerfen' : 'karteZugVerwerfen';
+                return `<div class="sk-vorschlag-zeile">
                 <span>${escapeHtml(v.name)} → ${v.felder} Feld${v.felder === 1 ? '' : 'er'}</span>
-                <button class="sk-mini-btn" onclick="karteZugBestaetigen('${escapeHtml(v.id)}')"><i class="fa-solid fa-check"></i> Bestätigen</button>
-                <button class="sk-mini-btn" onclick="karteZugVerwerfen('${escapeHtml(v.id)}')"><i class="fa-solid fa-xmark"></i> Verwerfen</button>
-            </div>`).join('')}
+                <button class="sk-mini-btn" onclick="${bestaetigenFn}('${escapeHtml(v.id)}')"><i class="fa-solid fa-check"></i> Bestätigen</button>
+                <button class="sk-mini-btn" onclick="${verwerfenFn}('${escapeHtml(v.id)}')"><i class="fa-solid fa-xmark"></i> Verwerfen</button>
+            </div>`;
+            }).join('')}
         </div>` : ''}
         <div class="sk-marker-zeile">
             <input type="text" id="kt-marker-name" class="sk-input" placeholder="Markierung benennen …" onkeydown="if(event.key==='Enter') karteMarkierungHinzufuegen()">

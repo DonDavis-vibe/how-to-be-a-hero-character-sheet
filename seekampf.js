@@ -1,15 +1,21 @@
 // How to be a Hero - Seekampf (Eldara-Hausregel)
 //
 // Taktischer Seekampf-Tracker fürs Regelwerk-Kapitel "Seekampf" (RW 4.1
-// S.3-5, siehe hausregeln/quellen/rw41.txt Zeile ~109-245). GM-only, wie
-// NSC-Liste/Quest-Logbuch - lebt nur im Browser des Spielleiters
-// (localStorage), wird nicht an Spieler gesendet. Nur sichtbar, wenn das
-// Regelpaket "eldora-arrrrr" aktiv ist (eldaraAktiv() in hausregeln.js).
+// S.3-5, siehe hausregeln/quellen/rw41.txt Zeile ~109-245). Nur sichtbar,
+// wenn das Regelpaket "eldora-arrrrr" aktiv ist (eldaraAktiv() in
+// hausregeln.js). Der Zustand (Schiffe, Initiative, Wind, Log) wird per
+// Live-Sync an alle verbundenen Spieler geschickt.
 //
-// Die eigentliche Karte (Raster, Zoom/Pan, Schiffs-Token per Drag & Drop,
-// Distanzmessung) kommt unverändert aus battlemap.js (Schwesterprojekt
-// demonslayer) - dieses Modul kennt kein Regelsystem, sondern verwaltet nur
-// Positionen. Hier drumherum kommt die Eldara-Spielmechanik:
+// Reine Bewegungs-/Regelschicht - die eigentliche Karte (Raster, Zoom/Pan,
+// Figuren per Drag & Drop, Zeichnen, Nebel des Krieges) läuft komplett über
+// die gemeinsame Karten-Engine aus karten.js (die wiederum battlemap.js aus
+// dem Schwesterprojekt demonslayer unverändert nutzt). Seekampf.js hält hier
+// keine eigene Karte/Leinwand mehr - Schiffe und Markierungen werden nur als
+// Figuren auf die gerade aktive Karte synchronisiert (skFigurenAbgleichen).
+// Wechselt der SL im Karte-Panel die aktive Karte, verschwinden Schiffe aus
+// der Ansicht, bis er zur Seekarte zurückwechselt - ihre Werte bleiben
+// unangetastet, es ist rein die Sichtbarkeit auf der Leinwand. Hier drumherum
+// kommt die Eldara-Spielmechanik:
 //
 // AUTOMATISIERT (reine Würfelmechanik ohne Charakterwerte):
 //   - Initiative (1W10 pro Einheit, S.3)
@@ -43,12 +49,11 @@
 //     initiative: [ { id, wurf } ] (sortiert), initiativeIndex,
 //     log: [ text, ... ] (jüngste zuerst, gekappt)
 //   }
-// Die Kartendaten (Positionen, Zoom-unabhängige Rasterfelder, optionales
-// Hintergrundbild) liegen SEPARAT unter SEEKAMPF_KARTE_KEY - battlemap.js
-// verwaltet sie selbst über BattleMap.applyState()/getState().
+// Die Kartendaten (Positionen, Rasterfelder, Hintergrundbild, Nebel) liegen
+// nicht mehr hier, sondern in karten.js (KARTEN_KEY) - eine Karte unter
+// vielen, wie jede andere auch.
 
 const SEEKAMPF_KEY = 'htbah_gm_seekampf';
-const SEEKAMPF_KARTE_KEY = 'htbah_gm_seekampf_karte';
 const SEEKAMPF_LOG_MAX = 40;
 
 const SK_WIND_RICHTUNGEN = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'];
@@ -63,18 +68,6 @@ const SK_SEITEN = {
     gegner: { label: 'Gegner', farbe: '#ef4444' },
     neutral: { label: 'Neutral', farbe: '#94a3b8' }
 };
-
-// Voreingestellte Rasterfarben, damit die Linien zu eigenen Kartenbildern passen
-// (kräftiger Punkt zur Auswahl, gezeichnet wird die halbtransparente Linie) -
-// dieselbe Idee wie im Schwesterprojekt demonslayer (mapui.js).
-const SK_RASTER_FARBEN = [
-    { punkt: '#e8f1f5', linie: 'rgba(232,241,245,0.30)', name: 'Hell' },
-    { punkt: '#57c2f0', linie: 'rgba(87,194,240,0.35)', name: 'Blau' },
-    { punkt: '#f0b429', linie: 'rgba(240,180,41,0.35)', name: 'Gold' },
-    { punkt: '#8b5e34', linie: 'rgba(139,94,52,0.40)', name: 'Sepia' },
-    { punkt: '#4ade80', linie: 'rgba(74,222,128,0.35)', name: 'Grün' },
-    { punkt: '#ef4444', linie: 'rgba(239,68,68,0.35)', name: 'Rot' }
-];
 
 // Kartenmarkierungen ohne eigene Kampfwerte (Riffe, Inseln, Wracks, ...) -
 // eigene, kleinere Kartentoken (skFreieSpawnPosition/addFigur), aber KEIN
@@ -171,7 +164,6 @@ const SK_KRITISCHE_TREFFERZONEN = [
 const SEEKAMPF_OFFEN_KEY = 'htbah_gm_seekampf_offen';
 
 let seekampf = { runde: 1, wind: { richtung: 0, naechsterWechsel: 6 }, einheiten: [], marker: [], initiative: [], initiativeIndex: 0, log: [] };
-let skMap = null;
 let skOffenGm = true;
 
 function skLeererStand() {
@@ -192,7 +184,16 @@ function skLaden() {
         seekampf.einheiten.forEach(e => {
             if (!Array.isArray(e.spielerIds)) e.spielerIds = e.spielerId ? [e.spielerId] : [];
             delete e.spielerId;
+            // kapitaen (Migration): früherer Stand kannte keinen Kapitän - null
+            // bedeutet "jeder in spielerIds darf steuern" (altes Verhalten).
+            if (e.kapitaen === undefined) e.kapitaen = null;
+            // karteId (Migration): früherer Stand zeigte jedes Schiff auf JEDER
+            // Karte an - null bedeutet "noch nicht zugeordnet", wird von
+            // skFigurenAbgleichen() beim nächsten Sync automatisch auf die dann
+            // gerade aktive Karte "eingebürgert".
+            if (e.karteId === undefined) e.karteId = null;
         });
+        seekampf.marker.forEach(m => { if (m.karteId === undefined) m.karteId = null; });
     } catch (e) { seekampf = skLeererStand(); }
     try { skOffenGm = localStorage.getItem(SEEKAMPF_OFFEN_KEY) !== '0'; } catch (e) { skOffenGm = true; }
 }
@@ -208,8 +209,8 @@ function skLog(text) {
     skSichern();
 }
 
-// --- Live-Sync an die Spieler (nur GM-Seite aktiv; Kartendaten kommen separat
-// über die onChange-Anbindung von battlemap.js, siehe skKarteInitialisieren) --
+// --- Live-Sync an die Spieler (nur GM-Seite aktiv; Kartendaten laufen separat
+// über karten.js' eigene 'karte'-Nachricht, siehe dort) --
 
 let skVerteilenTimer = null;
 
@@ -221,11 +222,13 @@ function skVerteilen() {
 }
 
 function skZustandFuerSpieler() {
-    return { type: 'seekampf', wind: seekampf.wind, runde: seekampf.runde, einheiten: seekampf.einheiten, marker: seekampf.marker, karte: skMap ? skMap.getState() : null };
+    // Die Karte selbst (Figuren, Bild, Nebel, ...) geht über karten.js raus
+    // (type: 'karte') - hier nur noch die reinen Kampf-/Regeldaten.
+    return { type: 'seekampf', wind: seekampf.wind, runde: seekampf.runde, einheiten: seekampf.einheiten, marker: seekampf.marker };
 }
 
 function skJetztVerteilen() {
-    if (typeof clientConnections === 'undefined' || !skMap) return;
+    if (typeof clientConnections === 'undefined') return;
     const nachricht = skZustandFuerSpieler();
     Object.values(clientConnections).forEach(conn => {
         if (conn && conn.open) { try { conn.send(nachricht); } catch (e) { /* weg */ } }
@@ -233,30 +236,39 @@ function skJetztVerteilen() {
 }
 
 function skAnVerbindung(conn) {
-    if (!conn || !conn.open || !skMap) return;
+    if (!conn || !conn.open) return;
     try { conn.send(skZustandFuerSpieler()); } catch (e) { /* weg */ }
 }
 
-// Zugvorschlag eines Spielers (nur für Schiffe, die ihm zugewiesen sind) -
-// wird als geplantX/geplantY auf die eigene Kopie der Figur gemerged, damit
+// Zugvorschlag eines Spielers für ein Schiff, das ihm zugewiesen ist -
+// dieselbe Nachricht (type: 'karteZugVorschlag'), mit der auch die eigene
+// Spieler-Figur ihren Zug anmeldet (siehe karten.js), nur eben mit der
+// Schiffs-ID statt "spieler:"+peerId als figurId. karten.js reicht sie extra
+// deshalb durch (return false dort), wenn sie nicht die eigene Figur des
+// Spielers betrifft. Wird als geplantX/geplantY auf die Figur gemerged, damit
 // battlemap.js' eingebaute Vorschau/Bestätigung (zugBestaetigen/zugVerwerfen)
 // unverändert weiterverwendet werden kann.
 function skAnfrageVerarbeiten(peerId, payload) {
     if (!payload || typeof payload !== 'object') return false;
-    if (payload.type === 'seekampfZug') {
-        if (!skMap) return true;
-        const e = skEinheit(payload.einheitId);
-        if (!e || !Array.isArray(e.spielerIds) || !e.spielerIds.includes(peerId)) return true;
-        skMap.addFigur({ id: e.id, geplantX: payload.x, geplantY: payload.y });
-        renderSeekampfGm();
-        return true;
-    }
-    return false;
+    if (payload.type !== 'karteZugVorschlag') return false;
+    if (!karteMap || payload.karteId !== karteAktivId) return false;
+    const e = skEinheit(payload.figurId);
+    if (!e) return false;
+    // Hat das Schiff einen Kapitän, darf NUR der steuern - sonst (kapitaen:
+    // null) wie bisher jeder aus der zugewiesenen Crew.
+    const darf = e.kapitaen ? e.kapitaen === peerId : (Array.isArray(e.spielerIds) && e.spielerIds.includes(peerId));
+    if (!darf) return false;
+    karteMap.addFigur({ id: e.id, geplantX: payload.x, geplantY: payload.y });
+    // Der Vorschlag erscheint jetzt in der "Offene Zugvorschläge"-Liste des
+    // Karte-Panels (dieselbe Mechanik wie für Spieler-Figuren) - dort auch
+    // bestätigen/verwerfen, siehe karten.js.
+    if (typeof renderKarteGm === 'function') renderKarteGm();
+    return true;
 }
 
 function skZugBestaetigen(id) {
-    if (!skMap) return;
-    if (skMap.zugBestaetigen(id)) {
+    if (!karteMap) return;
+    if (karteMap.zugBestaetigen(id)) {
         const e = skEinheit(id);
         if (e) skLog(`Zug von ${e.name} bestätigt.`);
     }
@@ -264,8 +276,8 @@ function skZugBestaetigen(id) {
 }
 
 function skZugVerwerfen(id) {
-    if (!skMap) return;
-    skMap.zugVerwerfen(id);
+    if (!karteMap) return;
+    karteMap.zugVerwerfen(id);
     renderSeekampfGm();
 }
 
@@ -310,8 +322,8 @@ function skEinheit(id) { return seekampf.einheiten.find(e => e.id === id); }
 // Neue Schiffe nicht exakt übereinander stapeln, sondern spiralförmig um die
 // Sichtmitte verteilen (der SL zieht sie ohnehin gleich an ihre Startposition).
 function skFreieSpawnPosition() {
-    const mitte = skMap.sichtbaresZentrum();
-    const n = skMap.figuren.length;
+    const mitte = karteMap.sichtbaresZentrum();
+    const n = karteMap.figuren.length;
     if (n === 0) return mitte;
     const winkel = n * 2.4;
     const radius = 1.5 * Math.sqrt(n);
@@ -331,7 +343,8 @@ function skEinheitHinzufuegen() {
     const id = 'sk_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
     const einheit = {
         id, name, seite, farbe: SK_SEITEN[seite].farbe,
-        klasse: klasse || '', spielerIds: [],
+        klasse: klasse || '', spielerIds: [], kapitaen: null,
+        karteId: (typeof karteAktivId !== 'undefined' ? karteAktivId : null),
         struktur: { aktuell: vorlage ? vorlage.trefferpunkte : 100, max: vorlage ? vorlage.trefferpunkte : 100 },
         geschwindigkeit: vorlage ? vorlage.geschwindigkeit : 'w6',
         kanonen: vorlage ? vorlage.kanonen : 10,
@@ -339,10 +352,10 @@ function skEinheitHinzufuegen() {
         effekte: []
     };
     seekampf.einheiten.push(einheit);
-    if (skMap) {
+    if (karteMap) {
         const pos = skFreieSpawnPosition();
-        skMap.addFigur({ id, name, farbe: einheit.farbe, x: pos.x, y: pos.y, groesse: 1.3 });
-        skMap.setFigurBild(id, skSchiffBild(einheit.farbe));
+        karteMap.addFigur({ id, name, farbe: einheit.farbe, x: pos.x, y: pos.y, groesse: 1.3 });
+        karteMap.setFigurBild(id, skSchiffBild(einheit.farbe));
     }
     if (nameEl) { nameEl.value = ''; nameEl.focus(); }
     skLog(`${name} (${SK_SEITEN[seite].label}) tritt dem Gefecht bei.`);
@@ -355,7 +368,7 @@ function skEinheitEntfernen(id) {
     if (!confirm(`"${e.name}" wirklich aus dem Gefecht entfernen?`)) return;
     seekampf.einheiten = seekampf.einheiten.filter(x => x.id !== id);
     seekampf.initiative = seekampf.initiative.filter(x => x.id !== id);
-    if (skMap) skMap.removeFigur(id);
+    if (karteMap) karteMap.removeFigur(id);
     skLog(`${e.name} verlässt das Gefecht.`);
     renderSeekampfGm();
 }
@@ -372,15 +385,15 @@ function skMarkerHinzufuegen() {
     const name = (nameEl && nameEl.value.trim()) || info.label;
 
     const id = 'skm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-    seekampf.marker.push({ id, name, farbe: info.farbe, typ, groesse: SK_MARKER_GROESSE_STANDARD });
-    if (skMap) {
+    seekampf.marker.push({ id, name, farbe: info.farbe, typ, groesse: SK_MARKER_GROESSE_STANDARD, karteId: (typeof karteAktivId !== 'undefined' ? karteAktivId : null) });
+    if (karteMap) {
         const pos = skFreieSpawnPosition();
-        skMap.addFigur({ id, name, farbe: info.farbe, x: pos.x, y: pos.y, groesse: SK_MARKER_GROESSE_STANDARD });
-        skMap.setFigurBild(id, skMarkerBild(typ));
+        karteMap.addFigur({ id, name, farbe: info.farbe, x: pos.x, y: pos.y, groesse: SK_MARKER_GROESSE_STANDARD });
+        karteMap.setFigurBild(id, skMarkerBild(typ));
         // addFigur() hängt neue Marker ans Array-Ende (= oben) - ohne diesen
         // Sortier-Reset läge ein frisch gesetzter Marker über bereits vorhandenen
         // Schiffen, statt wie gewollt darunter.
-        skFigurenZOrdnen(skMap, seekampf.einheiten);
+        skFigurenZOrdnen(karteMap, seekampf.einheiten);
     }
     if (nameEl) nameEl.value = '';
     skSichern();
@@ -391,7 +404,7 @@ function skMarkerEntfernen(id) {
     const m = skMarker(id);
     if (!m) return;
     seekampf.marker = seekampf.marker.filter(x => x.id !== id);
-    if (skMap) skMap.removeFigur(id);
+    if (karteMap) karteMap.removeFigur(id);
     skSichern();
     renderSeekampfGm();
 }
@@ -405,7 +418,7 @@ function skMarkerGroesseAendern(id, delta) {
     if (!m) return;
     const basis = m.groesse || SK_MARKER_GROESSE_STANDARD;
     m.groesse = Math.max(SK_MARKER_GROESSE_MIN, Math.min(SK_MARKER_GROESSE_MAX, Math.round((basis + delta) * 100) / 100));
-    if (skMap) skMap.setFigurGroesse(id, m.groesse);
+    if (karteMap) karteMap.setFigurGroesse(id, m.groesse);
     skSichern();
     renderSeekampfGm();
 }
@@ -415,7 +428,7 @@ function skEinheitFeldAendern(id, feld, wert) {
     if (!e) return;
     if (feld === 'name') {
         e.name = wert;
-        if (skMap) skMap.addFigur({ id, name: wert });
+        if (karteMap) karteMap.addFigur({ id, name: wert });
     } else if (feld === 'geschwindigkeit') {
         e.geschwindigkeit = wert;
     } else if (feld === 'kanonen' || feld === 'lager') {
@@ -424,9 +437,9 @@ function skEinheitFeldAendern(id, feld, wert) {
         if (!SK_SEITEN[wert]) return;
         e.seite = wert;
         e.farbe = SK_SEITEN[wert].farbe;
-        if (skMap) {
-            skMap.addFigur({ id, farbe: e.farbe });
-            skMap.setFigurBild(id, skSchiffBild(e.farbe));
+        if (karteMap) {
+            karteMap.addFigur({ id, farbe: e.farbe });
+            karteMap.setFigurBild(id, skSchiffBild(e.farbe));
         }
     } else if (feld === 'struktur_max') {
         const max = Math.max(1, parseInt(wert) || 1);
@@ -438,12 +451,35 @@ function skEinheitFeldAendern(id, feld, wert) {
 
 // Mehrere Spieler können sich ein Schiff teilen (die ganze Crew steht ja auf
 // demselben Deck) - Klick auf einen Namens-Chip nimmt ihn rein oder raus.
+// Wird jemand entfernt, der gerade Kapitän war, geht das Schiff automatisch
+// zurück auf "jeder in der Crew darf steuern".
 function skEinheitSpielerToggle(id, peerId) {
     const e = skEinheit(id);
     if (!e) return;
     if (!Array.isArray(e.spielerIds)) e.spielerIds = [];
     const idx = e.spielerIds.indexOf(peerId);
     if (idx === -1) e.spielerIds.push(peerId); else e.spielerIds.splice(idx, 1);
+    if (idx !== -1 && e.kapitaen === peerId) e.kapitaen = null;
+    skSichern();
+    renderSeekampfGm();
+}
+
+// Kapitän: nur diese eine Person darf das Schiff steuern (Zugvorschläge
+// anmelden), statt jeder in spielerIds - für Crews, die nicht wollen, dass
+// jeder mitfummelt. kapitaen: null = altes Verhalten (jeder aus der Crew
+// darf). Ein Klick auf den bereits amtierenden Kapitän setzt ihn wieder
+// zurück auf null. Ein Kapitän muss Teil der Crew sein - wird er es noch
+// nicht, direkt mit aufnehmen.
+function skEinheitKapitaenUmschalten(id, peerId) {
+    const e = skEinheit(id);
+    if (!e) return;
+    if (e.kapitaen === peerId) {
+        e.kapitaen = null;
+    } else {
+        if (!Array.isArray(e.spielerIds)) e.spielerIds = [];
+        if (!e.spielerIds.includes(peerId)) e.spielerIds.push(peerId);
+        e.kapitaen = peerId;
+    }
     skSichern();
     renderSeekampfGm();
 }
@@ -532,7 +568,7 @@ function skGefechtZuruecksetzen() {
     if (!confirm('Gefecht wirklich zurücksetzen? Alle Einheiten, Initiative und das Kampf-Log werden gelöscht (Kartenmarkierungen wie Riffe/Inseln und die Karte selbst bleiben erhalten).')) return;
     const markerVorher = seekampf.marker;
     seekampf = Object.assign(skLeererStand(), { marker: markerVorher });
-    if (skMap) skMap.figuren.slice().forEach(f => { if (!skMarker(f.id)) skMap.removeFigur(f.id); });
+    if (karteMap) karteMap.figuren.slice().forEach(f => { if (!skMarker(f.id)) karteMap.removeFigur(f.id); });
     skSichern();
     renderSeekampfGm();
 }
@@ -639,29 +675,70 @@ function skRammeSchaden(taeterId, zielId) {
 // bekommen ein neues Token an einer freien Stelle, vorhandene Positionen
 // bleiben unangetastet, und Token, die zu keiner Einheit/keinem Marker mehr
 // gehören (gelöscht), verschwinden auch von der Karte.
+// Schiffe/Marker gehören - anders als noch in einer früheren Fassung, wo
+// jedes Schiff auf JEDER Karte auftauchte - genau EINER Karte (`karteId`):
+// der, auf der sie erstellt bzw. zuletzt per skEinheitAufAktiveKarteVersetzen()
+// hin versetzt wurden. Hier wird nur ein-/ausgeblendet, wer auf die gerade
+// aktive Karte gehört - nichts wird dabei aus seekampf.einheiten/.marker
+// gelöscht, ein Schiff behält all seine Kampfwerte, während eine andere
+// Karte aktiv ist, es ist dort nur nicht sichtbar/ziehbar.
 function skFigurenAbgleichen() {
-    if (!skMap) return;
+    if (!karteMap) return;
+    const aktivId = typeof karteAktivId !== 'undefined' ? karteAktivId : null;
     seekampf.einheiten.forEach(e => {
-        if (!skMap.figuren.some(f => f.id === e.id)) {
+        // Erstkontakt (frisch erstellt, oder Altbestand ohne karteId) - gehört
+        // ab jetzt zu der Karte, die gerade aktiv ist.
+        if (e.karteId == null) e.karteId = aktivId;
+        const gehoertHierher = e.karteId === aktivId;
+        const vorhanden = karteMap.figuren.some(f => f.id === e.id);
+        if (gehoertHierher && !vorhanden) {
             const pos = skFreieSpawnPosition();
-            skMap.addFigur({ id: e.id, name: e.name, farbe: e.farbe, x: pos.x, y: pos.y, groesse: 1.3 });
+            karteMap.addFigur({ id: e.id, name: e.name, farbe: e.farbe, x: pos.x, y: pos.y, groesse: 1.3 });
+        } else if (!gehoertHierher && vorhanden) {
+            karteMap.removeFigur(e.id);
         }
         // Wie bei Markern: Porträt ist nicht Teil des persistierten Kartenzustands,
         // nach jedem Neuladen/Sync erneut zuweisen (dedupliziert sich selbst).
-        skMap.setFigurBild(e.id, skSchiffBild(e.farbe));
+        if (gehoertHierher) karteMap.setFigurBild(e.id, skSchiffBild(e.farbe));
     });
     seekampf.marker.forEach(m => {
-        if (!skMap.figuren.some(f => f.id === m.id)) {
+        if (m.karteId == null) m.karteId = aktivId;
+        const gehoertHierher = m.karteId === aktivId;
+        const vorhanden = karteMap.figuren.some(f => f.id === m.id);
+        if (gehoertHierher && !vorhanden) {
             const pos = skFreieSpawnPosition();
-            skMap.addFigur({ id: m.id, name: m.name, farbe: m.farbe, x: pos.x, y: pos.y, groesse: m.groesse || SK_MARKER_GROESSE_STANDARD });
+            karteMap.addFigur({ id: m.id, name: m.name, farbe: m.farbe, x: pos.x, y: pos.y, groesse: m.groesse || SK_MARKER_GROESSE_STANDARD });
+        } else if (!gehoertHierher && vorhanden) {
+            karteMap.removeFigur(m.id);
         }
         // setFigurBild() ist bewusst NICHT Teil des persistierten Kartenzustands
         // (battlemap.js) - nach jedem Neuladen/Sync erneut zuweisen (dedupliziert
         // sich selbst, siehe dortiger Kommentar).
-        skMap.setFigurBild(m.id, skMarkerBild(m.typ || 'sonstiges'));
+        if (gehoertHierher) karteMap.setFigurBild(m.id, skMarkerBild(m.typ || 'sonstiges'));
     });
-    skMap.figuren.slice().forEach(f => { if (!skEinheit(f.id) && !skMarker(f.id)) skMap.removeFigur(f.id); });
-    skFigurenZOrdnen(skMap, seekampf.einheiten);
+    // Nur eigene (Schiffs-/Marker-)Figuren aufräumen, die es nicht mehr gibt -
+    // NICHT jede Figur ohne Treffer, sonst würden hier bei jedem Kartenwechsel
+    // auch Spieler- und NSC-Figuren (karten.js) mit entfernt.
+    karteMap.figuren.slice().forEach(f => {
+        const istEigenesPraefix = f.id.startsWith('sk_') || f.id.startsWith('skm_');
+        if (istEigenesPraefix && !skEinheit(f.id) && !skMarker(f.id)) karteMap.removeFigur(f.id);
+    });
+    skFigurenZOrdnen(karteMap, seekampf.einheiten);
+}
+
+// Versetzt ein Schiff explizit auf die gerade aktive Karte (z.B. wenn es an
+// einer Insel anlegt und die Gruppe dort auf eine Landkarte wechselt) - sonst
+// bliebe es für immer an seine Erstellungskarte gebunden. Idempotent: schon
+// auf der Zielkarte -> einfach ein no-op (skFigurenAbgleichen lässt die
+// Figur unangetastet an ihrer letzten Position stehen).
+function skEinheitAufAktiveKarteVersetzen(id) {
+    const e = skEinheit(id);
+    if (!e || !karteMap || typeof karteAktivId === 'undefined' || !karteAktivId) return;
+    e.karteId = karteAktivId;
+    skFigurenAbgleichen();
+    const kartenname = (typeof karten !== 'undefined' && Array.isArray(karten) && karten.find(k => k.id === karteAktivId)?.name) || 'die aktive Karte';
+    skLog(`${e.name} wird auf "${kartenname}" versetzt.`);
+    renderSeekampfGm();
 }
 
 // Schiffe sollen nie unter einem großen Riff/einer großen Insel verschwinden.
@@ -678,107 +755,10 @@ function skFigurenZOrdnen(karte, einheitenListe) {
     karte.zeichnen();
 }
 
-function skKarteInitialisieren(canvas) {
-    if (!canvas || skMap) return;
-    let anfangsZustand = null;
-    try {
-        const roh = localStorage.getItem(SEEKAMPF_KARTE_KEY);
-        if (roh) anfangsZustand = JSON.parse(roh);
-    } catch (e) { /* kein gespeicherter Kartenstand */ }
-
-    skMap = BattleMap.create(canvas, {
-        einheit: 200, einheitName: 'm',
-        onChange: (zustand) => {
-            try { localStorage.setItem(SEEKAMPF_KARTE_KEY, JSON.stringify(zustand)); } catch (e) { /* voll oder blockiert */ }
-            skVerteilen();
-        }
-    });
-
-    if (anfangsZustand) {
-        skMap.applyState(anfangsZustand, anfangsZustand.bild);
-    }
-    skFigurenAbgleichen();
-}
-
-function skKarteBildHochladen(ereignis) {
-    const datei = ereignis.target.files && ereignis.target.files[0];
-    ereignis.target.value = '';
-    if (!datei || !skMap) return;
-    BattleMap.bildVerkleinern(datei).then(res => { skMap.setBild(res.dataUrl); skMap.einpassen(); }).catch(() => {});
-}
-
-function skKarteBildEntfernen() {
-    if (!skMap) return;
-    skMap.setBild(null);
-}
-
-// Raster an ein eigenes Kartenbild anpassen (Feldgröße/Versatz in Pixeln,
-// Rasterfarbe, sichtbar/einrasten an-aus) - wie im Schwesterprojekt demonslayer
-// (mapui.js) über battlemap.js' setRaster()/raster-Objekt gesteuert.
-function renderSkRasterWerkzeuge() {
-    const box = document.getElementById('sk-raster-werkzeuge');
-    if (!box || !skMap) return;
-    const r = skMap.raster;
-    box.innerHTML = `
-        <button class="tool-btn ${r.rasterSichtbar ? 'tool-btn-aktiv' : ''}" onclick="skRasterUmschalten()" title="Rasterlinien ein/aus"><i class="fa-solid fa-table-cells"></i> Raster</button>
-        <button class="tool-btn ${r.einrasten ? 'tool-btn-aktiv' : ''}" onclick="skEinrastenUmschalten()" title="Schiffe beim Ziehen auf halbe Felder einrasten"><i class="fa-solid fa-magnet"></i> Einrasten</button>
-        ${r.rasterSichtbar ? `<span class="sk-raster-farben" title="Rasterfarbe">
-            ${SK_RASTER_FARBEN.map(rf => `<span class="sk-raster-farbpunkt ${((r.rasterFarbe || SK_RASTER_FARBEN[0].linie) === rf.linie) ? 'sk-raster-farbpunkt-aktiv' : ''}" style="background:${rf.punkt}" title="Raster: ${rf.name}" onclick="skRasterFarbeWaehlen('${rf.linie}')"></span>`).join('')}
-        </span>` : ''}
-        <label class="sk-raster-feld" title="Feldgröße in Pixeln (an ein eigenes Kartenbild anpassen)">Feldgröße
-            <span class="sk-num-stepper">
-                <button type="button" data-dir="-1">−</button>
-                <input type="number" id="sk-raster-groesse" class="sk-input" value="${r.rasterGroesse}" min="4" max="400" step="5">
-                <button type="button" data-dir="1">+</button>
-            </span>
-        </label>
-        <label class="sk-raster-feld" title="Raster waagerecht verschieben">Versatz X
-            <span class="sk-num-stepper">
-                <button type="button" data-dir="-1">−</button>
-                <input type="number" id="sk-raster-versatzx" class="sk-input" value="${r.rasterVersatzX}">
-                <button type="button" data-dir="1">+</button>
-            </span>
-        </label>
-        <label class="sk-raster-feld" title="Raster senkrecht verschieben">Versatz Y
-            <span class="sk-num-stepper">
-                <button type="button" data-dir="-1">−</button>
-                <input type="number" id="sk-raster-versatzy" class="sk-input" value="${r.rasterVersatzY}">
-                <button type="button" data-dir="1">+</button>
-            </span>
-        </label>`;
-    ['sk-raster-groesse', 'sk-raster-versatzx', 'sk-raster-versatzy'].forEach(id => {
-        const feld = document.getElementById(id);
-        if (feld) feld.addEventListener('input', skRasterAusFeldern);
-    });
-}
-
-function skRasterAusFeldern() {
-    if (!skMap) return;
-    const zahl = id => parseFloat((document.getElementById(id) || {}).value) || 0;
-    skMap.setRaster({
-        rasterGroesse: Math.max(4, zahl('sk-raster-groesse')),
-        rasterVersatzX: zahl('sk-raster-versatzx'),
-        rasterVersatzY: zahl('sk-raster-versatzy')
-    });
-}
-
-function skRasterFarbeWaehlen(farbe) {
-    if (!skMap) return;
-    skMap.setRaster({ rasterFarbe: farbe });
-    renderSkRasterWerkzeuge();
-}
-
-function skRasterUmschalten() {
-    if (!skMap) return;
-    skMap.setRaster({ rasterSichtbar: !skMap.raster.rasterSichtbar });
-    renderSkRasterWerkzeuge();
-}
-
-function skEinrastenUmschalten() {
-    if (!skMap) return;
-    skMap.setRaster({ einrasten: !skMap.raster.einrasten });
-    renderSkRasterWerkzeuge();
-}
+// Kartendarstellung (Leinwand, Raster, Bild-Upload, Zeichnen, Nebel) läuft
+// jetzt komplett über die gemeinsame Karten-Engine (karten.js) - Schiffe und
+// Markierungen werden dort nur noch als Figuren hinein-synchronisiert (siehe
+// skFigurenAbgleichen). Seekampf selbst zeichnet nichts mehr eigenständig.
 
 // --- Darstellung -------------------------------------------------------------
 
@@ -803,13 +783,26 @@ function skEinheitKarteHtml(e, istAmZug) {
             </select>
             <button class="btn-delete-icon" onclick="skEinheitEntfernen('${e.id}')" title="Aus dem Gefecht entfernen"><i class="fa-solid fa-trash"></i></button>
         </div>
+        ${(() => {
+            const eigeneKarte = (typeof karten !== 'undefined' && Array.isArray(karten)) ? karten.find(k => k.id === e.karteId) : null;
+            const aktivId = typeof karteAktivId !== 'undefined' ? karteAktivId : null;
+            const istAufAktiverKarte = e.karteId != null && e.karteId === aktivId;
+            return `<div class="sk-aktion-zeile">
+                <span class="ir-hint" style="margin:0"><i class="fa-solid fa-map-location-dot"></i> ${eigeneKarte ? escapeHtml(eigeneKarte.name) : 'keiner Karte zugeordnet'}${istAufAktiverKarte ? ' (aktive Karte)' : ''}</span>
+                ${!istAufAktiverKarte && aktivId ? `<button class="sk-mini-btn" onclick="skEinheitAufAktiveKarteVersetzen('${e.id}')" title="Schiff auf die gerade aktive Karte versetzen"><i class="fa-solid fa-arrow-right-to-bracket"></i> Hierher versetzen</button>` : ''}
+            </div>`;
+        })()}
         ${typeof connectedPlayersData !== 'undefined' && Object.keys(connectedPlayersData).length ? `
         <div class="sk-besitzer-zeile">
-            <span class="ir-hint" style="margin:0">Steuerbar von (mehrere möglich, z.B. die ganze Crew):</span>
+            <span class="ir-hint" style="margin:0">Crew (mehrere möglich) - ${e.kapitaen ? `nur <b>${escapeHtml(schiffSpielerName(e.kapitaen))}</b> als Kapitän steuert` : 'jeder aus der Crew darf steuern'}, Krone klicken zum Ändern:</span>
             <div class="sk-besitzer-chips">
                 ${Object.keys(connectedPlayersData).map(pid => {
                     const aktiv = Array.isArray(e.spielerIds) && e.spielerIds.includes(pid);
-                    return `<button type="button" class="sk-besitzer-chip ${aktiv ? 'sk-besitzer-chip-aktiv' : ''}" onclick="skEinheitSpielerToggle('${e.id}', '${escapeHtml(pid)}')" title="${aktiv ? 'Darf dieses Schiff ziehen - klicken zum Entfernen' : 'Klicken, um dieses Schiff zuzuweisen'}">${aktiv ? '<i class="fa-solid fa-check"></i> ' : ''}${escapeHtml(schiffSpielerName(pid))}</button>`;
+                    const istKapitaen = e.kapitaen === pid;
+                    return `<span class="sk-besitzer-chip-gruppe">
+                        <button type="button" class="sk-besitzer-chip ${aktiv ? 'sk-besitzer-chip-aktiv' : ''}" onclick="skEinheitSpielerToggle('${e.id}', '${escapeHtml(pid)}')" title="${aktiv ? 'Gehört zur Crew - klicken zum Entfernen' : 'Klicken, um zur Crew hinzuzufügen'}">${aktiv ? '<i class="fa-solid fa-check"></i> ' : ''}${escapeHtml(schiffSpielerName(pid))}</button>
+                        <button type="button" class="sk-badge-groesse ${istKapitaen ? 'sk-kapitaen-aktiv' : ''}" onclick="skEinheitKapitaenUmschalten('${e.id}', '${escapeHtml(pid)}')" title="${istKapitaen ? 'Ist Kapitän - klicken, damit wieder die ganze Crew steuern darf' : 'Zum Kapitän machen - nur diese Person darf das Schiff dann noch steuern'}"><i class="fa-solid fa-crown"></i></button>
+                    </span>`;
                 }).join('')}
             </div>
         </div>` : ''}
@@ -902,8 +895,12 @@ function renderSeekampfGm() {
         return;
     }
     box.style.display = '';
+    // Sorgt dafür, dass die gemeinsame Karten-Engine existiert, bevor wir
+    // Schiffe/Marker auf sie synchronisieren (siehe karten.js) - Seekampf
+    // zeichnet selbst nichts mehr, die Ansicht läuft komplett dort.
+    if (typeof renderKarteGm === 'function') renderKarteGm();
 
-    if (!document.getElementById('sk-canvas')) {
+    if (!box.querySelector('.sk-details')) {
         box.innerHTML = `
             <details class="x-details sk-details" ${skOffenGm ? 'open' : ''}>
                 <summary class="tm-head">
@@ -912,51 +909,17 @@ function renderSeekampfGm() {
                         <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('seekampf')" title="Hilfe zum Seekampf"></i>
                     </div>
                 </summary>
-                <div class="sk-karten-werkzeuge">
-                    <button class="tool-btn" data-skwerkzeug="zeigen"><i class="fa-solid fa-arrow-pointer"></i> Zeigen</button>
-                    <button class="tool-btn" data-skwerkzeug="messen"><i class="fa-solid fa-ruler"></i> Messen</button>
-                    <button class="tool-btn" data-skwerkzeug="malen"><i class="fa-solid fa-pen"></i> Zeichnen</button>
-                    <select id="sk-mal-art" class="sk-input sk-mal-art" title="Form">
-                        <option value="freihand">Freihand</option>
-                        <option value="linie">Linie</option>
-                        <option value="kreis">Kreis (z.B. Kanonenreichweite)</option>
-                        <option value="rechteck">Rechteck</option>
-                    </select>
-                    <input type="color" id="sk-mal-farbe" class="sk-mal-farbe" value="#a3342b" title="Zeichenfarbe">
-                    <button class="tool-btn" onclick="skMap && skMap.formenLoeschen()" title="Alle Zeichnungen löschen"><i class="fa-solid fa-eraser"></i> Formen löschen</button>
-                    <button class="tool-btn" onclick="skMap && skMap.rueckgaengig()" title="Letzte Zeichnung/Markierung rückgängig"><i class="fa-solid fa-rotate-left"></i> Rückgängig</button>
-                    <button class="tool-btn" onclick="skMap && skMap.einpassen()"><i class="fa-solid fa-expand"></i> Einpassen</button>
-                    <label class="tool-btn" style="margin:0"><i class="fa-solid fa-image"></i> Karte laden<input type="file" accept="image/*" style="display:none" onchange="skKarteBildHochladen(event)"></label>
-                    <button class="tool-btn" onclick="skKarteBildEntfernen()"><i class="fa-solid fa-image-slash"></i> Karte entfernen</button>
-                </div>
-                <div id="sk-raster-werkzeuge" class="sk-karten-werkzeuge"></div>
-                <canvas id="sk-canvas" class="sk-canvas"></canvas>
-                <p class="ir-hint">Riffe, Inseln und Kanonenreichweiten markieren: mit "Zeichnen" Formen auf die Karte malen, oder unten als benanntes Markierungs-Token setzen. Beides bleibt beim Zurücksetzen des Gefechts erhalten. Passt das Raster nicht zu einem eigenen Kartenbild, oben Feldgröße/Versatz/Farbe anpassen.</p>
+                <p class="ir-hint" style="margin-top:0">Schiffe und Markierungen erscheinen auf der aktiven Karte im Karte-Panel - dort auch bewegen, zeichnen und Kartenbild laden.</p>
                 <div id="sk-dynamic"></div>
             </details>`;
-        const canvas = document.getElementById('sk-canvas');
-        skKarteInitialisieren(canvas);
-        renderSkRasterWerkzeuge();
-        box.querySelectorAll('[data-skwerkzeug]').forEach(btn => btn.addEventListener('click', () => {
-            if (skMap) skMap.setWerkzeug(btn.dataset.skwerkzeug);
-            box.querySelectorAll('[data-skwerkzeug]').forEach(b => b.classList.toggle('tool-btn-aktiv', b === btn));
-        }));
-        const zeigenBtn = box.querySelector('[data-skwerkzeug="zeigen"]');
-        if (zeigenBtn) zeigenBtn.classList.add('tool-btn-aktiv');
-        const malArtSel = document.getElementById('sk-mal-art');
-        if (malArtSel) malArtSel.addEventListener('change', () => { if (skMap) skMap.setMalArt(malArtSel.value); });
-        const malFarbeInput = document.getElementById('sk-mal-farbe');
-        if (malFarbeInput) malFarbeInput.addEventListener('input', () => { if (skMap) skMap.setMalFarbe(malFarbeInput.value); });
         const details = box.querySelector('details');
         if (details) details.addEventListener('toggle', () => {
             skOffenGm = details.open;
             try { localStorage.setItem(SEEKAMPF_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
-            if (details.open && skMap) skMap.zeichnen();
         });
-    } else if (skMap) {
-        // Neu hinzugekommene/entfernte Einheiten und Marker seit dem letzten Render abgleichen.
-        skFigurenAbgleichen();
     }
+    // Neu hinzugekommene/entfernte Einheiten und Marker seit dem letzten Render abgleichen.
+    skFigurenAbgleichen();
 
     const dyn = document.getElementById('sk-dynamic');
     if (!dyn) return;
@@ -987,14 +950,6 @@ function renderSeekampfGm() {
                 if (!e) return '';
                 return `<span class="sk-init-chip ${i.id === amZugId ? 'sk-init-chip-aktiv' : ''}">${escapeHtml(e.name)} (${i.wurf})</span>`;
             }).join('')}
-        </div>` : ''}
-        ${skMap && skMap.offeneZuege().length ? `<div class="sk-vorschlaege">
-            <div class="sk-vorschlaege-titel"><i class="fa-solid fa-route"></i> Offene Zugvorschläge von Spielern</div>
-            ${skMap.offeneZuege().map(v => `<div class="sk-vorschlag-zeile">
-                <span>${escapeHtml(v.name)} → ${v.felder} Feld${v.felder === 1 ? '' : 'er'}</span>
-                <button class="sk-mini-btn" onclick="skZugBestaetigen('${v.id}')"><i class="fa-solid fa-check"></i> Bestätigen</button>
-                <button class="sk-mini-btn" onclick="skZugVerwerfen('${v.id}')"><i class="fa-solid fa-xmark"></i> Verwerfen</button>
-            </div>`).join('')}
         </div>` : ''}
 
         <div class="sk-marker-zeile">
@@ -1050,7 +1005,6 @@ function skLeererSpielerStand() {
 }
 
 let skSpieler = skLeererSpielerStand();
-let skSpielerMap = null;
 let skSpielerOffen = true;
 
 function skEmpfangen(payload) {
@@ -1058,28 +1012,29 @@ function skEmpfangen(payload) {
     skSpieler.runde = payload.runde || skSpieler.runde;
     skSpieler.einheiten = Array.isArray(payload.einheiten) ? payload.einheiten : [];
     skSpieler.marker = Array.isArray(payload.marker) ? payload.marker : [];
-    // Erst rendern (legt skSpielerMap beim allerersten Empfang überhaupt erst an),
-    // danach den Kartenzustand anwenden - sonst geht der allererste Sync ins Leere.
     renderSeekampfSpieler();
-    if (skSpielerMap && payload.karte) {
-        skSpielerMap.applyState(payload.karte, payload.karte.bild);
-        // Porträts sind bewusst nicht Teil des übertragenen Kartenzustands
-        // (battlemap.js) - beim Spieler wie beim SL nach jedem Sync neu zuweisen.
+    // Die Figuren selbst (Position, Bild, Nebel) laufen über karten.js' eigene
+    // Nachricht (type: 'karte') auf die gemeinsame karteSpielerMap - hier nur
+    // noch Porträts und den lokalen Besitzer-Trick für Schiffe nachziehen.
+    // karteSpielerMap existiert eventuell noch nicht (falls diese Nachricht
+    // vor der ersten 'karte'-Nachricht ankommt) - dann holt der nächste Sync
+    // das nach.
+    if (typeof karteSpielerMap !== 'undefined' && karteSpielerMap) {
         const meinPeer = typeof peer !== 'undefined' && peer ? peer.id : null;
         skSpieler.einheiten.forEach(e => {
-            skSpielerMap.setFigurBild(e.id, skSchiffBild(e.farbe));
+            karteSpielerMap.setFigurBild(e.id, skSchiffBild(e.farbe));
             // Mehrere Spieler können sich ein Schiff teilen (siehe skEinheitSpielerToggle)
             // - battlemap.js selbst kennt aber nur EINEN besitzer pro Figur und prüft
             // ihn strikt gegen setBesitzer(). Der Trick: jede Spieler-Karte ist ihre
             // eigene, unabhängige BattleMap-Instanz, also setzen wir "besitzer" hier
-            // lokal auf die EIGENE peerId, sobald sie in spielerIds steckt - andere
-            // Spieler machen genau dasselbe mit ihrer eigenen peerId auf ihrer
-            // eigenen Karte, unabhängig davon, wie viele insgesamt zugewiesen sind.
-            const gehoertMir = Array.isArray(e.spielerIds) && meinPeer && e.spielerIds.includes(meinPeer);
-            skSpielerMap.addFigur({ id: e.id, besitzer: gehoertMir ? meinPeer : null });
+            // lokal auf die EIGENE peerId, wenn diese Person das Schiff steuern darf
+            // (Kapitän gesetzt: nur der; sonst jeder aus spielerIds) - andere Spieler
+            // machen dasselbe mit ihrer eigenen peerId auf ihrer eigenen Karte.
+            const darf = e.kapitaen ? e.kapitaen === meinPeer : (Array.isArray(e.spielerIds) && meinPeer && e.spielerIds.includes(meinPeer));
+            karteSpielerMap.addFigur({ id: e.id, besitzer: darf ? meinPeer : null });
         });
-        skSpieler.marker.forEach(m => skSpielerMap.setFigurBild(m.id, skMarkerBild(m.typ || 'sonstiges')));
-        skFigurenZOrdnen(skSpielerMap, skSpieler.einheiten);
+        skSpieler.marker.forEach(m => karteSpielerMap.setFigurBild(m.id, skMarkerBild(m.typ || 'sonstiges')));
+        skFigurenZOrdnen(karteSpielerMap, skSpieler.einheiten);
     }
 }
 
@@ -1124,6 +1079,10 @@ function skEinheitKarteSpielerHtml(e) {
     </div>`;
 }
 
+// Zeichnet nichts mehr selbst - die Karte (inkl. Schiffe ziehen) läuft über
+// das Karte-Panel (karten.js), das dieselbe Vorschlag/Bestätigung-Mechanik
+// für Schiffe mitnutzt (siehe skAnfrageVerarbeiten). Hier nur noch Wind/
+// Runde/Schiffsroster als Buchhaltungs-Ansicht.
 function renderSeekampfSpieler() {
     const section = document.getElementById('seekampf-section');
     if (!section) return;
@@ -1134,7 +1093,7 @@ function renderSeekampfSpieler() {
     }
     section.style.display = '';
 
-    if (!document.getElementById('sk-spieler-canvas')) {
+    if (!section.querySelector('.sk-details')) {
         section.innerHTML = `
             <details class="x-details sk-details" ${skSpielerOffen ? 'open' : ''}>
                 <summary class="tm-head">
@@ -1142,37 +1101,11 @@ function renderSeekampfSpieler() {
                         <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('seekampf')" title="Hilfe zum Seekampf"></i>
                     </h2>
                 </summary>
-                <div class="sk-karten-werkzeuge">
-                    <button class="tool-btn" data-skspielerwerkzeug="zeigen"><i class="fa-solid fa-arrow-pointer"></i> Zeigen</button>
-                    <button class="tool-btn" data-skspielerwerkzeug="messen"><i class="fa-solid fa-ruler"></i> Messen</button>
-                </div>
-                <canvas id="sk-spieler-canvas" class="sk-canvas"></canvas>
-                <p class="ir-hint">Der Spielleiter führt Buch - du siehst live mit. Ist dir ein Schiff zugewiesen, kannst du es selbst ziehen; dein Zug erscheint beim SL erst als Vorschlag, den er bestätigt oder verwirft.</p>
+                <p class="ir-hint" style="margin-top:0">Die Karte mit den Schiffen ist im Karte-Panel - dort auch ziehen, wenn dir (oder als Kapitän nur dir) ein Schiff zugewiesen ist. Dein Zug erscheint beim SL erst als Vorschlag, den er bestätigt oder verwirft.</p>
                 <div id="sk-spieler-dynamic"></div>
             </details>`;
-        const canvas = document.getElementById('sk-spieler-canvas');
-        skSpielerMap = BattleMap.create(canvas, {
-            einheit: 200, einheitName: 'm',
-            bestaetigungNoetig: true,
-            onZugVorschlag: (figur) => {
-                if (typeof hostConnection !== 'undefined' && hostConnection && hostConnection.open) {
-                    try { hostConnection.send({ type: 'seekampfZug', einheitId: figur.id, x: figur.geplantX, y: figur.geplantY }); } catch (e) { /* weg */ }
-                }
-            }
-        });
-        const meinPeer = typeof peer !== 'undefined' && peer ? peer.id : null;
-        skSpielerMap.setBesitzer(meinPeer);
-        section.querySelectorAll('[data-skspielerwerkzeug]').forEach(btn => btn.addEventListener('click', () => {
-            skSpielerMap.setWerkzeug(btn.dataset.skspielerwerkzeug);
-            section.querySelectorAll('[data-skspielerwerkzeug]').forEach(b => b.classList.toggle('tool-btn-aktiv', b === btn));
-        }));
-        const zeigenBtn = section.querySelector('[data-skspielerwerkzeug="zeigen"]');
-        if (zeigenBtn) zeigenBtn.classList.add('tool-btn-aktiv');
         const details = section.querySelector('details');
-        if (details) details.addEventListener('toggle', () => {
-            skSpielerOffen = details.open;
-            if (details.open && skSpielerMap) skSpielerMap.zeichnen();
-        });
+        if (details) details.addEventListener('toggle', () => { skSpielerOffen = details.open; });
     }
 
     const dyn = document.getElementById('sk-spieler-dynamic');
