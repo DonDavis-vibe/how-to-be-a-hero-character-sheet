@@ -119,6 +119,7 @@ function renderNscListeGm() {
                 ${n.ort ? `<span class="nsc-badge"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(n.ort)}</span>` : ''}
                 ${n.rolle ? `<span class="nsc-badge">${escapeHtml(n.rolle)}</span>` : ''}
                 ${n.haltung ? `<span class="status-badge ${ton}">${escapeHtml(n.haltung)}</span>` : ''}
+                ${typeof karteNsPlatzieren === 'function' && typeof eldaraAktiv === 'function' && eldaraAktiv() ? `<button class="x-mini" data-nsckarte="${escapeHtml(n.id)}" title="Auf Karte platzieren"><i class="fa-solid fa-map-location-dot"></i></button>` : ''}
                 <button class="x-mini x-mini-danger" data-nscdel="${escapeHtml(n.id)}" title="NSC entfernen"><i class="fa-solid fa-trash"></i></button>
             </div>
             ${details ? `<div class="nsc-item-details">${details}</div>` : ''}
@@ -163,6 +164,10 @@ function renderNscListeGm() {
         renderNscListeGm();
     });
     box.querySelectorAll('[data-nscdel]').forEach(b => b.addEventListener('click', () => nscListeEntfernen(b.dataset.nscdel)));
+    box.querySelectorAll('[data-nsckarte]').forEach(b => b.addEventListener('click', () => {
+        const n = nscListe.find(x => x.id === b.dataset.nsckarte);
+        if (n && typeof karteNsPlatzieren === 'function') karteNsPlatzieren(n);
+    }));
     box.querySelectorAll('[data-nscnotiz]').forEach(t => {
         nscNotizAutoSize(t);
         t.addEventListener('input', () => { nscNotizAutoSize(t); nscListeFeldAendern(t.dataset.nscnotiz, 'notiz', t.value); });

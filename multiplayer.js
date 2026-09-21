@@ -259,6 +259,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
             if (typeof renderSchiffGm === 'function') renderSchiffGm();
             if (typeof renderSeekampfGm === 'function') renderSeekampfGm();
+            if (typeof karteSpielerEntfernen === 'function') karteSpielerEntfernen(conn.peer);
             if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
             if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(conn.peer);
             if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
@@ -276,6 +277,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             if (typeof questeAnVerbindung === 'function') questeAnVerbindung(conn);
             if (typeof schiffAnVerbindung === 'function') schiffAnVerbindung(conn);
             if (typeof skAnVerbindung === 'function') skAnVerbindung(conn);
+            if (typeof karteAnVerbindung === 'function') karteAnVerbindung(conn);
         };
         if (conn.open) begruessen();
         else conn.on('open', begruessen);
@@ -402,6 +404,8 @@ function handleIncomingData(peerId, payload) {
     if (typeof schiffAnfrageVerarbeiten === 'function' && schiffAnfrageVerarbeiten(peerId, payload)) return;
     // Seekampf (seekampf.js): Zugvorschlag für zugewiesenes Schiff
     if (typeof skAnfrageVerarbeiten === 'function' && skAnfrageVerarbeiten(peerId, payload)) return;
+    // Karte (karten.js): Zugvorschlag für die eigene Spieler-Figur
+    if (typeof karteAnfrageVerarbeiten === 'function' && karteAnfrageVerarbeiten(peerId, payload)) return;
     if (payload.type === 'state') {
         const neuerSpieler = !connectedPlayersData[peerId];
         connectedPlayersData[peerId] = payload.data;
@@ -409,6 +413,7 @@ function handleIncomingData(peerId, payload) {
         if (neuerSpieler && typeof renderTischmitteGm === 'function') renderTischmitteGm();
         if (typeof renderSchiffGm === 'function') renderSchiffGm();
         if (neuerSpieler && typeof renderSeekampfGm === 'function') renderSeekampfGm();
+        if (neuerSpieler && typeof renderKarteGm === 'function') renderKarteGm();
         if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
         if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(peerId);
     } else if (payload.type === 'log') {
@@ -936,6 +941,7 @@ function joinMultiplayerSession(codeArg) {
             if (typeof questeBeitritt === 'function') questeBeitritt();
             if (typeof schiffBeitritt === 'function') schiffBeitritt();
             if (typeof skSpielerBeitritt === 'function') skSpielerBeitritt();
+            if (typeof karteSpielerBeitritt === 'function') karteSpielerBeitritt();
         });
 
         hostConnection.on('close', () => {
@@ -947,6 +953,7 @@ function joinMultiplayerSession(codeArg) {
             if (typeof questeGetrennt === 'function') questeGetrennt();
             if (typeof schiffGetrennt === 'function') schiffGetrennt();
             if (typeof skSpielerGetrennt === 'function') skSpielerGetrennt();
+            if (typeof karteSpielerGetrennt === 'function') karteSpielerGetrennt();
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
@@ -982,6 +989,8 @@ function joinMultiplayerSession(codeArg) {
                 // erledigt in schiffsinventar.js
             } else if (payload && typeof skNachrichtVerarbeiten === 'function' && skNachrichtVerarbeiten(payload)) {
                 // erledigt in seekampf.js
+            } else if (payload && typeof karteNachrichtVerarbeiten === 'function' && karteNachrichtVerarbeiten(payload)) {
+                // erledigt in karten.js
             } else if (payload && payload.type === 'hausregeln') {
                 if (typeof hausregelnEmpfangen === 'function') hausregelnEmpfangen(payload.regeln);
             } else if (payload && payload.type === 'customSound') {

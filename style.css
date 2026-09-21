@@ -2574,6 +2574,11 @@ body.theme-ultracore {
 .seekampf-section { margin-top: 2rem; }
 .seekampf-section .cat-title { margin: 0; }
 .seekampf-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+
+/* Karte (Eldara-VTT, karten.js) - Spieler-Ansicht */
+.karte-section { margin-top: 2rem; }
+.karte-section .cat-title { margin: 0; }
+.karte-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
 .qs-ziel-icon-erledigt { color: var(--color-heal) !important; }
 .qs-hinweise-liste { margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); }
 .qs-hinweise-liste li { padding: 0.1rem 0; }

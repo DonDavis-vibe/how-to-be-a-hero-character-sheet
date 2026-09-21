@@ -370,6 +370,10 @@
                  Eldara-Regelpaket (seekampf.js) -->
             <div id="seekampf-section" class="seekampf-section" style="display: none;"></div>
 
+            <!-- Karte (Eldara-VTT): Landkarten/Inseln/Schiffsdeck, nur bei
+                 aktivem Eldara-Regelpaket (karten.js) -->
+            <div id="karte-section" class="karte-section" style="display: none;"></div>
+
         </div>
 
         <!-- Notes Section (Movable) -->
@@ -505,6 +509,7 @@
     <script src="battlemap.js"></script>
     <script src="seekampf-icons.js"></script>
     <script src="seekampf.js"></script>
+    <script src="karten.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
     <script src="gmlayout.js"></script>
@@ -896,6 +901,14 @@
                 <div class="gm-panel-slot" data-panel="seekampf">
                     <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
                     <div id="gm-seekampf" class="gm-seekampf"></div>
+                </div>
+
+                <!-- Karte (Eldara-VTT): Kartenbibliothek mit Spieler-/NSC-Figuren
+                     und Nebel des Krieges (battlemap.js + karten.js), SL-only,
+                     nur bei aktivem Eldara-Regelpaket -->
+                <div class="gm-panel-slot" data-panel="karte">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-karte" class="gm-seekampf"></div>
                 </div>
 
                 <!-- Tischmitte: Loot vorbereiten, verstecken, aufdecken (tischmitte.js) -->

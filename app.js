@@ -136,6 +136,8 @@ function renderAll() {
     if (typeof renderSchiffSpieler === 'function') renderSchiffSpieler();
     // Seekampf-Karte (seekampf.js) - nur bei aktivem Eldara-Regelpaket
     if (typeof renderSeekampfSpieler === 'function') renderSeekampfSpieler();
+    // Karte (karten.js) - nur bei aktivem Eldara-Regelpaket
+    if (typeof renderKarteSpieler === 'function') renderKarteSpieler();
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');

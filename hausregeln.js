@@ -388,6 +388,7 @@ function hausregelnAnwenden(cb) {
         if (typeof calculatePoints === 'function') calculatePoints();
         if (typeof renderSchiffGm === 'function') renderSchiffGm();
         if (typeof renderSeekampfGm === 'function') renderSeekampfGm();
+        if (typeof renderKarteGm === 'function') renderKarteGm();
         if (cb) cb(paket);
     });
 }
