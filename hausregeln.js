@@ -207,6 +207,18 @@ function hausregelnTalenteUebernehmen(stumm) {
     return true;
 }
 
+// Feste Talentliste einer Kategorie, wenn sie für den Bogen gelten soll -
+// sonst null (dann bleibt die freie Texteingabe wie im reinen Regelwerk).
+// Eng an eldaraAktiv() statt an hausregelnAktiv() gebunden: wie beim
+// Rasterinventar/Schiff ist das eine UX-Ergänzung der Eldara-Runde, keine
+// generelle Paket-Eigenschaft, die jede Runde per Häkchen an-/abschalten soll.
+function hausregelnFesteTalentliste(attr) {
+    if (typeof eldaraAktiv !== 'function' || !eldaraAktiv()) return null;
+    const p = aktivesPaket();
+    const liste = p && p.talente && p.talente[attr];
+    return Array.isArray(liste) && liste.length ? liste : null;
+}
+
 // --- Würfeltabellen ---------------------------------------------------------
 
 function hausregelnTabellen() {

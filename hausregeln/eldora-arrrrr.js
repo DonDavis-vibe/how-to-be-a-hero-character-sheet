@@ -6,7 +6,7 @@
 hausregelPaketRegistrieren({
  "id": "eldora-arrrrr",
  "name": "Eldara – Version Arrrrr",
- "version": "2026-05-18",
+ "version": "2026-07-22 (RW 4.3, Talentbaum-Daten von 2026-05-18)",
  "system": "How to be a hero - Eldora Version Arrrrr",
  "beschreibung": "Piraten-Hausregeln einer HTBAH-Runde: feste Talentliste, progressive Talentkosten, Rang- und Skillpunkte sowie ein Talentbaum mit drei Hauptbäumen und einem Wesen je Charakter.",
  "waehrung": "Tchambas",
@@ -14,29 +14,24 @@ hausregelPaketRegistrieren({
  "talente": {
   "handeln": [
    {
-    "id": "agilitaet",
-    "name": "Agilität",
-    "beschreibung": "Test"
-   },
-   {
     "id": "athletik",
     "name": "Athletik",
-    "beschreibung": "Klettern, Rennen, Springen"
+    "beschreibung": "Ausdauer, Rennen, Reflexe, Springen"
    },
    {
-    "id": "angeln",
-    "name": "Angeln",
-    "beschreibung": "1W4 Rationen aus See, Fluss oder Lagune"
+    "id": "angel",
+    "name": "Angel",
+    "beschreibung": "1W4 Nahrungsrationen pro zwei Stunden (Angeln-Wurf)"
    },
    {
     "id": "entern",
     "name": "Entern",
-    "beschreibung": "Treffer: Startposition auf dem feindlichen Deck frei wählen. Kritischer Treffer: Zusätzlicher Angriff vor Kampfbeginn!"
+    "beschreibung": "Treffer: Startposition auf dem feindlichen Deck frei wählen. Kritischer Treffer: zusätzlicher Angriff vor Kampfbeginn."
    },
    {
     "id": "fernkampf",
     "name": "Fernkampf",
-    "beschreibung": "Bogen, Armbrust, Pistolen, Wurfwaffen, Werfen und Zielen Alle Distanzangriffe samt Zielen, Werfen, Wind/Entfernung einschätzen. Beeinflusst Treffer, Präzision und besondere Manöver (z. B. Gliedmaßen, Seile, Lampen abschießen)."
+    "beschreibung": "Bogen, Armbrust, Pistolen, Wurfwaffen, Werfen und Zielen"
    },
    {
     "id": "handwerk",
@@ -44,9 +39,9 @@ hausregelPaketRegistrieren({
     "beschreibung": "Umgang mit Werkzeugen"
    },
    {
-    "id": "heimlichkeit",
-    "name": "Heimlichkeit",
-    "beschreibung": "Schleichen, stehlen, verkleiden"
+    "id": "heimlich",
+    "name": "Heimlich",
+    "beschreibung": "Schleichen, Stehlen, Verkleiden"
    },
    {
     "id": "zaehigkeit",
@@ -56,7 +51,7 @@ hausregelPaketRegistrieren({
    {
     "id": "kochen",
     "name": "Kochen",
-    "beschreibung": "Kochen - Spezial-Aktion",
+    "beschreibung": "Kochprobe → anschließend Tabelle „Kochen\"",
     "tabelle": "table_kochen"
    },
    {
@@ -92,7 +87,7 @@ hausregelPaketRegistrieren({
    {
     "id": "wahrnehmung",
     "name": "Wahrnehmung",
-    "beschreibung": "Sehen, hören, Spüren von Gefahr"
+    "beschreibung": "Sehen, Hören, Spüren von Gefahr"
    }
   ],
   "wissen": [
@@ -109,48 +104,47 @@ hausregelPaketRegistrieren({
    {
     "id": "heraldik",
     "name": "Heraldik",
-    "beschreibung": "Hofprotokoll, edle Häuser"
+    "beschreibung": "Hofprotokolle & edle Häuser"
    },
    {
     "id": "lesen-schreiben",
-    "name": "Lesen, Schreiben",
-    "beschreibung": "ab 20 Grundfertigkeit, 30 Muttersprache +1, 60 Muttersprache +2, 90 Muttersprache +3, 95 Muttersprache +4, 99 Muttersprache +5"
+    "name": "Lesen/Schreiben",
+    "beschreibung": "Ab 20: Lesen & Schreiben (Grundfertigkeit). Ab 30/60/90/95/99 zusätzlich Muttersprache +1/+2/+3/+4/+5."
    },
    {
     "id": "medizin",
     "name": "Medizin",
-    "beschreibung": "Schulmedizin, Behandlung, Operationen, Wunden versorgen, Blutungen stillen, Schienen, Salben, Amputationen.",
-    "tabelle": "table_medizin"
+    "beschreibung": "Schulmedizin, Behandlung, Operationen. Heilwurf: 1W10 + 1W10 pro vollen 10 Punkten unter dem Medizinwert; krit. Erfolg ×2."
    },
    {
     "id": "naturkunde",
     "name": "Naturkunde",
-    "beschreibung": "Giftpflanzen, Heilkräuter, Fährten, Tierverhalten - auf dem Papier und im Kopf."
+    "beschreibung": "Flora & Fauna (theoretisch)"
    },
    {
     "id": "nautik",
     "name": "Nautik",
-    "beschreibung": "Karten lesen, Strecken berechnen, Position bestimmen, Störungen, Winde, Routenplanung, Tiefen."
+    "beschreibung": "Karten lesen, Strecken berechnen, Position bestimmen"
    },
    {
     "id": "ueberleben",
     "name": "Überleben",
-    "beschreibung": "Shelterbau, Nahrung, Feuerlager, Fallen, essbare Pflanzen, Feuer bei Regen, macht unabhängig von Häfen"
+    "beschreibung": "Shelterbau, Nahrung, Feuer"
    },
    {
     "id": "technik",
     "name": "Technik",
-    "beschreibung": "Maschinen, Apperate, Flaschenzüge, Zahnräder, Federn, einfache Mechaniken, komplexe Basteleien"
+    "beschreibung": "Maschinen & Apparate"
    },
    {
     "id": "tiere-zaehmen",
     "name": "Tiere zähmen",
-    "beschreibung": "Beruhigen, dressieren, vertrauen. Vom Lasttier bis zum Raubvogel: Erziehung, Pflege, Kommandos, Handzeichen"
+    "beschreibung": "Beruhigen, Dressieren, Vertrauen"
    },
    {
-    "id": "vodoo",
-    "name": "Vodoo",
-    "beschreibung": "Rituale, Zauber der alten Wege: Schutzkreise, Ahnenrufe, Flüche, Puppen, Masken, Grundlage für magische Spezialmanöver"
+    "id": "voodoo",
+    "name": "Voodoo",
+    "beschreibung": "Rituale & Zauber der alten Wege"
    }
   ],
   "soziales": [
@@ -162,69 +156,69 @@ hausregelPaketRegistrieren({
    {
     "id": "beruhigen",
     "name": "Beruhigen",
-    "beschreibung": "Eskalation verhindern, Ruhe finden, Hitze kühlen, Angst lösen, Stimmen dämpfen, Ein sanfter Blick, ein ruhiges Wort, eine Geste des Vertrauens"
+    "beschreibung": "Eskalation verhindern, Ruhe finden"
    },
    {
     "id": "verhandeln",
     "name": "Verhandeln",
-    "beschreibung": "Friedensbrücken, Waffenstillstände, Bedingungen. Das leise Ende einer aluten Fehde"
+    "beschreibung": "Konflikte, Diplomatie"
    },
    {
     "id": "einschuechtern",
     "name": "Einschüchtern",
-    "beschreibung": "Angst als Werkzeug. Drohgebärden, blutige Klingen, ungebrochener Blick. Bei Erfolg: Betroffene in 10m Umkreis erhalten -1 Bewegung für 1W4 Runden"
+    "beschreibung": "Angst als Werkzeug. Bei Erfolg: Betroffene (10m Umkreis) erhalten -1m Bewegung für 1W4 Runden."
    },
    {
     "id": "feilschen",
     "name": "Feilschen",
-    "beschreibung": "Beim An- und Verkauf das beste Angebot. Preise drücken, Extras rausschlagen, Gebühren wegreden, oder die andere Seite zum Zahlen bringen."
+    "beschreibung": "Beim (Ver-)Kauf das beste Angebot"
    },
    {
     "id": "flirten",
     "name": "Flirten",
-    "beschreibung": "Charme und Verführung."
+    "beschreibung": "Charme & Verführung"
    },
    {
     "id": "willenskraft",
     "name": "Willenskraft",
-    "beschreibung": "Standhaftigkeit, innere Stärke. Widerstand gegen Einschüchtern, Überreden, Motivieren, Wesen/Monsterinstinkte und gegen übernatürliche Anblicke"
+    "beschreibung": "Standhaftigkeit & innere Stärke - Widerstand gegen Einschüchtern, Überreden, Motivieren, Wesens-/Monster-Instinkte und übernatürliche Anblicke."
    },
    {
     "id": "luegen",
     "name": "Lügen",
-    "beschreibung": "Täuschung, Ablenkung."
+    "beschreibung": "Täuschung & Ablenkung"
    },
    {
     "id": "menschenkenntnis",
     "name": "Menschenkenntnis",
-    "beschreibung": "Motive erkennen oder einschätzen"
+    "beschreibung": "Motive erkennen, Einschätzen"
    },
    {
     "id": "motivieren",
     "name": "Motivieren",
-    "beschreibung": "Bei Erfolg: Verbündete 10m Umkreis erhalten Boni. Schlachtrufe, Gesänge, Versprechen"
+    "beschreibung": "Feuer entfachen. Bei Erfolg: Verbündete (10m Umkreis) erhalten Boni."
    },
    {
     "id": "musizieren",
     "name": "Musizieren",
-    "beschreibung": "Auftrittsprobe",
-    "tabelle": "table_musician"
+    "beschreibung": "Auftrittsprobe → anschließend Tabelle „Musizieren\"",
+    "tabelle": "table_musizieren"
    },
    {
     "id": "ueberreden",
     "name": "Überreden",
-    "beschreibung": "Erfolg: Du hältst jemanden von einer Aktion ab, oder lenkst sie auf eine andere Bahn."
+    "beschreibung": "Zunge statt Klinge. Bei Erfolg: Du hältst jemanden von einer Aktion ab oder lenkst sie um."
    },
    {
     "id": "zechen",
     "name": "Zechen",
-    "beschreibung": "Saufen, große Mengen saufen!",
-    "tabelle": "table_saufen"
+    "beschreibung": "Zechprobe → anschließend Tabelle „Zechen\"",
+    "tabelle": "table_zechen"
    }
   ]
  },
  "punkte": {
-  "maxTalentpunkte": 500,
+  "maxTalentpunkte": 400,
   "kostenStaffel": [
    {
     "bis": 30,
@@ -296,10 +290,10 @@ hausregelPaketRegistrieren({
    "Stärke": "Stärke",
    "Fernkampf": "Fernkampf",
    "Agilität": "Agilität",
-   "Voodoo Ritual Klinge": "Vodoo",
-   "Voodoo Fluchspucker": "Vodoo",
+   "Voodoo Ritual Klinge": "Voodoo",
+   "Voodoo Fluchspucker": "Voodoo",
    "Einschüchtern": "Einschüchtern",
-   "Heimlichkeit": "Heimlichkeit",
+   "Heimlichkeit": "Heimlich",
    "Medizin": "Medizin",
    "Motivieren": "Motivieren"
   },

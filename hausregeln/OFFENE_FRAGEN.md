@@ -4,7 +4,26 @@ Für das Gespräch mit dem Spielleiter der Eldara-Runde. Der Talentbaum-Rebuild
 (`talentbaum.js`, `hausregeln/eldora-arrrrr.js`) ist bereits mit den unten
 dokumentierten *Annahmen* fertig gebaut und im Tool nutzbar — die Antworten
 hier ändern höchstens Details, keine Grundarchitektur. Fundstellen beziehen
-sich auf `hausregeln/quellen/rw41.txt` (Volltext des Regelwerks RW 4.1).
+sich auf `hausregeln/quellen/rw41.txt` (Volltext des Regelwerks RW 4.1),
+außer wo explizit RW 4.3 (`quellen/rw43.txt`, Stand 2026-07-22) genannt ist.
+
+**Update RW 4.3 (2026-07-22):** Die Basis-Talentliste (Frage 1 unten) und das
+Punktebudget (Frage 5) wurden gegen das neue Regelwerk geprüft und im
+Konverter korrigiert - Frage 5 ist damit erledigt. Details siehe dort.
+
+Dabei sind nebenbei drei Bugs in der alten (aus einem Beispiel-Charakterbogen
+übernommenen) Talentliste aufgefallen und stillschweigend behoben, keine
+Ansichtssache, deshalb hier nur zur Info statt als Frage:
+- „Agilität" stand als Basis-Talent auf dem Bogen (mit Beschreibung „Test")
+  - existiert im Regelwerk gar nicht als Talent, nur als Talentbaum-Name
+  (siehe Frage 1). Entfernt.
+- „Medizin" verwies auf eine nicht existierende Würfeltabelle
+  (`table_medizin`) - laut RW 4.3 S.12 gibt es nur Tabellen für Kochen,
+  Musizieren und Zechen. Verweis entfernt.
+- „Musizieren" und „Zechen" verwiesen auf falsch geschriebene Tabellen-IDs
+  (`table_musician`, `table_saufen`) statt der tatsächlichen
+  (`table_musizieren`, `table_zechen`) - der Würfeln-Knopf am Talent ist
+  dadurch bisher nie aufgetaucht. Korrigiert.
 
 Sortiert nach Wichtigkeit (die erste Frage betrifft am meisten).
 
@@ -13,24 +32,38 @@ Sortiert nach Wichtigkeit (die erste Frage betrifft am meisten).
 ## 1. Welcher Bogen-Talentwert treibt welchen Hauptbaum? (wichtigste Frage)
 
 Das Regelwerk sagt: „Um Ränge freizuschalten … muss dein Attribut-Grundwert
-dem entsprechenden Rang haben" (Zeile ~735), nennt aber **nirgends explizit**,
-welcher Talentwert das für die elf Hauptbäume (Nahkampf Klingen, Nahkampf
-Fäuste, Stärke, Fernkampf, Agilität, Voodoo Ritualklinge, Voodoo Fluchspucker,
-Einschüchtern, Heimlichkeit, Medizin, Motivieren) konkret ist. Die Basis-
-Talentliste (Zeile ~277ff: Athletik, Entern, Fernkampf, Handwerk, Heimlich,
-Zähigkeit, Kochen, **Nahkampf**, Reiten, Schiffe steuern, Stärke, Wahrnehmung,
-**Vodoo** …) enthält **kein** „Nahkampf Klingen" oder „Voodoo Ritualklinge" -
-nur die generischen Talente „Nahkampf" und „Vodoo".
+dem entsprechenden Rang haben" (RW 4.3 S.17), nennt aber **nirgends
+explizit**, welcher Talentwert das für die elf Hauptbäume (Nahkampf Klingen,
+Nahkampf Fäuste, Stärke, Fernkampf, Agilität, Voodoo Ritualklinge, Voodoo
+Fluchspucker, Einschüchtern, Heimlich, Medizin, Motivieren - Schreibweise
+S.14) konkret ist. Die Basis-Talentliste (RW 4.3 S.8-11: Athletik, Entern,
+Fernkampf, Handwerk, Heimlich, Zähigkeit, Kochen, **Nahkampf**, Reiten,
+Schiffe steuern, Stärke, Wahrnehmung, **Voodoo** …) enthält **kein**
+„Nahkampf Klingen" oder „Voodoo Ritualklinge" - nur die generischen Talente
+„Nahkampf" und „Voodoo".
 
 **Meine Annahme im Code** (`hausregeln/konvertiere-eldora.py`, Konstante
 `BAUM_TALENT`): Die beiden Nahkampf-Bäume teilen sich das Talent „Nahkampf",
-die beiden Voodoo-Bäume teilen sich „Vodoo", die übrigen sieben sind 1:1
+die beiden Voodoo-Bäume teilen sich „Voodoo", die übrigen sieben sind 1:1
 (Stärke→Stärke, Fernkampf→Fernkampf, Agilität→Agilität, Einschüchtern→
-Einschüchtern, Heimlichkeit→Heimlich, Medizin→Medizin, Motivieren→Motivieren).
+Einschüchtern, Heimlich→Heimlich, Medizin→Medizin, Motivieren→Motivieren).
 
 **Frage an den SL:** Stimmt das? Falls nicht - gibt es eine eigene,
 separate Punkteverteilung nur für die elf Baum-Werte, unabhängig von den
-40 Basis-Talenten auf dem Bogen?
+39 Basis-Talenten auf dem Bogen?
+
+**Neu seit RW 4.3 - Namens-Stolperstein:** Der exportierte Talentbaum der
+Gruppe (`quellen/eldora-arrrrr.roh.json`, 562 Skills) benennt zwei Äste noch
+„Heimlichkeit" und „Voodoo Ritual Klinge" (mit Leerzeichen). RW 4.3 S.14
+schreibt diese Äste jetzt „Heimlich" und „Voodoo Ritualklinge". Das Tool
+zeigt weiterhin die alten Ast-Namen aus der Rohdatei (`HAUPTBAEUME` in
+`konvertiere-eldora.py`) - sonst würden diese beiden Äste ihre Skills
+verlieren, weil `Ast` in der Rohdatei nicht mitgeändert wurde.
+
+**Frage an den SL:** Ist das nur eine Schreibweisen-Auffrischung im PDF, oder
+sollen die beiden Äste in eurem eigenen Tool/Export tatsächlich umbenannt
+werden? Falls letzteres: sag Bescheid, dann benenne ich `Ast` in einer neuen
+Rohdaten-Lieferung passend um (oder lege eine Alias-Tabelle an).
 
 ---
 
@@ -83,15 +116,17 @@ nacheinander alle durchläuft)?
 
 ---
 
-## 5. Budget: 400 oder 500 Talentpunkte?
+## 5. Budget: 400 oder 500 Talentpunkte? — ERLEDIGT (RW 4.3)
 
-Regelwerk (Zeile ~248): „Jede Spielerfigur startet mit 400
-Fähigkeitspunkten." Die von der Gruppe gelieferten Beispiel-Charakterdaten
-(`eldora-arrrrr.roh.json`) haben `max_talent_points: 500`.
+Regelwerk RW 4.1 (Zeile ~248) und jetzt RW 4.3 (S.6 **und** S.8, zwei
+unabhängige Stellen): „Verteilt 400 Punkte auf die Talente der drei
+Gruppen." Die von der Gruppe gelieferten Beispiel-Charakterdaten
+(`eldora-arrrrr.roh.json`) hatten `max_talent_points: 500` - das war
+offenbar nur der Stand eines einzelnen Beispiel-Charakters, nicht die Regel.
 
-**Frage an den SL:** Gilt für die laufende Runde 400 (Regelwerk) oder 500
-(wie im Beispiel-Bogen)? Das Tool übernimmt aktuell den Wert aus den
-Bogen-Rohdaten (also 500) - sag Bescheid, falls das falsch ist.
+**Umgesetzt:** Das Tool nutzt jetzt fest **400** (`PUNKTE.maxTalentpunkte`
+in `konvertiere-eldora.py`), unabhängig davon, was in der Rohdatei steht.
+Falls die Runde tatsächlich mit 500 spielt, bitte Bescheid geben.
 
 ---
 

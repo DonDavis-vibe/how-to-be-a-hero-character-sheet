@@ -49,6 +49,11 @@ const helpData = {
             "<p>Sobald du im Live-Sync mit deinem Spielleiter verbunden bist, siehst du hier deine <b>Mitspieler</b>: Bild, Name, Lebenspunkte und ihre aktuellen Status-Effekte. Fällt jemand auf 10 LP oder weniger, blinkt die Zeile rot.</p>" +
             "<p>Mehr ist es absichtlich nicht - Skills, Inventar und Notizen der anderen bleiben privat bzw. Sache des Spielleiters. Die Farbe kommt vom Spielleiter-Dashboard.</p>",
 
+    teamwuerfel: "<h3>Team-Würfel</h3>" +
+                 "<p>Sobald du im Live-Sync verbunden bist, siehst du hier die <b>Würfe deiner ganzen Gruppe</b> in Echtzeit - deine eigenen eingeschlossen. Kein Discord-Webhook mehr nötig, um mitzuverfolgen, was am Tisch gewürfelt wird.</p>" +
+                 "<p>Es laufen nur echte Würfe rein (Würfel-Tool, Skill- und Attributproben) - allgemeine Logbuch-Einträge wie Items oder HP-Änderungen tauchen hier nicht auf, das würde nur unnötig Rauschen. Die Farbe je Spieler entspricht der im Spielleiter-Dashboard.</p>" +
+                 "<p><i>Reiner Live-Feed - nichts davon wird gespeichert. Wer neu beitritt, sieht nur Würfe ab dem eigenen Beitritt.</i></p>",
+
     tischmitte: "<h3>Tischmitte</h3>" +
                 "<p>Die Tischmitte ist eine geteilte Ablage zwischen Spielleiter und Spielern - wie Beute, die in der Mitte des Tisches liegt.</p>" +
                 "<p><b>Für den Spielleiter:</b> Lege Gegenstände, Waffen oder Geld ab. <b>Versteckte</b> Einträge siehst nur du - so kannst du den Loot eines Abenteuers schon vor der Session vorbereiten. Findet die Gruppe die Truhe, klickst du auf <i>Aufdecken</i> (oder <i>Alle aufdecken</i>) und die Beute erscheint bei allen Spielern. Über <i>Geben an …</i> schiebst du etwas auch direkt einem bestimmten Charakter ins Inventar.</p>" +

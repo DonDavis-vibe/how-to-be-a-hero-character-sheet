@@ -263,31 +263,41 @@ function adjustHpMax(amount) {
 function renderSkills(attr) {
     const listEl = document.getElementById(`skills-${attr}`);
     listEl.innerHTML = '';
-    
+
     const skills = appData[`skills_${attr}`];
     const attrVal = parseInt(appData[`attr_${attr}`]) || 0;
-    
+    // Hausregel-Paket mit fester Talentliste (aktuell nur Eldara, siehe
+    // hausregeln.js) ersetzt die freie Texteingabe durch ein Dropdown -
+    // Regelwerk pur bleibt exakt wie bisher.
+    const talentliste = typeof hausregelnFesteTalentliste === 'function' ? hausregelnFesteTalentliste(attr) : null;
+
     skills.forEach((skill, index) => {
         const item = document.createElement('div');
         item.className = 'skill-item';
-        
+
         const nameInput = document.createElement('div');
         nameInput.className = 'skill-name-input';
-        nameInput.contentEditable = true;
-        nameInput.setAttribute('placeholder', 'Skill Name');
         nameInput.textContent = skill.name || '';
         // Talente aus einem Regelpaket (hausregeln.js) bringen eine Beschreibung mit
         if (skill.beschreibung) nameInput.title = skill.beschreibung;
-        nameInput.oninput = (e) => {
-            skill.name = e.target.textContent;
-            saveData();
-        };
-        nameInput.onkeydown = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                nameInput.blur();
-            }
-        };
+        if (talentliste) {
+            // Feste Talentliste aktiv: Name kommt aus dem Dropdown beim Anlegen
+            // (siehe renderSkillAddControl), nicht mehr frei eintippbar.
+            nameInput.classList.add('skill-name-fixed');
+        } else {
+            nameInput.contentEditable = true;
+            nameInput.setAttribute('placeholder', 'Skill Name');
+            nameInput.oninput = (e) => {
+                skill.name = e.target.textContent;
+                saveData();
+            };
+            nameInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    nameInput.blur();
+                }
+            };
+        }
 
         const totalSpan = document.createElement('span');
         totalSpan.className = 'skill-total skill-val clickable';
@@ -394,6 +404,51 @@ function renderSkills(attr) {
         item.appendChild(controlsRow);
         listEl.appendChild(item);
     });
+
+    renderSkillAddControl(attr, talentliste);
+}
+
+// Ersetzt bei fester Talentliste den "+ Skill"-Button durch ein Dropdown mit
+// den noch nicht auf dem Bogen stehenden Paket-Talenten; ohne Talentliste
+// (oder wenn schon alle drauf sind) bleibt/verschwindet einfach der Button.
+function renderSkillAddControl(attr, talentliste) {
+    const btn = document.getElementById(`add-skill-btn-${attr}`);
+    const alteSelect = document.getElementById(`add-skill-select-${attr}`);
+    if (alteSelect) alteSelect.remove();
+    if (!btn) return;
+
+    if (!talentliste) {
+        btn.style.display = '';
+        return;
+    }
+
+    const vorhanden = (appData[`skills_${attr}`] || []).map(s => (s.name || '').trim().toLowerCase());
+    const verfuegbar = talentliste.filter(t => !vorhanden.includes(t.name.toLowerCase()));
+    btn.style.display = 'none';
+    if (!verfuegbar.length) return;
+
+    const select = document.createElement('select');
+    select.id = `add-skill-select-${attr}`;
+    select.className = 'add-skill-select';
+    select.innerHTML = '<option value="" selected disabled>+ Talent hinzufügen …</option>'
+        + verfuegbar.map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join('');
+    select.addEventListener('change', () => {
+        const t = verfuegbar.find(x => x.id === select.value);
+        if (!t) return;
+        if (!Array.isArray(appData[`skills_${attr}`])) appData[`skills_${attr}`] = [];
+        appData[`skills_${attr}`].push({
+            id: 's' + Date.now() + Math.random().toString(36).slice(2, 6),
+            name: t.name,
+            invested: 0,
+            paketTalent: t.id,
+            beschreibung: t.beschreibung || '',
+            tabelle: t.tabelle || undefined
+        });
+        saveData();
+        renderSkills(attr);
+        calculatePoints();
+    });
+    btn.insertAdjacentElement('afterend', select);
 }
 
 // Regelwerk S.8: "keine Fähigkeiten über 100 Punkte haben kann" - markiert Werte über 100 visuell.

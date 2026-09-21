@@ -243,7 +243,7 @@
                     <div class="skills-list" id="skills-handeln">
                         <!-- Populated by JS -->
                     </div>
-                    <button class="add-skill-btn" onclick="addSkill('handeln')"><i class="fa-solid fa-plus"></i> Skill</button>
+                    <button class="add-skill-btn" id="add-skill-btn-handeln" onclick="addSkill('handeln')"><i class="fa-solid fa-plus"></i> Skill</button>
                 </div>
 
                 <!-- Wissen -->
@@ -268,7 +268,7 @@
                     <div class="skills-list" id="skills-wissen">
                         <!-- Populated by JS -->
                     </div>
-                    <button class="add-skill-btn" onclick="addSkill('wissen')"><i class="fa-solid fa-plus"></i> Skill</button>
+                    <button class="add-skill-btn" id="add-skill-btn-wissen" onclick="addSkill('wissen')"><i class="fa-solid fa-plus"></i> Skill</button>
                 </div>
 
                 <!-- Soziales -->
@@ -293,7 +293,7 @@
                     <div class="skills-list" id="skills-soziales">
                         <!-- Populated by JS -->
                     </div>
-                    <button class="add-skill-btn" onclick="addSkill('soziales')"><i class="fa-solid fa-plus"></i> Skill</button>
+                    <button class="add-skill-btn" id="add-skill-btn-soziales" onclick="addSkill('soziales')"><i class="fa-solid fa-plus"></i> Skill</button>
                 </div>
 
             </div>
@@ -459,7 +459,11 @@
                     </ul>
                 </div>
             </div>
-            
+
+            <!-- Team-Würfel: Live-Feed der Würfe aller verbundenen Spieler, nur als
+                 verbundener Spieler (teamwuerfel.js) -->
+            <div id="teamwuerfel-section" class="glass-panel teamwuerfel-section" style="margin-top: 1rem; display: none;"></div>
+
             <!-- Gruppenübersicht: Mitspieler mit HP und Status, nur als verbundener Spieler (gruppe.js) -->
             <div id="gruppe-panel" class="glass-panel gruppe-panel" style="margin-top: 1rem; display: none;"></div>
 
@@ -492,6 +496,7 @@
     <script src="talentbaum.js"></script>
     <script src="tischmitte.js"></script>
     <script src="gruppe.js"></script>
+    <script src="teamwuerfel.js"></script>
     <script src="nscliste.js"></script>
     <script src="quests.js"></script>
     <script src="spielerlog.js"></script>

@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Konvertiert die Rohdaten der Eldara-Runde (quellen/eldora-arrrrr.roh.json, das
-Export-Format ihres eigenen Prototyps) in das Regelpaket-Format des Tools
-(siehe DATA_FORMAT.md, Abschnitt "Regelpakete / Hausregeln").
+Konvertiert die Eldara-Regeln in das Regelpaket-Format des Tools (siehe
+DATA_FORMAT.md, Abschnitt "Regelpakete / Hausregeln"). Zwei Quellen fließen
+ein:
+
+  - quellen/eldora-arrrrr.roh.json - Export-Format des Gruppen-Prototyps.
+    Liefert den Talentbaum (Skills je Ast, Wesen, Ränge) - diesen Teil kann
+    das Tool nicht sinnvoll von Hand transkribieren, dafür ist er zu groß.
+  - quellen/rw43.txt - Volltext-Extrakt des offiziellen Regelwerks (RW 4.3,
+    Stand 2026-07-22). Liefert die Basis-Talentliste (Handeln/Wissen/
+    Soziales, S.8-11), das Punktebudget und die "Besonderen Eigenschaften" -
+    diese Teile sind als Konstanten von Hand aus dem PDF abgetippt (siehe
+    TALENTE, PUNKTE, EIGENSCHAFTEN unten), weil die Rohdatei der Gruppe hier
+    nachweislich abweicht (Test-Einträge, veraltete Werte - siehe
+    hausregeln/OFFENE_FRAGEN.md Frage 5).
 
 Aufruf (aus dem Repo-Wurzelverzeichnis):
 
@@ -17,7 +28,6 @@ JavaScript im Tool nie raten muss.
 """
 
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -28,9 +38,16 @@ ZIEL = HIER / 'eldora-arrrrr.js'
 PAKET_ID = 'eldora-arrrrr'
 PAKET_NAME = 'Eldara – Version Arrrrr'
 
-# Welche Äste des Talentbaums Spieler als Hauptbaum wählen dürfen. Entspricht
-# AVAILABLE_HAUPTBAEUME aus dem Prototyp der Gruppe, aber mit den exakten
-# Ast-Namen aus den Daten (der Prototyp hat unscharf per "includes" gesucht).
+# Welche Äste des Talentbaums Spieler als Hauptbaum wählen dürfen. Namen
+# MÜSSEN exakt den "Ast"-Werten in der Rohdatei entsprechen (sonst verliert
+# der Ast seine Skills - siehe unten), deshalb bewusst "Heimlichkeit"/"Voodoo
+# Ritual Klinge" wie im Gruppen-Prototyp, OBWOHL RW 4.3 S.14 ("Hauptgruppen")
+# jetzt "Heimlich" und "Voodoo Ritualklinge" (ohne Leerzeichen) schreibt.
+# Der Basis-Talentname, den ein Ast für Rang/Skillpunkte anzapft (siehe
+# BAUM_TALENT unten), folgt dagegen der neuen RW-4.3-Schreibweise, weil der
+# NUR gegen appData.skills_*[].name (aus TALENTE) matcht, nicht gegen die
+# Rohdatei. Frage 1 in OFFENE_FRAGEN.md fragt den SL, ob die Rohdatei
+# nachgezogen werden soll.
 HAUPTBAEUME = [
     'Nahkampf Klingen', 'Nahkampf Fäuste', 'Stärke', 'Fernkampf', 'Agilität',
     'Voodoo Ritual Klinge', 'Voodoo Fluchspucker', 'Einschüchtern',
@@ -45,10 +62,12 @@ HAUPTBAEUME = [
 # hausregeln/OFFENE_FRAGEN.md - die dort genannten Punkte sind noch NICHT vom
 # Regelwerk-Text zweifelsfrei geklärt, sondern meine dokumentierte Lesart.
 PUNKTE = {
-    # Obergrenze der Talentpunkte. RW 4.1 S.6: "Jede Spielerfigur startet mit
-    # 400 Fähigkeitspunkten" - die Rohdaten der Gruppe sagen 500 (siehe
-    # OFFENE_FRAGEN.md). Bis geklärt: was im Charakterbogen der Gruppe steht.
-    'maxTalentpunkte': None,  # wird aus den Rohdaten gefüllt
+    # Obergrenze der Talentpunkte. RW 4.3 S.6 + S.8 sagen an ZWEI Stellen
+    # unabhängig "400 Punkte" ("Verteilt 400 Punkte auf die Talente der drei
+    # Gruppen"). Klärt die alte Frage 5 aus OFFENE_FRAGEN.md (400 vs. 500):
+    # die 500 kamen nur aus einem einzelnen Beispiel-Charakterbogen der
+    # Gruppe (eldora-arrrrr.roh.json), nicht aus dem Regelwerk selbst.
+    'maxTalentpunkte': 400,
     # Progressive Kosten je Talentpunkt UND Rang-Schwellen eines Talentbaums in
     # einem: Punkt/Wert 1-30 = Rang 1 (kostet 1/Punkt), 31-60 = Rang 2 (kostet
     # 2), 61-90 = Rang 3 (kostet 4), 91-99 = Rang 4 (kostet 10). RW 4.1 S.17.
@@ -66,22 +85,25 @@ PUNKTE = {
 }
 
 # ANNAHME (nicht im Regelwerk-Text explizit bestätigt, siehe OFFENE_FRAGEN.md):
-# welcher Bogen-Talentwert den Rang/die Skillpunkte je Hauptbaum treibt. Die
-# Talentbaum-Namen (S.14) sind NICHT identisch mit den Basis-Talenten (S.6ff) -
-# "Nahkampf Klingen" und "Nahkampf Fäuste" gibt es als Talent nur einmal
-# ("Nahkampf"), ebenso "Voodoo Ritual Klinge"/"Voodoo Fluchspucker" ("Vodoo").
-# Die übrigen sechs sind 1:1-Treffer (Name auf dem Bogen == Ast-Name, bis auf
-# Schreibweise). Namen exakt wie appData.skills_*[].name auf dem Bogen.
+# welcher Bogen-Talentwert den Rang/die Skillpunkte je Hauptbaum treibt.
+# KEYS = Ast-Namen wie in HAUPTBAEUME (alte Rohdaten-Schreibweise, siehe
+# Kommentar dort). VALUES = Name in appData.skills_*[].name, also die neue,
+# gegen RW 4.3 korrigierte Schreibweise aus TALENTE unten.
+# Die Talentbaum-Namen (S.14) sind NICHT identisch mit den Basis-Talenten
+# (S.8ff) - "Nahkampf Klingen" und "Nahkampf Fäuste" gibt es als Talent nur
+# einmal ("Nahkampf"), ebenso "Voodoo Ritual Klinge"/"Voodoo Fluchspucker"
+# ("Voodoo"). Die übrigen sechs sind 1:1-Treffer ("Agilität" ist dort bewusst
+# NICHT als Basis-Talent gelistet, siehe OFFENE_FRAGEN.md Frage 1).
 BAUM_TALENT = {
     'Nahkampf Klingen': 'Nahkampf',
     'Nahkampf Fäuste': 'Nahkampf',
     'Stärke': 'Stärke',
     'Fernkampf': 'Fernkampf',
     'Agilität': 'Agilität',
-    'Voodoo Ritual Klinge': 'Vodoo',
-    'Voodoo Fluchspucker': 'Vodoo',
+    'Voodoo Ritual Klinge': 'Voodoo',
+    'Voodoo Fluchspucker': 'Voodoo',
     'Einschüchtern': 'Einschüchtern',
-    'Heimlichkeit': 'Heimlichkeit',
+    'Heimlichkeit': 'Heimlich',
     'Medizin': 'Medizin',
     'Motivieren': 'Motivieren',
 }
@@ -150,6 +172,114 @@ EIGENSCHAFTEN = [
         '+3W10 zusätzlichen Schaden; Krit-Chance +20%']},
 ]
 
+# Die feste Basis-Talentliste je Kategorie (RW 4.3 S.8-11, "Talentgruppen &
+# Talente"), von Hand aus dem PDF abgetippt statt aus der Rohdatei der Gruppe
+# abgeleitet - die Rohdatei ist der Export EINES Charakterbogens und enthält
+# dessen eigene Test-/Custom-Einträge (z.B. "Agilität" mit description "Test",
+# das im Regelwerk als Basis-Talent gar nicht existiert - "Agilität" ist dort
+# nur ein Talentbaum-Name, siehe HAUPTBAEUME). id = Slug des Namens, damit
+# appData.skills_*[].paketTalent stabil bleibt (siehe hausregeln.js).
+# 'tabelle' verweist auf einen Schlüssel in wuerfelTabellen (nur Kochen,
+# Musizieren, Zechen haben laut RW 4.3 S.12f eine Sondertabelle - Medizin
+# NICHT, das ist eine Wurf-Formel, keine Tabelle).
+TALENTE = {
+    'handeln': [
+        {'id': 'athletik', 'name': 'Athletik',
+         'beschreibung': 'Ausdauer, Rennen, Reflexe, Springen'},
+        {'id': 'angel', 'name': 'Angel',
+         'beschreibung': '1W4 Nahrungsrationen pro zwei Stunden (Angeln-Wurf)'},
+        {'id': 'entern', 'name': 'Entern',
+         'beschreibung': 'Treffer: Startposition auf dem feindlichen Deck frei wählen. '
+                          'Kritischer Treffer: zusätzlicher Angriff vor Kampfbeginn.'},
+        {'id': 'fernkampf', 'name': 'Fernkampf',
+         'beschreibung': 'Bogen, Armbrust, Pistolen, Wurfwaffen, Werfen und Zielen'},
+        {'id': 'handwerk', 'name': 'Handwerk',
+         'beschreibung': 'Umgang mit Werkzeugen'},
+        {'id': 'heimlich', 'name': 'Heimlich',
+         'beschreibung': 'Schleichen, Stehlen, Verkleiden'},
+        {'id': 'zaehigkeit', 'name': 'Zähigkeit',
+         'beschreibung': 'Gift, Essen, Flüche widerstehen'},
+        {'id': 'kochen', 'name': 'Kochen',
+         'beschreibung': 'Kochprobe → anschließend Tabelle „Kochen"',
+         'tabelle': 'table_kochen'},
+        {'id': 'nahkampf', 'name': 'Nahkampf',
+         'beschreibung': 'Faustkampf, Schwertkampf, Hieb- & Stichwaffen'},
+        {'id': 'reiten', 'name': 'Reiten',
+         'beschreibung': 'Sitz, Führung, Manöver'},
+        {'id': 'schiffe-steuern', 'name': 'Schiffe steuern',
+         'beschreibung': 'Ruder, Segel, Crewführung im Manöver'},
+        {'id': 'schloesser-knacken', 'name': 'Schlösser knacken',
+         'beschreibung': 'Dietriche, Mechaniken, Fingergefühl'},
+        {'id': 'schwimmen', 'name': 'Schwimmen',
+         'beschreibung': 'Schwimmen, Tauchen'},
+        {'id': 'staerke', 'name': 'Stärke',
+         'beschreibung': 'Kraft, Heben, Zerbrechen'},
+        {'id': 'wahrnehmung', 'name': 'Wahrnehmung',
+         'beschreibung': 'Sehen, Hören, Spüren von Gefahr'},
+    ],
+    'wissen': [
+        {'id': 'chemie', 'name': 'Chemie',
+         'beschreibung': 'Reaktionen, Pulver, Mischungen'},
+        {'id': 'gassenwissen', 'name': 'Gassenwissen',
+         'beschreibung': 'Gerüchte, dubiose Kontakte, Informationen'},
+        {'id': 'heraldik', 'name': 'Heraldik',
+         'beschreibung': 'Hofprotokolle & edle Häuser'},
+        {'id': 'lesen-schreiben', 'name': 'Lesen/Schreiben',
+         'beschreibung': 'Ab 20: Lesen & Schreiben (Grundfertigkeit). '
+                          'Ab 30/60/90/95/99 zusätzlich Muttersprache +1/+2/+3/+4/+5.'},
+        {'id': 'medizin', 'name': 'Medizin',
+         'beschreibung': 'Schulmedizin, Behandlung, Operationen. Heilwurf: 1W10 + 1W10 '
+                          'pro vollen 10 Punkten unter dem Medizinwert; krit. Erfolg ×2.'},
+        {'id': 'naturkunde', 'name': 'Naturkunde',
+         'beschreibung': 'Flora & Fauna (theoretisch)'},
+        {'id': 'nautik', 'name': 'Nautik',
+         'beschreibung': 'Karten lesen, Strecken berechnen, Position bestimmen'},
+        {'id': 'ueberleben', 'name': 'Überleben',
+         'beschreibung': 'Shelterbau, Nahrung, Feuer'},
+        {'id': 'technik', 'name': 'Technik',
+         'beschreibung': 'Maschinen & Apparate'},
+        {'id': 'tiere-zaehmen', 'name': 'Tiere zähmen',
+         'beschreibung': 'Beruhigen, Dressieren, Vertrauen'},
+        {'id': 'voodoo', 'name': 'Voodoo',
+         'beschreibung': 'Rituale & Zauber der alten Wege'},
+    ],
+    'soziales': [
+        {'id': 'auftritt', 'name': 'Auftritt',
+         'beschreibung': 'Präsenz, Haltung, Wirkung'},
+        {'id': 'beruhigen', 'name': 'Beruhigen',
+         'beschreibung': 'Eskalation verhindern, Ruhe finden'},
+        {'id': 'verhandeln', 'name': 'Verhandeln',
+         'beschreibung': 'Konflikte, Diplomatie'},
+        {'id': 'einschuechtern', 'name': 'Einschüchtern',
+         'beschreibung': 'Angst als Werkzeug. Bei Erfolg: Betroffene (10m Umkreis) '
+                          'erhalten -1m Bewegung für 1W4 Runden.'},
+        {'id': 'feilschen', 'name': 'Feilschen',
+         'beschreibung': 'Beim (Ver-)Kauf das beste Angebot'},
+        {'id': 'flirten', 'name': 'Flirten',
+         'beschreibung': 'Charme & Verführung'},
+        {'id': 'willenskraft', 'name': 'Willenskraft',
+         'beschreibung': 'Standhaftigkeit & innere Stärke - Widerstand gegen '
+                          'Einschüchtern, Überreden, Motivieren, Wesens-/Monster-'
+                          'Instinkte und übernatürliche Anblicke.'},
+        {'id': 'luegen', 'name': 'Lügen',
+         'beschreibung': 'Täuschung & Ablenkung'},
+        {'id': 'menschenkenntnis', 'name': 'Menschenkenntnis',
+         'beschreibung': 'Motive erkennen, Einschätzen'},
+        {'id': 'motivieren', 'name': 'Motivieren',
+         'beschreibung': 'Feuer entfachen. Bei Erfolg: Verbündete (10m Umkreis) '
+                          'erhalten Boni.'},
+        {'id': 'musizieren', 'name': 'Musizieren',
+         'beschreibung': 'Auftrittsprobe → anschließend Tabelle „Musizieren"',
+         'tabelle': 'table_musizieren'},
+        {'id': 'ueberreden', 'name': 'Überreden',
+         'beschreibung': 'Zunge statt Klinge. Bei Erfolg: Du hältst jemanden von '
+                          'einer Aktion ab oder lenkst sie um.'},
+        {'id': 'zechen', 'name': 'Zechen',
+         'beschreibung': 'Zechprobe → anschließend Tabelle „Zechen"',
+         'tabelle': 'table_zechen'},
+    ],
+}
+
 
 def art_normalisieren(roh):
     a = (roh or '').strip().lower()
@@ -175,34 +305,15 @@ def leer_zu_none(wert):
     return wert
 
 
-def slug(text):
-    t = text.lower()
-    for a, b in (('ä', 'ae'), ('ö', 'oe'), ('ü', 'ue'), ('ß', 'ss')):
-        t = t.replace(a, b)
-    t = re.sub(r'[^a-z0-9]+', '-', t).strip('-')
-    return t
-
-
 def konvertiere():
     roh = json.loads(QUELLE.read_text(encoding='utf-8'))
     ch = roh['charakter']
     sheet = ch.get('charakter_sheet', {})
 
     # --- Talente (feste Liste je Kategorie) --------------------------------
-    talente = {'handeln': [], 'wissen': [], 'soziales': []}
-    for schluessel, t in ch['talents'].items():
-        kat = (t.get('category') or '').lower()
-        if kat not in talente:
-            print(f'WARNUNG: Talent {schluessel!r} hat unbekannte Kategorie {kat!r} - übersprungen', file=sys.stderr)
-            continue
-        eintrag = {
-            'id': slug(t.get('name') or schluessel),
-            'name': (t.get('name') or schluessel).strip(),
-            'beschreibung': (t.get('description') or '').strip(),
-        }
-        if t.get('specialTableID'):
-            eintrag['tabelle'] = t['specialTableID']
-        talente[kat].append(eintrag)
+    # Kommt aus der TALENTE-Konstante oben (RW 4.3 S.8-11), NICHT aus
+    # ch['talents'] - siehe Kommentar dort.
+    talente = {kat: [dict(t) for t in eintraege] for kat, eintraege in TALENTE.items()}
 
     # --- Talentbaum ---------------------------------------------------------
     skills = []
@@ -294,12 +405,14 @@ def konvertiere():
         }
 
     punkte = dict(PUNKTE)
-    punkte['maxTalentpunkte'] = int(sheet.get('max_talent_points') or 400)
 
     paket = {
         'id': PAKET_ID,
         'name': PAKET_NAME,
-        'version': roh.get('meta', {}).get('lastSave') or 'unbekannt',
+        # Gemischte Herkunft: Talentbaum/Wesen kommen weiter aus der
+        # Rohdatei der Gruppe (roh['meta']['lastSave']), Talente/Punkte
+        # wurden gerade gegen RW 4.3 (Stand 2026-07-22) geprüft/korrigiert.
+        'version': '2026-07-22 (RW 4.3, Talentbaum-Daten von %s)' % (roh.get('meta', {}).get('lastSave') or 'unbekannt'),
         'system': roh.get('meta', {}).get('system') or '',
         'beschreibung': (
             'Piraten-Hausregeln einer HTBAH-Runde: feste Talentliste, progressive '

@@ -574,6 +574,23 @@ h2 {
     content: attr(placeholder);
     color: rgba(255,255,255,0.3);
 }
+/* Talent aus einer festen Paket-Talentliste (Eldara, hausregeln.js) - Name
+   kommt aus dem Dropdown und ist hier bewusst nicht mehr eintippbar. */
+.skill-item .skill-name-input.skill-name-fixed {
+    cursor: default;
+    background: rgba(15, 23, 42, 0.3);
+}
+
+.add-skill-select {
+    width: 100%; margin-top: 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,255,255,0.2);
+    color: var(--text-secondary);
+    padding: 0.5rem; border-radius: 8px; cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+.add-skill-select:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
 
 .skill-item input[type="number"] {
     width: 40px;
@@ -2560,6 +2577,21 @@ body.theme-ultracore {
 .qs-ziel-icon-erledigt { color: var(--color-heal) !important; }
 .qs-hinweise-liste { margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); }
 .qs-hinweise-liste li { padding: 0.1rem 0; }
+
+/* --- Team-Würfel: Live-Wurf-Feed für Spieler (teamwuerfel.js) ------------- */
+.teamwuerfel-section { padding: 1.2rem 1.5rem; }
+.teamwuerfel-section .cat-title { margin: 0; }
+.teamwuerfel-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+.tw-liste { list-style: none; margin: 0.8rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; max-height: 260px; overflow-y: auto; padding-right: 0.2rem; }
+.tw-zeile {
+    display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
+    background: rgba(255,255,255,0.03); padding: 0.4rem 0.6rem; border-radius: 6px;
+    border-left: 3px solid var(--tw-farbe, var(--text-secondary));
+    animation: slideIn 0.3s ease-out;
+}
+.tw-zeit { color: var(--text-secondary); font-size: 0.75rem; flex-shrink: 0; }
+.tw-name { font-weight: 700; font-size: 0.85rem; color: var(--tw-farbe, var(--text-primary)); flex-shrink: 0; }
+.tw-msg { font-size: 0.85rem; color: var(--text-primary); }
 
 /* --- Gruppenübersicht für Spieler ----------------------------------------- */
 .gruppe-panel { padding: 1.2rem 1.5rem; }

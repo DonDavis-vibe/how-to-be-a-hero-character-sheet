@@ -416,8 +416,11 @@ function handleIncomingData(peerId, payload) {
         addGmLogEntry(charName, payload.message, payload.emoji);
         if (payload.bigNumber !== undefined && payload.bigNumber !== null) {
             updateGmPlayerBigDiceResult(payload.bigNumber, payload.subtitle, charName);
+            // Team-Würfel (teamwuerfel.js): nur echte Würfe (bigNumber gesetzt)
+            // gehen an die Gruppe weiter, keine allgemeinen Logbuch-Einträge.
+            if (typeof teamwuerfelVerteilen === 'function') teamwuerfelVerteilen(charName, payload);
         }
-        
+
         // Trigger Effects based on log content
         if (typeof fireConfetti === 'function') {
             const msg = payload.message || '';
@@ -929,6 +932,7 @@ function joinMultiplayerSession(codeArg) {
             sendMultiplayerState();
             if (typeof tischmitteBeitritt === 'function') tischmitteBeitritt();
             if (typeof renderGruppe === 'function') renderGruppe();
+            if (typeof teamwuerfelBeitritt === 'function') teamwuerfelBeitritt();
             if (typeof questeBeitritt === 'function') questeBeitritt();
             if (typeof schiffBeitritt === 'function') schiffBeitritt();
             if (typeof skSpielerBeitritt === 'function') skSpielerBeitritt();
@@ -939,6 +943,7 @@ function joinMultiplayerSession(codeArg) {
             clearMultiplayerSession();
             if (typeof tischmitteGetrennt === 'function') tischmitteGetrennt();
             if (typeof gruppeGetrennt === 'function') gruppeGetrennt();
+            if (typeof teamwuerfelGetrennt === 'function') teamwuerfelGetrennt();
             if (typeof questeGetrennt === 'function') questeGetrennt();
             if (typeof schiffGetrennt === 'function') schiffGetrennt();
             if (typeof skSpielerGetrennt === 'function') skSpielerGetrennt();
@@ -967,6 +972,8 @@ function joinMultiplayerSession(codeArg) {
                 // erledigt in tischmitte.js
             } else if (payload && typeof gruppeNachrichtVerarbeiten === 'function' && gruppeNachrichtVerarbeiten(payload)) {
                 // erledigt in gruppe.js
+            } else if (payload && typeof teamwuerfelNachrichtVerarbeiten === 'function' && teamwuerfelNachrichtVerarbeiten(payload)) {
+                // erledigt in teamwuerfel.js
             } else if (payload && typeof eingriffNachrichtVerarbeiten === 'function' && eingriffNachrichtVerarbeiten(payload)) {
                 // erledigt in eingriff.js
             } else if (payload && typeof questeNachrichtVerarbeiten === 'function' && questeNachrichtVerarbeiten(payload)) {
