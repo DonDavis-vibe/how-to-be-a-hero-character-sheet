@@ -11,12 +11,12 @@ Update unten alle nachgeprüft.
 **Update RW 4.3 (2026-07-22):** Alle neun Fragen wurden gegen das neue
 Regelwerk durchgeprüft. Erledigt: Frage 5 (Punktebudget, durch den PDF-Text
 selbst), Frage 9 (Rüstungsstufen-Mali, durch den PDF-Text selbst - jetzt als
-saubere Tabelle), Frage 2 (Skillpunkte pro Rang, durch direkte Bestätigung
-des SL) und der Namens-Stolperstein in Frage 1 (Heimlich/Heimlichkeit,
-Voodoo Ritualklinge/Ritual Klinge - laut SL derselbe Ast, nur andere
-Schreibweise, jetzt im Konverter normalisiert). Frage 1s eigentliche
+saubere Tabelle), der Namens-Stolperstein in Frage 1 (Heimlich/Heimlichkeit,
+Voodoo Ritualklinge/Ritual Klinge - laut SL derselbe Ast, jetzt im Konverter
+normalisiert), sowie Frage 2 (Skillpunkte pro Rang) und Frage 4 (Ränge einer
+Eigenschaft) durch direkte Bestätigung des SL. Frage 1s eigentliche
 Hauptfrage (welcher Talentwert treibt welchen Hauptbaum) sowie die Fragen
-3, 4, 6, 7, 8 stehen im PDF-Text selbst **wortgleich oder sinngleich zu
+3, 6, 7, 8 stehen im PDF-Text selbst **wortgleich oder sinngleich zu
 RW 4.1** - das neue Regelwerk klärt sie nicht von sich aus, bleiben also
 offen bis der SL sie beantwortet.
 
@@ -109,25 +109,23 @@ Hauptbäumen gezählt werden?
 
 ---
 
-## 4. Eigenschaften mit mehreren Werten (z.B. "10/15/20 %") - wie oft wählbar?
+## 4. Eigenschaften mit mehreren Werten (z.B. "10/15/20 %") - wie oft wählbar? — ERLEDIGT (SL bestätigt)
 
-*Gegen RW 4.3 (S.18f, "Besondere Eigenschaften") geprüft: dort jetzt als
-ordentliche Tabelle statt Fließtext, aber inhaltlich unverändert - immer noch
-Schrägstrich-Werte in einer Zelle, keine "St1/St2/St3"-Notation. Frage bleibt
-offen.*
+Die Eigenschaften-Tabelle (RW 4.3 S.18f) zeigt viele Einträge mit
+Schrägstrich-Werten wie "Fluchtreflex: 10/15/20 %" oder "Langes Leben:
++20/40/60/80/100 HP" - keine "St1/St2/St3"-Notation wie bei den Skills, der
+PDF-Text selbst klärt die Zählweise nicht. Antwort kam direkt vom SL:
+**„Das sind auch Ränge der Eigenschaften"** - die Schrägstrich-Werte sind
+also, genau wie St1/St2/St3 bei Skills, eigene Ränge/Stufen derselben
+Eigenschaft, kein Satz unabhängiger Einzel-Picks.
 
-Die Eigenschaften-Tabelle zeigt viele Einträge mit Schrägstrich-Werten wie
-"Fluchtreflex: 10/15/20 %" oder "Langes Leben: +20/40/60/80/100 HP" - keine
-"St1/St2/St3"-Notation wie bei den Skills.
-
-**Meine Annahme:** Jede Zahl ist ein eigener Pick derselben Eigenschaft
-(z.B. "Langes Leben" fünfmal wählbar, jedes Mal +1 Rangpunkt, nächste Zahl in
-der Reihe). Bei Eigenschaften mit nur einem Wert (z.B. "Krieger": „+1 Attacke
-pro Angriffsaktion") ist entsprechend nur ein Pick möglich.
-
-**Frage an den SL:** Stimmt das, oder ist z.B. bei "Langes Leben" gemeint,
-dass man sich beim Wählen einmalig auf einen der fünf Werte festlegt (nicht
-nacheinander alle durchläuft)?
+**Umgesetzt (unverändert, schon vorher richtig):** Jede Zahl ist ein
+eigener, sequenzieller Pick derselben Eigenschaft (z.B. "Langes Leben"
+fünfmal wählbar, jedes Mal +1 Rangpunkt, nächste Zahl in der Reihe - nicht
+überspringbar). Bei Eigenschaften mit nur einem Wert (z.B. "Krieger": „+1
+Attacke pro Angriffsaktion") ist entsprechend nur ein Pick möglich. Das
+entspricht genau der SL-Antwort, `talentbaum.js` (`tbEigenschaftWaehlen`)
+bleibt wie es ist.
 
 ---
 
