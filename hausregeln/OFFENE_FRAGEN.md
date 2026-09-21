@@ -3,13 +3,18 @@
 Für das Gespräch mit dem Spielleiter der Eldara-Runde. Der Talentbaum-Rebuild
 (`talentbaum.js`, `hausregeln/eldora-arrrrr.js`) ist bereits mit den unten
 dokumentierten *Annahmen* fertig gebaut und im Tool nutzbar — die Antworten
-hier ändern höchstens Details, keine Grundarchitektur. Fundstellen beziehen
-sich auf `hausregeln/quellen/rw41.txt` (Volltext des Regelwerks RW 4.1),
-außer wo explizit RW 4.3 (`quellen/rw43.txt`, Stand 2026-07-22) genannt ist.
+hier ändern höchstens Details, keine Grundarchitektur. Fundstellen sind jetzt
+Seitenzahlen in RW 4.3 (`hausregeln/quellen/rw43.txt`, Stand 2026-07-22) -
+ursprünglich stammten die Fragen aus RW 4.1 (`rw41.txt`), sind aber seit dem
+Update unten alle nachgeprüft.
 
-**Update RW 4.3 (2026-07-22):** Die Basis-Talentliste (Frage 1 unten) und das
-Punktebudget (Frage 5) wurden gegen das neue Regelwerk geprüft und im
-Konverter korrigiert - Frage 5 ist damit erledigt. Details siehe dort.
+**Update RW 4.3 (2026-07-22):** Alle neun Fragen wurden gegen das neue
+Regelwerk durchgeprüft. Erledigt: Frage 5 (Punktebudget, durch den PDF-Text
+selbst), Frage 9 (Rüstungsstufen-Mali, durch den PDF-Text selbst - jetzt als
+saubere Tabelle) und Frage 2 (Skillpunkte pro Rang, durch direkte Bestätigung
+des SL). Die restlichen sechs Fragen (1, 3, 4, 6, 7, 8) stehen im PDF-Text
+selbst **wortgleich oder sinngleich zu RW 4.1** - das neue Regelwerk klärt sie
+nicht von sich aus, bleiben also offen bis der SL sie beantwortet.
 
 Dabei sind nebenbei drei Bugs in der alten (aus einem Beispiel-Charakterbogen
 übernommenen) Talentliste aufgefallen und stillschweigend behoben, keine
@@ -67,26 +72,30 @@ Rohdaten-Lieferung passend um (oder lege eine Alias-Tabelle an).
 
 ---
 
-## 2. "2 Skillpunkte auf dem Rang darunter verteilt" - wie genau gezählt?
+## 2. "2 Skillpunkte auf dem Rang darunter verteilt" - wie genau gezählt? — ERLEDIGT (SL bestätigt)
 
-Zeile ~736f: „muss dein Attribut-Grundwert dem entsprechenden Rang haben, und
-du musst mindestens 2 Skillpunkte auf dem Rang darunter verteilt haben."
+RW 4.1 und RW 4.3 (S.17) sagen wortgleich: „muss dein Attribut-Grundwert dem
+entsprechenden Rang haben, und du musst mindestens 2 Skillpunkte auf dem Rang
+darunter verteilt haben." Der PDF-Text selbst klärt die genaue Zählweise
+nicht - das kam jetzt direkt vom SL: **„Du musst pro Rang 2 Skillpunkte
+ausgeben."**
 
-**Meine Umsetzung:** Skillpunkte = nur die Punkte, die für ein *zweites oder
-drittes* Level eines Skills ausgegeben wurden (das *erste* Level kostet ja
-einen Rangpunkt, keinen Skillpunkt). Für Rang 2 in einem Baum braucht es also
-insgesamt mindestens 2 solcher Zweit-/Drittlevel-Käufe unter den Rang-1-Skills
-desselben Baums - egal ob auf einen Skill verteilt (Lvl 1→3) oder auf zwei
-(je Lvl 1→2).
-
-**Frage an den SL:** Ist das die richtige Lesart, oder zählt z.B. auch das
-*erste* Level eines Skills als "ein Skillpunkt" im Sinne dieses Satzes?
+**Umgesetzt (unverändert, schon vorher richtig):** Skillpunkte = nur die
+Punkte, die für ein *zweites oder drittes* Level eines Skills ausgegeben
+wurden (das *erste* Level kostet ja einen Rangpunkt, keinen Skillpunkt). Für
+Rang 2 in einem Baum braucht es also insgesamt mindestens 2 solcher
+Zweit-/Drittlevel-Käufe unter den Rang-1-Skills desselben Baums - egal ob auf
+einen Skill verteilt (Lvl 1→3) oder auf zwei (je Lvl 1→2). Das entspricht
+genau der SL-Antwort, `talentbaum.js` (`freischaltung: {modus: 'vorRang',
+benoetigt: 2}`) bleibt wie es ist.
 
 ---
 
 ## 3. Eigenschaften: zählt Wesen als "Talentbaum" bei der Freischaltung?
 
-Zeile ~817f: Eine Eigenschaft von Rang R braucht „mindestens zwei
+*Gegen RW 4.3 (S.18) geprüft: Text unverändert zu RW 4.1, Frage bleibt offen.*
+
+RW 4.3 S.18: Eine Eigenschaft von Rang R braucht „mindestens zwei
 Talentbäumen den gleichen Rang erreicht". Beim Rangpunkte-Absatz eine Zeile
 vorher steht explizit „einer der **drei** Talentbäume" (Wesen ausdrücklich
 ausgenommen) - hier bei den Eigenschaften fehlt das Wort "drei".
@@ -101,9 +110,14 @@ Hauptbäumen gezählt werden?
 
 ## 4. Eigenschaften mit mehreren Werten (z.B. "10/15/20 %") - wie oft wählbar?
 
-Die Eigenschaften-Tabelle (Zeile ~825-900) zeigt viele Einträge mit
-Schrägstrich-Werten wie "Fluchtreflex: 10/15/20 %" oder "Langes Leben:
-+20/40/60/80/100 HP" - keine "St1/St2/St3"-Notation wie bei den Skills.
+*Gegen RW 4.3 (S.18f, "Besondere Eigenschaften") geprüft: dort jetzt als
+ordentliche Tabelle statt Fließtext, aber inhaltlich unverändert - immer noch
+Schrägstrich-Werte in einer Zelle, keine "St1/St2/St3"-Notation. Frage bleibt
+offen.*
+
+Die Eigenschaften-Tabelle zeigt viele Einträge mit Schrägstrich-Werten wie
+"Fluchtreflex: 10/15/20 %" oder "Langes Leben: +20/40/60/80/100 HP" - keine
+"St1/St2/St3"-Notation wie bei den Skills.
 
 **Meine Annahme:** Jede Zahl ist ein eigener Pick derselben Eigenschaft
 (z.B. "Langes Leben" fünfmal wählbar, jedes Mal +1 Rangpunkt, nächste Zahl in
@@ -132,7 +146,9 @@ Falls die Runde tatsächlich mit 500 spielt, bitte Bescheid geben.
 
 ## 6. Monsterpunkte: feste Menge pro Vergabe, Obergrenze, Rückgang?
 
-Zeile ~782: „Stattdessen vergibt der Spielleiter Monsterpunkte, wenn der
+*Gegen RW 4.3 (S.17) geprüft: Text unverändert zu RW 4.1, Frage bleibt offen.*
+
+RW 4.3 S.17: „Stattdessen vergibt der Spielleiter Monsterpunkte, wenn der
 Charakter seine dunkle Natur erforscht, ein uraltes Ritual überlebt oder
 einen gewaltigen Gegner bezwingt." Keine Angabe, wie viele Punkte pro
 Ereignis, ob sie je wieder sinken, oder ob es eine Obergrenze unter 99 gibt.
@@ -148,7 +164,10 @@ Schritten (z.B. immer +1) vergeben werden?
 
 ## 7. Kreuz-Leveln: Summe oder Maximum?
 
-Zeile ~815: „Habt ihr einen Skill doppelt, könnt ihr ihn auch kreuz leveln.
+*Gegen RW 4.3 (S.17) geprüft: Text unverändert zu RW 4.1 (nahezu wortgleiches
+Beispiel), Frage bleibt offen.*
+
+RW 4.3 S.17: „Habt ihr einen Skill doppelt, könnt ihr ihn auch kreuz leveln.
 (z.B. Habt ihr Nahkampf und Stärke, könnt ihr auch Spott auf LvL2 bekommen,
 indem ihr den Skill in den beiden Talentbäumen jeweils einmal levelt.)"
 
@@ -163,7 +182,10 @@ Umsetzung - nur zur Bestätigung, falls es doch anders gemeint war.
 
 ## 8. NSC-/Monster-Talentbäume für Spieler (Ausnahmefall)?
 
-Zeile ~653: „Wollt ihr einen Talentbaum aus diesem Bereich [Werwolf, Vampir,
+*Gegen RW 4.3 (S.14f, "Nicht-Spieler-Spezialisierungen") geprüft: Text
+unverändert zu RW 4.1, Frage bleibt offen.*
+
+RW 4.3 S.15: „Wollt ihr einen Talentbaum aus diesem Bereich [Werwolf, Vampir,
 Zombie, …], kontaktiert bitte den Spielleiter." Das klingt, als könnte ein
 Spieler in Ausnahmefällen doch Zugriff auf einen der 19 NSC/Monster-Bäume
 bekommen (mit SL-Erlaubnis) statt sie kategorisch auszuschließen.
@@ -177,10 +199,36 @@ Monsterpunkten), ist aber aktuell nicht gebaut.
 
 ---
 
-## 9. Rüstungsstufen-Mali (Bewegung/Handeln/Heimlichkeit) - Zeile ~1226-1234
+## 9. Rüstungsstufen-Mali (Bewegung/Handeln/Heimlichkeit) — ERLEDIGT (RW 4.3, Tabellen-Extraktion war das Problem, nicht das Regelwerk)
 
-Die Tabelle direkt unter "Rüstungsstufen und Mali" (S.27, `rw41.txt:1224-1234`)
-ist im Rohextrakt nicht eindeutig einer Zeile pro Stufe zuzuordnen:
+Die alte RW-4.1-Extraktion (`rw41.txt`) hatte die Tabelle durch PDF→Text
+zerrissen und eine Zeile war nicht sicher zuzuordnen - siehe Zitat unten.
+RW 4.3 (S.27) lässt sich dagegen sauber und eindeutig lesen:
+
+```
+Status         Rüstungswert   Bewegung   Handeln   Heimlichkeit
+Ungepanzert    0              –          –         –
+Leicht         1–10           -1m        –         -10
+Mittel         11–20          -1m        -5        -15
+Schwer         21+            -2m        -7        -20
+```
+
+(gilt laut RW 4.3 nur für **getragene** Rüstung, Art 3 - nicht für
+Schiffspanzerung.)
+
+**Noch nicht umgesetzt:** Das Tool bildet aktuell nur den Rucksack-Platz-Malus
+ab (-1 Mittel/-2 Schwer, separates Inventar-Kapitel S.25f.) - diese Bewegungs-
+/Handeln-/Heimlichkeit-Mali fehlen noch, weil Bewegung und Heimlichkeit im
+Tool aktuell gar keine eigenen Bogen-Werte sind (Heimlich ist nur ein Talent
+unter Handeln, kein separater Meter-Wert wie beim Rüstungsmalus nötig).
+
+**Frage/Ansage an den SL:** Die Werte sind jetzt klar - sag Bescheid, ob ihr
+diese Mali am Tisch tatsächlich nutzt, dann bauen wir sie nach (braucht
+vermutlich einen neuen Bogen-Wert "Bewegung" plus einen Abzug auf Heimlich je
+nach angelegter Rüstung).
+
+<details>
+<summary>Alte RW-4.1-Extraktion, nur zur Historie</summary>
 
 ```
 Status         Rüstungswert  Bewegung  Handeln  Heimlichkeit
@@ -190,19 +238,7 @@ Leicht         1–10          -2m       -7       -20
 Mittel         11–20
 Schwer         21+
 ```
-
-Die zweite, namenlose Zahlenzeile direkt unter "Ungepanzert" lässt sich nicht
-sicher zuordnen (gehört sie noch zu Ungepanzert, oder ist es eine verrutschte
-Leicht-Zeile?), und für Mittel/Schwer fehlen die Werte in der Extraktion
-komplett. Das Tool bildet aktuell nur den (eindeutigen) Rucksack-Platz-Malus
-ab (-1 Mittel/-2 Schwer, aus dem separaten Inventar-Kapitel S.25f.) - diese
-zusätzlichen Bewegungs-/Handeln-/Heimlichkeit-Mali sind **nicht** umgesetzt,
-zumal Bewegung und Heimlichkeit im Tool aktuell auch gar keine eigenen
-Bogen-Werte sind.
-
-**Frage an den SL:** Könntest du die Originaltabelle aus dem PDF (S.27) kurz
-abtippen oder ein Foto schicken? Falls die Gruppe diese Mali tatsächlich
-nutzt, baue ich sie nach - aktuell landen sie sonst im Nirvana.
+</details>
 
 ---
 
