@@ -72,6 +72,11 @@ function tbDaten(daten) {
     if (!Array.isArray(h.hauptbaeume)) h.hauptbaeume = [];
     if (h.wesen === undefined) h.wesen = null;
     if (h.wesenWert === undefined) h.wesenWert = 0;
+    // Vom SL per Sonderfreigabe (Eingriff-Dialog) zusätzlich zu den normalen
+    // Wesen-Optionen freigeschalteter NSC-/Monster-Ast (RW 4.3 S.15: "Wollt
+    // ihr einen Talentbaum aus diesem Bereich, kontaktiert bitte den
+    // Spielleiter" - siehe eingriff.js).
+    if (h.sonderAst === undefined) h.sonderAst = null;
     if (!h.gelernt || typeof h.gelernt !== 'object') h.gelernt = {};
     if (!h.verbraucht || typeof h.verbraucht !== 'object') h.verbraucht = {};
     if (!h.eigenschaften || typeof h.eigenschaften !== 'object') h.eigenschaften = {};
@@ -408,8 +413,12 @@ function renderTalentbaum() {
     }
     let wesenSelect = '';
     if (anzahlWesen > 0) {
-        const optionen = [`<option value="">– Wesen –</option>`].concat((regeln.wesen || []).map(w =>
-            `<option value="${escapeHtml(w)}" ${w === h.wesen ? 'selected' : ''}>${escapeHtml(w)}</option>`));
+        // Vom SL sonderfreigeschalteter NSC-/Monster-Ast (h.sonderAst) kommt als
+        // zusätzliche Option dazu, falls er nicht ohnehin schon in regeln.wesen steht.
+        const wesenOptionen = (regeln.wesen || []).slice();
+        if (h.sonderAst && !wesenOptionen.includes(h.sonderAst)) wesenOptionen.push(h.sonderAst);
+        const optionen = [`<option value="">– Wesen –</option>`].concat(wesenOptionen.map(w =>
+            `<option value="${escapeHtml(w)}" ${w === h.wesen ? 'selected' : ''}>${escapeHtml(w)}${w === h.sonderAst ? ' ⭐ Sonderfreigabe' : ''}</option>`));
         wesenSelect = `<select class="x-select tb-select tb-select-wesen" onchange="tbWesenWaehlen(this.value)">${optionen.join('')}</select>`;
     }
 

@@ -14,10 +14,10 @@ selbst), Frage 9 (Rüstungsstufen-Mali, durch den PDF-Text selbst - jetzt als
 saubere Tabelle), der Namens-Stolperstein in Frage 1 (Heimlich/Heimlichkeit,
 Voodoo Ritualklinge/Ritual Klinge - laut SL derselbe Ast, jetzt im Konverter
 normalisiert), sowie Frage 2 (Skillpunkte pro Rang) und Frage 4 (Ränge einer
-Eigenschaft) durch direkte Bestätigung des SL. Frage 8 (NSC-/Monster-Bäume
-als SL-Sonderfreigabe) ist ebenfalls vom SL bestätigt ("kommt vor"), die
-Umsetzung dafür fehlt aber noch im Tool. Frage 1s eigentliche Hauptfrage
-(welcher Talentwert treibt welchen Hauptbaum) sowie die Fragen 3, 6, 7
+Eigenschaft) sowie Frage 8 (NSC-/Monster-Bäume als SL-Sonderfreigabe, "kommt
+vor" - jetzt als Dropdown im Eingriff-Dialog gebaut) durch direkte
+Bestätigung des SL. Frage 1s eigentliche Hauptfrage (welcher Talentwert
+treibt welchen Hauptbaum) sowie die Fragen 3, 6, 7
 stehen im PDF-Text selbst **wortgleich oder sinngleich zu RW 4.1** - das
 neue Regelwerk klärt sie nicht von sich aus, bleiben also offen bis der SL
 sie beantwortet.
@@ -181,7 +181,7 @@ Umsetzung - nur zur Bestätigung, falls es doch anders gemeint war.
 
 ---
 
-## 8. NSC-/Monster-Talentbäume für Spieler (Ausnahmefall)? — ANTWORT DA (SL bestätigt), Umsetzung noch offen
+## 8. NSC-/Monster-Talentbäume für Spieler (Ausnahmefall)? — ERLEDIGT (SL bestätigt, jetzt gebaut)
 
 RW 4.3 S.15: „Wollt ihr einen Talentbaum aus diesem Bereich [Werwolf, Vampir,
 Zombie, …], kontaktiert bitte den Spielleiter." Das klang, als könnte ein
@@ -190,14 +190,15 @@ bekommen (mit SL-Erlaubnis) statt sie kategorisch auszuschließen.
 
 **SL bestätigt:** „Ja, der SL vergibt sowas." Kommt also in der Praxis vor.
 
-**Aktuell:** Diese 19 Äste sind im Tool nicht wählbar (nur die 11 normalen
-Hauptbäume + 11 Wesen stehen in den Dropdowns) - die Sonderfreigabe ist noch
-nicht gebaut.
-
-**Nächster Schritt:** Als seltene SL-Sonderfreigabe nachrüsten, ähnlich den
-Monsterpunkten (Eingriff-Dialog) - vermutlich ein zusätzliches Dropdown im
-Eingriff-Dialog, mit dem der SL einem einzelnen Spieler einen der 19 Äste
-freischaltet. Noch nicht umgesetzt, sag Bescheid wenn gewünscht.
+**Umgesetzt:** Neuer Abschnitt „Sonderfreigabe: Talentbaum" im Eingriff-
+Dialog (`eingriff.js`) - der SL wählt dort einen der 19 NSC-/Monster-Äste
+und schaltet ihn für genau diesen einen Spieler frei
+(`appData.hausregeln.sonderAst`). Der freigeschaltete Ast taucht dann bei
+diesem Spieler als zusätzliche Option im Wesen-Dropdown auf (markiert mit
+⭐, siehe `talentbaum.js`), ganz normal spielbar wie jedes andere Wesen. Ein
+✕-Knopf im Eingriff-Dialog nimmt die Freigabe wieder zurück; hatte der
+Spieler den Sonderbaum bereits als Wesen gewählt, wird das dabei
+automatisch zurückgesetzt.
 
 ---
 

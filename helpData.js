@@ -42,6 +42,7 @@ const helpData = {
     gmEingriff: "<h3>🪄 SL-Eingriff</h3>" +
                 "<p>Über den <i>Eingriff</i>-Knopf in der Spielerkarte greifst du direkt in den Bogen eines Spielers ein: <b>Gegenstand, Waffe oder Geld geben</b> (negativer Betrag zieht Geld ab) und <b>Status-Effekte setzen oder entfernen</b>.</p>" +
                 "<p>Hat der Spieler ein <b>Wesen/Monster</b> gewählt (Eldara-Talentbaum), kannst du hier auch <b>Monsterpunkte</b> vergeben - die treiben Rang und Skillpunkte seines Wesen-Asts, statt aus eigenen Talentpunkten zu kommen.</p>" +
+                "<p>Bei aktivem Eldara-Paket kannst du hier außerdem eine <b>Sonderfreigabe: Talentbaum</b> erteilen - einer der 19 NSC-/Monster-Bäume (Werwolf, Vampir, …) wird dann für genau diesen Spieler als zusätzliche Wesen-Option wählbar (Ausnahmefall laut Regelwerk „kontaktiert bitte den Spielleiter"). Ein Klick auf ✕ nimmt die Freigabe wieder zurück.</p>" +
                 "<p><b>Verdeckt:</b> Mit dem Haken erscheint beim Spieler weder ein Logbuch-Eintrag noch ein Hinweis - der Wert ist einfach da. Gedacht für Flüche, heimlich zugesteckte Gegenstände oder eine schleichende Vergiftung, die nicht mit Fanfare ankommen sollen. Ohne Haken landet der Eingriff wie jede andere Änderung im Aktions-Logbuch des Spielers, mit dem Zusatz „vom Spielleiter\".</p>" +
                 "<p><i>In deinem Live-Feed steht jeder Eingriff - auch die verdeckten, damit du nachvollziehen kannst, was du wann getan hast.</i></p>",
 
