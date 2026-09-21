@@ -14,11 +14,13 @@ selbst), Frage 9 (Rüstungsstufen-Mali, durch den PDF-Text selbst - jetzt als
 saubere Tabelle), der Namens-Stolperstein in Frage 1 (Heimlich/Heimlichkeit,
 Voodoo Ritualklinge/Ritual Klinge - laut SL derselbe Ast, jetzt im Konverter
 normalisiert), sowie Frage 2 (Skillpunkte pro Rang) und Frage 4 (Ränge einer
-Eigenschaft) durch direkte Bestätigung des SL. Frage 1s eigentliche
-Hauptfrage (welcher Talentwert treibt welchen Hauptbaum) sowie die Fragen
-3, 6, 7, 8 stehen im PDF-Text selbst **wortgleich oder sinngleich zu
-RW 4.1** - das neue Regelwerk klärt sie nicht von sich aus, bleiben also
-offen bis der SL sie beantwortet.
+Eigenschaft) durch direkte Bestätigung des SL. Frage 8 (NSC-/Monster-Bäume
+als SL-Sonderfreigabe) ist ebenfalls vom SL bestätigt ("kommt vor"), die
+Umsetzung dafür fehlt aber noch im Tool. Frage 1s eigentliche Hauptfrage
+(welcher Talentwert treibt welchen Hauptbaum) sowie die Fragen 3, 6, 7
+stehen im PDF-Text selbst **wortgleich oder sinngleich zu RW 4.1** - das
+neue Regelwerk klärt sie nicht von sich aus, bleiben also offen bis der SL
+sie beantwortet.
 
 Dabei sind nebenbei drei Bugs in der alten (aus einem Beispiel-Charakterbogen
 übernommenen) Talentliste aufgefallen und stillschweigend behoben, keine
@@ -179,22 +181,23 @@ Umsetzung - nur zur Bestätigung, falls es doch anders gemeint war.
 
 ---
 
-## 8. NSC-/Monster-Talentbäume für Spieler (Ausnahmefall)?
-
-*Gegen RW 4.3 (S.14f, "Nicht-Spieler-Spezialisierungen") geprüft: Text
-unverändert zu RW 4.1, Frage bleibt offen.*
+## 8. NSC-/Monster-Talentbäume für Spieler (Ausnahmefall)? — ANTWORT DA (SL bestätigt), Umsetzung noch offen
 
 RW 4.3 S.15: „Wollt ihr einen Talentbaum aus diesem Bereich [Werwolf, Vampir,
-Zombie, …], kontaktiert bitte den Spielleiter." Das klingt, als könnte ein
+Zombie, …], kontaktiert bitte den Spielleiter." Das klang, als könnte ein
 Spieler in Ausnahmefällen doch Zugriff auf einen der 19 NSC/Monster-Bäume
 bekommen (mit SL-Erlaubnis) statt sie kategorisch auszuschließen.
 
-**Aktuell:** Diese 19 Äste sind im Tool nicht wählbar (nur die 11 normalen
-Hauptbäume + 11 Wesen stehen in den Dropdowns).
+**SL bestätigt:** „Ja, der SL vergibt sowas." Kommt also in der Praxis vor.
 
-**Frage an den SL:** Kommt das in der Praxis vor? Falls ja, sag Bescheid -
-das ließe sich als seltene SL-Sonderfreigabe nachrüsten (ähnlich den
-Monsterpunkten), ist aber aktuell nicht gebaut.
+**Aktuell:** Diese 19 Äste sind im Tool nicht wählbar (nur die 11 normalen
+Hauptbäume + 11 Wesen stehen in den Dropdowns) - die Sonderfreigabe ist noch
+nicht gebaut.
+
+**Nächster Schritt:** Als seltene SL-Sonderfreigabe nachrüsten, ähnlich den
+Monsterpunkten (Eingriff-Dialog) - vermutlich ein zusätzliches Dropdown im
+Eingriff-Dialog, mit dem der SL einem einzelnen Spieler einen der 19 Äste
+freischaltet. Noch nicht umgesetzt, sag Bescheid wenn gewünscht.
 
 ---
 
