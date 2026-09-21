@@ -138,6 +138,8 @@ function renderAll() {
     if (typeof renderSeekampfSpieler === 'function') renderSeekampfSpieler();
     // Karte (karten.js) - nur bei aktivem Eldara-Regelpaket
     if (typeof renderKarteSpieler === 'function') renderKarteSpieler();
+    // Kampf (kampf.js) - nur bei aktivem Eldara-Regelpaket
+    if (typeof renderKampfSpieler === 'function') renderKampfSpieler();
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');
@@ -214,13 +216,14 @@ function setupEventListeners() {
 }
 
 // --- HP Management ---
-function adjustHp(amount) {
+function adjustHp(amount, grund) {
     const oldHp = appData.hpCurrent;
     appData.hpCurrent += amount;
     if (appData.hpCurrent > appData.hpMax) appData.hpCurrent = appData.hpMax;
     const diff = appData.hpCurrent - oldHp;
-    if (diff > 0) addActivityLog(`Heilung um ${diff} HP`, 'activity-good', '<i class="fa-solid fa-heart"></i>');
-    else if (diff < 0) addActivityLog(`Schaden erlitten: ${Math.abs(diff)} HP`, 'activity-bad', '<i class="fa-solid fa-heart-crack"></i>');
+    const zusatz = grund ? ` (${grund})` : '';
+    if (diff > 0) addActivityLog(`Heilung um ${diff} HP${zusatz}`, 'activity-good', '<i class="fa-solid fa-heart"></i>');
+    else if (diff < 0) addActivityLog(`Schaden erlitten: ${Math.abs(diff)} HP${zusatz}`, 'activity-bad', '<i class="fa-solid fa-heart-crack"></i>');
     
     document.getElementById('hp-current').value = appData.hpCurrent;
     updateHpBarVisual();

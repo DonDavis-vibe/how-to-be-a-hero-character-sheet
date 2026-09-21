@@ -29,6 +29,13 @@
 //                             kontaktiert bitte den Spielleiter" - das ist
 //                             genau diese Ausnahme, seltener SL-Sonderfall.
 //     aktion 'sonderAstWeg'  {} - nimmt die Sonderfreigabe wieder zurück.
+//     aktion 'hp'             { betrag, grund } - Eldara-Hausregel (kampf.js):
+//                             Schaden (negativ) oder Heilung (positiv) aus dem
+//                             Kampf-Tracker, z.B. eine tickende Blutung oder
+//                             ein Rettungswurf-Ergebnis. Wird IMMER offen
+//                             angewendet (kein "still" für Kampfschaden -
+//                             der Spieler muss seine eigene HP-Änderung
+//                             sehen), reuse von adjustHp() (app.js).
 //
 // Das Formular sitzt in einem Modal statt in der Spielerkarte: die Karten
 // werden bei jedem Bogen-Update neu gebaut, Eingaben darin gingen verloren.
@@ -309,6 +316,13 @@ function eingriffEmpfangen(payload) {
         appData.hausregeln.sonderAst = String(payload.ast).slice(0, 60);
         log(`Sonderfreigabe: Talentbaum "${appData.hausregeln.sonderAst}" freigeschaltet (vom Spielleiter)`, 'activity-good', '<i class="fa-solid fa-unlock"></i>');
         if (typeof renderTalentbaum === 'function') renderTalentbaum();
+    } else if (payload.aktion === 'hp' && typeof payload.betrag === 'number' && payload.betrag) {
+        // Eldara-Hausregel (kampf.js): Schaden/Heilung aus dem Kampf-Tracker.
+        // Läuft immer offen (nicht "still"): adjustHp() loggt selbst und
+        // aktualisiert hp-bar/Eingabefeld direkt, das braucht der Spieler,
+        // um seine eigene HP-Änderung nachzuvollziehen.
+        if (typeof adjustHp === 'function') adjustHp(payload.betrag, payload.grund ? String(payload.grund).slice(0, 120) : undefined);
+        return;
     } else if (payload.aktion === 'sonderAstWeg') {
         if (appData.hausregeln) {
             const alt = appData.hausregeln.sonderAst;

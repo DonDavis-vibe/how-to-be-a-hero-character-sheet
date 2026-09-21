@@ -374,6 +374,10 @@
                  aktivem Eldara-Regelpaket (karten.js) -->
             <div id="karte-section" class="karte-section" style="display: none;"></div>
 
+            <!-- Kampf (Eldara-VTT): Initiative-/Zustands-Tracker für allgemeinen
+                 Kampf (Landkampf etc.), nur bei aktivem Eldara-Regelpaket (kampf.js) -->
+            <div id="kampf-section" class="karte-section" style="display: none;"></div>
+
         </div>
 
         <!-- Notes Section (Movable) -->
@@ -510,6 +514,7 @@
     <script src="seekampf-icons.js"></script>
     <script src="seekampf.js"></script>
     <script src="karten.js"></script>
+    <script src="kampf.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
     <script src="gmlayout.js"></script>
@@ -909,6 +914,14 @@
                 <div class="gm-panel-slot" data-panel="karte">
                     <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
                     <div id="gm-karte" class="gm-seekampf"></div>
+                </div>
+
+                <!-- Kampf (Eldara-VTT): Initiative-/Zustands-Tracker für allgemeinen
+                     Kampf/"Landkampf" (kampf.js), SL-only, nur bei aktivem
+                     Eldara-Regelpaket -->
+                <div class="gm-panel-slot" data-panel="kampf">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-kampf" class="gm-seekampf"></div>
                 </div>
 
                 <!-- Tischmitte: Loot vorbereiten, verstecken, aufdecken (tischmitte.js) -->

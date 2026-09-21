@@ -259,6 +259,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
             if (typeof renderSchiffGm === 'function') renderSchiffGm();
             if (typeof renderSeekampfGm === 'function') renderSeekampfGm();
+            if (typeof renderKampfGm === 'function') renderKampfGm();
             if (typeof karteSpielerEntfernen === 'function') karteSpielerEntfernen(conn.peer);
             if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
             if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(conn.peer);
@@ -278,6 +279,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             if (typeof schiffAnVerbindung === 'function') schiffAnVerbindung(conn);
             if (typeof skAnVerbindung === 'function') skAnVerbindung(conn);
             if (typeof karteAnVerbindung === 'function') karteAnVerbindung(conn);
+            if (typeof kampfAnVerbindung === 'function') kampfAnVerbindung(conn);
         };
         if (conn.open) begruessen();
         else conn.on('open', begruessen);
@@ -414,6 +416,7 @@ function handleIncomingData(peerId, payload) {
         if (typeof renderSchiffGm === 'function') renderSchiffGm();
         if (neuerSpieler && typeof renderSeekampfGm === 'function') renderSeekampfGm();
         if (neuerSpieler && typeof renderKarteGm === 'function') renderKarteGm();
+        if (neuerSpieler && typeof renderKampfGm === 'function') renderKampfGm();
         if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
         if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(peerId);
     } else if (payload.type === 'log') {
@@ -954,6 +957,7 @@ function joinMultiplayerSession(codeArg) {
             if (typeof schiffGetrennt === 'function') schiffGetrennt();
             if (typeof skSpielerGetrennt === 'function') skSpielerGetrennt();
             if (typeof karteSpielerGetrennt === 'function') karteSpielerGetrennt();
+            if (typeof kampfSpielerGetrennt === 'function') kampfSpielerGetrennt();
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
@@ -991,6 +995,8 @@ function joinMultiplayerSession(codeArg) {
                 // erledigt in seekampf.js
             } else if (payload && typeof karteNachrichtVerarbeiten === 'function' && karteNachrichtVerarbeiten(payload)) {
                 // erledigt in karten.js
+            } else if (payload && typeof kampfNachrichtVerarbeiten === 'function' && kampfNachrichtVerarbeiten(payload)) {
+                // erledigt in kampf.js
             } else if (payload && payload.type === 'hausregeln') {
                 if (typeof hausregelnEmpfangen === 'function') hausregelnEmpfangen(payload.regeln);
             } else if (payload && payload.type === 'customSound') {
