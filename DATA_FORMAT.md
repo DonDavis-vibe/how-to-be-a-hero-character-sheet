@@ -58,6 +58,9 @@ The root object of the JSON file represents a single character's state.
   
   "currency": { "name": "Credits", "amount": 150 },
   "notes": "Hat Höhenangst...",
+  "questlog": [
+    { "id": "sl_1", "npc": "Bürgermeister Voss", "zeitpunkt": "Tag 2, Rathaus", "text": "Warnte vor den Lichtern im Sumpf, wollte aber nicht sagen wovor genau." }
+  ],
   "theme": "mafia",
   "fxEnabled": true,
   "soundEnabled": true,
@@ -131,6 +134,11 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `name` (String): The name of the currency (e.g. "Credits").
   - `amount` (Number): The current amount.
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
+- `questlog` (Array of Objects, Optional): The player's own structured adventure journal (separate from the GM's quest log, see *Quest-Logbuch* below) - which NPC was met when, and what they said or hinted at. Never transmitted to the GM's dashboard.
+  - `id` (String): Unique identifier.
+  - `npc` (String, Optional): Free-text name of the NPC involved.
+  - `zeitpunkt` (String, Optional): Free-text point in time (e.g. "Tag 2, Rathaus").
+  - `text` (String): The note itself - what was said, what hints were given.
 - `theme` (String): The UI theme selected by the user. Supported values: `default`, `steampunk`, `cyberpunk`, `apocalyptic`, `mafia`, `lovecraft`, `magic`, `deepspace`.
 - `fxEnabled` (Boolean, Optional): Whether visual CSS/JS effects are enabled for the theme (default `true`).
 - `soundEnabled` (Boolean, Optional): Whether UI sound effects are enabled (default `true`).

@@ -2547,6 +2547,13 @@ body.theme-ultracore {
 .qs-teil-zeile-spieler { gap: 0.6rem; }
 .qs-teil-zeile-spieler i { color: var(--text-secondary); width: 1rem; text-align: center; }
 
+/* Mein Logbuch (spielerlog.js) - eigenes Tagebuch des Spielers */
+.spielerlog-section { margin-top: 2rem; }
+.spielerlog-section .cat-title { margin: 0; }
+.spielerlog-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+.spielerlog-section .qs-list { margin-top: 0.8rem; }
+.sl-teil-input { flex: 1 1 140px; }
+
 .seekampf-section { margin-top: 2rem; }
 .seekampf-section .cat-title { margin: 0; }
 .seekampf-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }

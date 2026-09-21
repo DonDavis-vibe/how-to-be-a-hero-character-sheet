@@ -125,6 +125,8 @@ function renderAll() {
     renderWeapons();
     renderStatuses();
     renderActivityLog();
+    // Mein Logbuch (spielerlog.js) - eigenes Tagebuch des Spielers
+    if (typeof renderSpielerlog === 'function') renderSpielerlog();
     // Hausregel-Erweiterung (talentbaum.js) - zeigt sich nur mit aktivem Regelpaket
     if (typeof renderTalentbaum === 'function') renderTalentbaum();
     updateHeaderBanner();

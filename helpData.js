@@ -89,6 +89,10 @@ const helpData = {
             "<p><b>Für Spieler:</b> Das Quest-Logbuch taucht bei dir erst auf, sobald der Spielleiter mindestens eine Quest mit der Gruppe geteilt hat - vorher siehst du nichts davon. Du siehst nur Namen, Beschreibung sowie die Hinweise und Ziele, die freigegeben wurden.</p>" +
             "<p><i>Wie die Tischmitte bleibt dein Quest-Logbuch als Spielleiter in deinem Browser gespeichert, auch über einen Reload hinweg.</i></p>",
 
+    spielerlog: "<h3>Mein Logbuch</h3>" +
+                "<p>Dein eigenes Tagebuch, zusätzlich zum freien <b>Notizen</b>-Feld: pro Eintrag hältst du fest, welchen <b>NSC</b> du wann getroffen hast und was er dir erzählt bzw. welche Hinweise er gegeben hat. NSC und Zeitpunkt sind optional - manchmal reicht auch einfach nur der Text.</p>" +
+                "<p>Die Einträge gehören ganz dir: sie bleiben in deinem Charakterbogen, gehen nie an den Spielleiter oder andere Spieler raus, und wandern beim <b>Speichern (JSON)</b> mit deinem Charakter mit.</p>",
+
     nscliste: "<h3>NSC-Liste</h3>" +
                "<p>Dein Gedächtnis für Nichtspielercharaktere, die im Laufe der Runde auftauchen - bleibt komplett bei dir, geht nie an Spieler raus.</p>" +
                "<p>Über <i>In NSC-Liste übernehmen</i> beim Zufallsgenerator landet ein gewürfelter NSC mit allen Feldern (Name, Ort, Rolle, Haltung, Auffälligkeit, Motivation, Wesen) direkt hier, ohne dass du etwas abtippen musst. Du kannst NSCs aber auch von Hand eintragen - dann reicht ein Name.</p>" +
