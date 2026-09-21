@@ -277,10 +277,10 @@ hausregelPaketRegistrieren({
    "Stärke",
    "Fernkampf",
    "Agilität",
-   "Voodoo Ritual Klinge",
+   "Voodoo Ritualklinge",
    "Voodoo Fluchspucker",
    "Einschüchtern",
-   "Heimlichkeit",
+   "Heimlich",
    "Medizin",
    "Motivieren"
   ],
@@ -290,10 +290,10 @@ hausregelPaketRegistrieren({
    "Stärke": "Stärke",
    "Fernkampf": "Fernkampf",
    "Agilität": "Agilität",
-   "Voodoo Ritual Klinge": "Voodoo",
+   "Voodoo Ritualklinge": "Voodoo",
    "Voodoo Fluchspucker": "Voodoo",
    "Einschüchtern": "Einschüchtern",
-   "Heimlichkeit": "Heimlich",
+   "Heimlich": "Heimlich",
    "Medizin": "Medizin",
    "Motivieren": "Motivieren"
   },
@@ -1518,7 +1518,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Berauben",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "physisch",
     "rang": 1,
@@ -1549,7 +1549,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Flinke Füße",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "passiv",
     "schadenTyp": "keiner",
     "rang": 1,
@@ -1574,7 +1574,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Giftmischer",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "extra",
     "schadenTyp": "magisch",
     "rang": 1,
@@ -1602,7 +1602,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Schlitzer",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "physisch",
     "rang": 1,
@@ -1633,7 +1633,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Ich bin dann mal weg",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "keiner",
     "rang": 1,
@@ -1658,7 +1658,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Trugbild",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "keiner",
     "rang": 2,
@@ -1683,7 +1683,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Dunkle Rüstung",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "extra",
     "schadenTyp": "keiner",
     "rang": 2,
@@ -1708,7 +1708,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Ablenken",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "keiner",
     "rang": 2,
@@ -1733,7 +1733,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Ruckzuckhieb",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "physisch",
     "rang": 2,
@@ -1764,7 +1764,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Angriff aus dem Dunkeln",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "physisch",
     "rang": 3,
@@ -1795,7 +1795,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Meuchelmörder",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "extra",
     "schadenTyp": "magisch",
     "rang": 3,
@@ -1826,7 +1826,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Schattenschritt",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "aktiv",
     "schadenTyp": "keiner",
     "rang": 3,
@@ -1851,7 +1851,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Seelenpakt",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "extra",
     "schadenTyp": "keiner",
     "rang": 4,
@@ -1876,7 +1876,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Zweite Dimension",
-    "ast": "Heimlichkeit",
+    "ast": "Heimlich",
     "art": "passiv",
     "schadenTyp": "keiner",
     "rang": 4,
@@ -4388,7 +4388,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Fluch",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 1,
@@ -4419,7 +4419,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Blutschuss",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 1,
@@ -4450,7 +4450,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Schlitzer",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "physisch",
     "rang": 1,
@@ -4481,7 +4481,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Schrecken der Meere",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "keiner",
     "rang": 1,
@@ -4506,7 +4506,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Verstärker der Leiden",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "passiv",
     "schadenTyp": "physisch",
     "rang": 1,
@@ -4537,7 +4537,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Atem der Verwesung",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 2,
@@ -4568,7 +4568,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Kadaverexplosion",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 2,
@@ -4599,7 +4599,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Lebensentzug",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 2,
@@ -4630,7 +4630,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Toxischer Ausbruch",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 2,
@@ -4661,7 +4661,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Knochenspeer",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 3,
@@ -4692,7 +4692,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Ruf des Grabes",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "passiv",
     "schadenTyp": "keiner",
     "rang": 3,
@@ -4717,7 +4717,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Welle der Korrosion",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "aktiv",
     "schadenTyp": "magisch",
     "rang": 3,
@@ -4748,7 +4748,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Blutexpansion",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "extra",
     "schadenTyp": "magisch",
     "rang": 4,
@@ -4779,7 +4779,7 @@ hausregelPaketRegistrieren({
    },
    {
     "name": "Seelenpakt",
-    "ast": "Voodoo Ritual Klinge",
+    "ast": "Voodoo Ritualklinge",
     "art": "extra",
     "schadenTyp": "keiner",
     "rang": 4,

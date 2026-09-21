@@ -11,10 +11,14 @@ Update unten alle nachgeprüft.
 **Update RW 4.3 (2026-07-22):** Alle neun Fragen wurden gegen das neue
 Regelwerk durchgeprüft. Erledigt: Frage 5 (Punktebudget, durch den PDF-Text
 selbst), Frage 9 (Rüstungsstufen-Mali, durch den PDF-Text selbst - jetzt als
-saubere Tabelle) und Frage 2 (Skillpunkte pro Rang, durch direkte Bestätigung
-des SL). Die restlichen sechs Fragen (1, 3, 4, 6, 7, 8) stehen im PDF-Text
-selbst **wortgleich oder sinngleich zu RW 4.1** - das neue Regelwerk klärt sie
-nicht von sich aus, bleiben also offen bis der SL sie beantwortet.
+saubere Tabelle), Frage 2 (Skillpunkte pro Rang, durch direkte Bestätigung
+des SL) und der Namens-Stolperstein in Frage 1 (Heimlich/Heimlichkeit,
+Voodoo Ritualklinge/Ritual Klinge - laut SL derselbe Ast, nur andere
+Schreibweise, jetzt im Konverter normalisiert). Frage 1s eigentliche
+Hauptfrage (welcher Talentwert treibt welchen Hauptbaum) sowie die Fragen
+3, 4, 6, 7, 8 stehen im PDF-Text selbst **wortgleich oder sinngleich zu
+RW 4.1** - das neue Regelwerk klärt sie nicht von sich aus, bleiben also
+offen bis der SL sie beantwortet.
 
 Dabei sind nebenbei drei Bugs in der alten (aus einem Beispiel-Charakterbogen
 übernommenen) Talentliste aufgefallen und stillschweigend behoben, keine
@@ -57,18 +61,15 @@ Einschüchtern, Heimlich→Heimlich, Medizin→Medizin, Motivieren→Motivieren)
 separate Punkteverteilung nur für die elf Baum-Werte, unabhängig von den
 39 Basis-Talenten auf dem Bogen?
 
-**Neu seit RW 4.3 - Namens-Stolperstein:** Der exportierte Talentbaum der
-Gruppe (`quellen/eldora-arrrrr.roh.json`, 562 Skills) benennt zwei Äste noch
-„Heimlichkeit" und „Voodoo Ritual Klinge" (mit Leerzeichen). RW 4.3 S.14
-schreibt diese Äste jetzt „Heimlich" und „Voodoo Ritualklinge". Das Tool
-zeigt weiterhin die alten Ast-Namen aus der Rohdatei (`HAUPTBAEUME` in
-`konvertiere-eldora.py`) - sonst würden diese beiden Äste ihre Skills
-verlieren, weil `Ast` in der Rohdatei nicht mitgeändert wurde.
-
-**Frage an den SL:** Ist das nur eine Schreibweisen-Auffrischung im PDF, oder
-sollen die beiden Äste in eurem eigenen Tool/Export tatsächlich umbenannt
-werden? Falls letzteres: sag Bescheid, dann benenne ich `Ast` in einer neuen
-Rohdaten-Lieferung passend um (oder lege eine Alias-Tabelle an).
+**Namens-Stolperstein seit RW 4.3 — ERLEDIGT (SL bestätigt):** Der exportierte
+Talentbaum der Gruppe (`quellen/eldora-arrrrr.roh.json`, 562 Skills) benannte
+zwei Äste noch „Heimlichkeit" und „Voodoo Ritual Klinge" (mit Leerzeichen),
+während RW 4.3 S.14 „Heimlich" und „Voodoo Ritualklinge" schreibt. Laut SL
+**nur eine Schreibweisen-Auffrischung, derselbe Ast** - kein neuer/separater
+Baum. `konvertiere-eldora.py` normalisiert das jetzt selbst beim Einlesen
+(Konstante `AST_SCHREIBWEISE_RW43`), damit überall im Tool die aktuelle
+RW-4.3-Schreibweise steht, ohne die 14+14 Skills der beiden Äste zu
+verlieren.
 
 ---
 

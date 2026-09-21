@@ -38,20 +38,24 @@ ZIEL = HIER / 'eldora-arrrrr.js'
 PAKET_ID = 'eldora-arrrrr'
 PAKET_NAME = 'Eldara – Version Arrrrr'
 
-# Welche Äste des Talentbaums Spieler als Hauptbaum wählen dürfen. Namen
-# MÜSSEN exakt den "Ast"-Werten in der Rohdatei entsprechen (sonst verliert
-# der Ast seine Skills - siehe unten), deshalb bewusst "Heimlichkeit"/"Voodoo
-# Ritual Klinge" wie im Gruppen-Prototyp, OBWOHL RW 4.3 S.14 ("Hauptgruppen")
-# jetzt "Heimlich" und "Voodoo Ritualklinge" (ohne Leerzeichen) schreibt.
-# Der Basis-Talentname, den ein Ast für Rang/Skillpunkte anzapft (siehe
-# BAUM_TALENT unten), folgt dagegen der neuen RW-4.3-Schreibweise, weil der
-# NUR gegen appData.skills_*[].name (aus TALENTE) matcht, nicht gegen die
-# Rohdatei. Frage 1 in OFFENE_FRAGEN.md fragt den SL, ob die Rohdatei
-# nachgezogen werden soll.
+# Die Rohdatei der Gruppe (roh.json, Export ihres eigenen Prototyps) benennt
+# zwei Äste noch nach alter Schreibweise ("Heimlichkeit", "Voodoo Ritual
+# Klinge" mit Leerzeichen). RW 4.3 S.14 schreibt sie "Heimlich"/"Voodoo
+# Ritualklinge" - laut SL (siehe OFFENE_FRAGEN.md Frage 1) ist das nur eine
+# Schreibweisen-Auffrischung, kein neuer/anderer Ast. Wird hier beim
+# Einlesen normalisiert, damit im Tool überall die aktuelle RW-4.3-Schreibweise
+# steht, ohne die Skill-Zuordnung aus der Rohdatei zu verlieren.
+AST_SCHREIBWEISE_RW43 = {
+    'Heimlichkeit': 'Heimlich',
+    'Voodoo Ritual Klinge': 'Voodoo Ritualklinge',
+}
+
+# Welche Äste des Talentbaums Spieler als Hauptbaum wählen dürfen (nach obiger
+# Normalisierung, also in RW-4.3-Schreibweise).
 HAUPTBAEUME = [
     'Nahkampf Klingen', 'Nahkampf Fäuste', 'Stärke', 'Fernkampf', 'Agilität',
-    'Voodoo Ritual Klinge', 'Voodoo Fluchspucker', 'Einschüchtern',
-    'Heimlichkeit', 'Medizin', 'Motivieren',
+    'Voodoo Ritualklinge', 'Voodoo Fluchspucker', 'Einschüchtern',
+    'Heimlich', 'Medizin', 'Motivieren',
 ]
 
 # Die Rangpunkt-/Skillpunkt-Regeln, jetzt gegen das vollständige Regelwerk
@@ -86,12 +90,11 @@ PUNKTE = {
 
 # ANNAHME (nicht im Regelwerk-Text explizit bestätigt, siehe OFFENE_FRAGEN.md):
 # welcher Bogen-Talentwert den Rang/die Skillpunkte je Hauptbaum treibt.
-# KEYS = Ast-Namen wie in HAUPTBAEUME (alte Rohdaten-Schreibweise, siehe
-# Kommentar dort). VALUES = Name in appData.skills_*[].name, also die neue,
-# gegen RW 4.3 korrigierte Schreibweise aus TALENTE unten.
+# KEYS = Ast-Namen wie in HAUPTBAEUME (RW-4.3-Schreibweise). VALUES = Name in
+# appData.skills_*[].name (aus TALENTE unten).
 # Die Talentbaum-Namen (S.14) sind NICHT identisch mit den Basis-Talenten
 # (S.8ff) - "Nahkampf Klingen" und "Nahkampf Fäuste" gibt es als Talent nur
-# einmal ("Nahkampf"), ebenso "Voodoo Ritual Klinge"/"Voodoo Fluchspucker"
+# einmal ("Nahkampf"), ebenso "Voodoo Ritualklinge"/"Voodoo Fluchspucker"
 # ("Voodoo"). Die übrigen sechs sind 1:1-Treffer ("Agilität" ist dort bewusst
 # NICHT als Basis-Talent gelistet, siehe OFFENE_FRAGEN.md Frage 1).
 BAUM_TALENT = {
@@ -100,10 +103,10 @@ BAUM_TALENT = {
     'Stärke': 'Stärke',
     'Fernkampf': 'Fernkampf',
     'Agilität': 'Agilität',
-    'Voodoo Ritual Klinge': 'Voodoo',
+    'Voodoo Ritualklinge': 'Voodoo',
     'Voodoo Fluchspucker': 'Voodoo',
     'Einschüchtern': 'Einschüchtern',
-    'Heimlichkeit': 'Heimlich',
+    'Heimlich': 'Heimlich',
     'Medizin': 'Medizin',
     'Motivieren': 'Motivieren',
 }
@@ -321,6 +324,7 @@ def konvertiere():
     for s in ch['Talentbaum']['skills']:
         name = (s.get('Name') or '').strip()
         ast = (s.get('Ast') or '').strip()
+        ast = AST_SCHREIBWEISE_RW43.get(ast, ast)
         if not name or not ast:
             print(f'WARNUNG: Skill ohne Name/Ast übersprungen: {s!r:.80}', file=sys.stderr)
             continue
