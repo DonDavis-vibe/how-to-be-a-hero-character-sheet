@@ -288,7 +288,7 @@ hausregelPaketRegistrieren({
    "Nahkampf Fäuste": "Nahkampf",
    "Stärke": "Stärke",
    "Fernkampf": "Fernkampf",
-   "Agilität": "Agilität",
+   "Agilität": "Athletik",
    "Voodoo Ritualklinge": "Voodoo",
    "Voodoo Fluchspucker": "Voodoo",
    "Einschüchtern": "Einschüchtern",

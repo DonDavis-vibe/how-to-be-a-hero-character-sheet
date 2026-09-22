@@ -40,7 +40,7 @@ Sortiert nach Wichtigkeit (die erste Frage betrifft am meisten).
 
 ---
 
-## 1. Welcher Bogen-Talentwert treibt welchen Hauptbaum? (wichtigste Frage)
+## 1. Welcher Bogen-Talentwert treibt welchen Hauptbaum? (wichtigste Frage) - TEILWEISE ERLEDIGT (SL bestätigt 2026-09-22)
 
 Das Regelwerk sagt: „Um Ränge freizuschalten … muss dein Attribut-Grundwert
 dem entsprechenden Rang haben" (RW 4.3 S.17), nennt aber **nirgends
@@ -56,12 +56,19 @@ Schiffe steuern, Stärke, Wahrnehmung, **Voodoo** …) enthält **kein**
 **Meine Annahme im Code** (`hausregeln/konvertiere-eldora.py`, Konstante
 `BAUM_TALENT`): Die beiden Nahkampf-Bäume teilen sich das Talent „Nahkampf",
 die beiden Voodoo-Bäume teilen sich „Voodoo", die übrigen sieben sind 1:1
-(Stärke→Stärke, Fernkampf→Fernkampf, Agilität→Agilität, Einschüchtern→
-Einschüchtern, Heimlich→Heimlich, Medizin→Medizin, Motivieren→Motivieren).
+(Stärke→Stärke, Fernkampf→Fernkampf, Einschüchtern→Einschüchtern,
+Heimlich→Heimlich, Medizin→Medizin, Motivieren→Motivieren).
 
-**Frage an den SL:** Stimmt das? Falls nicht - gibt es eine eigene,
-separate Punkteverteilung nur für die elf Baum-Werte, unabhängig von den
-39 Basis-Talenten auf dem Bogen?
+**SL bestätigt (Discord, 2026-09-22, JohoSaft): „Agilität muss bei den drei
+Talentebäumen in Athletik umgewandelt werden."** - der Hauptbaum „Agilität"
+wird also nicht vom (nicht existierenden) Basis-Talent „Agilität" getrieben,
+sondern vom echten Basis-Talent „Athletik" (S.8, in der Kategorie Handeln).
+Umgesetzt: `BAUM_TALENT['Agilität'] = 'Athletik'`, `eldora-arrrrr.js` neu
+generiert.
+
+**Noch offen:** Die übrigen zehn Zuordnungen (v.a. die geteilten Nahkampf-/
+Voodoo-Paare) sind weiterhin unbestätigte Annahme, nur die Agilität-Zeile
+ist jetzt vom SL selbst korrigiert worden.
 
 **Namens-Stolperstein seit RW 4.3 — ERLEDIGT (SL bestätigt):** Der exportierte
 Talentbaum der Gruppe (`quellen/eldora-arrrrr.roh.json`, 562 Skills) benannte

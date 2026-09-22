@@ -88,21 +88,22 @@ PUNKTE = {
                             91, 92, 93, 94, 95, 96, 97, 98, 99],
 }
 
-# ANNAHME (nicht im Regelwerk-Text explizit bestätigt, siehe OFFENE_FRAGEN.md):
-# welcher Bogen-Talentwert den Rang/die Skillpunkte je Hauptbaum treibt.
+# Welcher Bogen-Talentwert den Rang/die Skillpunkte je Hauptbaum treibt.
 # KEYS = Ast-Namen wie in HAUPTBAEUME (RW-4.3-Schreibweise). VALUES = Name in
 # appData.skills_*[].name (aus TALENTE unten).
 # Die Talentbaum-Namen (S.14) sind NICHT identisch mit den Basis-Talenten
 # (S.8ff) - "Nahkampf Klingen" und "Nahkampf Fäuste" gibt es als Talent nur
 # einmal ("Nahkampf"), ebenso "Voodoo Ritualklinge"/"Voodoo Fluchspucker"
-# ("Voodoo"). Die übrigen sechs sind 1:1-Treffer ("Agilität" ist dort bewusst
-# NICHT als Basis-Talent gelistet, siehe OFFENE_FRAGEN.md Frage 1).
+# ("Voodoo") und "Agilität" -> "Athletik" (SL-bestätigt 2026-09-22, JohoSaft/
+# Discord - "Agilität" ist dort bewusst NICHT als Basis-Talent gelistet,
+# siehe OFFENE_FRAGEN.md Frage 1, das war der fehlende Teil der Antwort).
+# Die übrigen fünf sind 1:1-Treffer.
 BAUM_TALENT = {
     'Nahkampf Klingen': 'Nahkampf',
     'Nahkampf Fäuste': 'Nahkampf',
     'Stärke': 'Stärke',
     'Fernkampf': 'Fernkampf',
-    'Agilität': 'Agilität',
+    'Agilität': 'Athletik',
     'Voodoo Ritualklinge': 'Voodoo',
     'Voodoo Fluchspucker': 'Voodoo',
     'Einschüchtern': 'Einschüchtern',
