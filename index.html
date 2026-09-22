@@ -723,6 +723,21 @@
                     <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmLayout')" title="Hilfe zum Umsortieren der Panels"></i>
                 </div>
 
+                <!-- Gruppe: SL-Sitzung sichern/laden (multiplayer.js) - Karten, Seekampf,
+                     Kampf, NSC-Liste, Tischmitte, Schiff, Quests und Regelpaket-Wahl als
+                     eine Datei, damit ein Abenteuer an einem anderen Abend/Gerät nahtlos
+                     weitergeht (nicht zu verwechseln mit "Speichern (JSON)" oben - das ist
+                     nur der Charakterbogen). -->
+                <div class="gm-group">
+                    <span class="gm-group-label"><i class="fa-solid fa-floppy-disk"></i> SL-Sitzung</span>
+                    <button class="gm-btn" onclick="exportGmSession()" title="Karten, Seekampf, Kampf, NSC-Liste, Tischmitte, Schiff, Quests und Regelpaket als Datei sichern"><i class="fa-solid fa-download"></i> Sichern</button>
+                    <label class="gm-btn" style="cursor: pointer;" title="Eine gesicherte SL-Sitzung laden - ersetzt die aktuellen Daten in diesem Browser">
+                        <i class="fa-solid fa-upload"></i> Laden
+                        <input type="file" id="gm-session-upload" accept=".json" style="display:none" onchange="importGmSession(event)">
+                    </label>
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmSitzung')" title="Hilfe zur SL-Sitzung"></i>
+                </div>
+
                 <!-- Gruppe: Sound -->
                 <div class="gm-group">
                     <span class="gm-group-label"><i class="fa-solid fa-volume-high"></i> Sound</span>

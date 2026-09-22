@@ -1180,6 +1180,82 @@ function importGmNotes(event) {
     event.target.value = '';
 }
 
+// --- SL-Sitzung sichern/laden ------------------------------------------------
+//
+// Karten (karten.js), Seekampf (seekampf.js), Kampf (kampf.js), NSC-Liste
+// (nscliste.js), Tischmitte (tischmitte.js), Schiffs-Inventar
+// (schiffsinventar.js), Quest-Log (quests.js) und die Regelpaket-Wahl
+// (hausregeln.js) liegen bislang jeder für sich in localStorage und
+// persistieren dadurch schon automatisch - "an einem anderen Abend nahtlos
+// weiterspielen" funktioniert also im selben Browser bereits ohne Zutun.
+// Diese Funktionen sind der explizite Sicherungsweg obendrauf: eine Datei,
+// die auf ein anderes Gerät/einen anderen Browser mitgenommen werden kann,
+// oder einfach als Backup vor größeren Änderungen. Bewusst GETRENNT vom
+// "Speichern (JSON)"-Knopf oben (exportData/importData in app.js), der nur
+// den Charakterbogen des Spielers exportiert - und getrennt vom Notizen-
+// Archiv (showGmNotesArchive unten), das dafür schon eine eigene, feinere
+// Lösung hat.
+const GM_SITZUNG_KEYS = [
+    'htbah_hausregeln',
+    'htbah_gm_karten', 'htbah_gm_karten_offen',
+    'htbah_gm_seekampf', 'htbah_gm_seekampf_offen',
+    'htbah_gm_kampf', 'htbah_gm_kampf_offen',
+    'htbah_gm_nscliste', 'htbah_gm_nscliste_offen', 'htbah_gm_nscliste_sortierung',
+    'htbah_gm_tischmitte', 'htbah_gm_tischmitte_offen',
+    'htbah_gm_schiff', 'htbah_gm_schiff_offen',
+    'htbah_gm_queste', 'htbah_gm_queste_offen',
+    'htbah_gm_panel_reihenfolge', 'htbah_gm_randomizer_offen'
+];
+
+function exportGmSession() {
+    const daten = {};
+    GM_SITZUNG_KEYS.forEach(k => {
+        const wert = localStorage.getItem(k);
+        if (wert !== null) daten[k] = wert;
+    });
+    const bundle = { typ: 'htbah-sl-sitzung', version: 1, exportiertAm: new Date().toISOString(), daten };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bundle, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute('href', dataStr);
+    a.setAttribute('download', `htbah_sl_sitzung_${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    if (typeof addGmLogSystemMessage === 'function') addGmLogSystemMessage('SL-Sitzung als Datei gesichert.');
+}
+
+// Ersetzt ALLE oben gelisteten Schlüssel wholesale (auch Löschen, wenn ein
+// Schlüssel in der geladenen Datei fehlt - z.B. eine ältere Sicherung von vor
+// Kampf.js) statt nur zu mergen, damit die geladene Sitzung wirklich exakt
+// den gesicherten Stand ergibt und keine Reste der aktuellen Sitzung
+// durchmischt. Ein voller Reload danach ist der einfachste robuste Weg, alle
+// Module (jedes mit seinem eigenen xLaden()+renderXGm() bei DOMContentLoaded)
+// sauber neu einzulesen, statt jede render-Funktion einzeln nachzuziehen.
+function importGmSession(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const bundle = JSON.parse(e.target.result);
+            if (!bundle || bundle.typ !== 'htbah-sl-sitzung' || !bundle.daten || typeof bundle.daten !== 'object') {
+                alert('Das ist keine gültige HTBAH-SL-Sitzungsdatei.');
+                return;
+            }
+            if (!confirm('Aktuelle SL-Daten in diesem Browser (Karten, Seekampf, Kampf, NSC-Liste, Tischmitte, Schiff, Quests, Regelpaket) werden durch die Datei ersetzt. Fortfahren?')) return;
+            GM_SITZUNG_KEYS.forEach(k => {
+                if (Object.prototype.hasOwnProperty.call(bundle.daten, k)) localStorage.setItem(k, bundle.daten[k]);
+                else localStorage.removeItem(k);
+            });
+            location.reload();
+        } catch (err) {
+            alert('Datei konnte nicht gelesen werden: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
 function showGmNotesArchive() {
     const modal = document.getElementById('gm-notes-archive-modal');
     const content = document.getElementById('gm-notes-archive-content');

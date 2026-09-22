@@ -14,6 +14,12 @@ const helpData = {
     gmSync: "<h3>Theme Sync</h3><p>Wenn du den Haken bei <b>Sync to Players</b> setzt, wird das von dir hier ausgewählte Vibe-Theme <b>automatisch auf alle Bildschirme deiner Spieler erzwungen</b>.</p><p>Das ist ein tolles Werkzeug, um in besonderen Momenten (z.B. bei einem Szenenwechsel in die Unterwelt) die Stimmung am virtuellen Tisch für alle gleichzeitig zu lenken!</p>",
 
     gmLayout: "<h3>Panels umsortieren</h3><p>Jedes Panel in der Hauptspalte (Spielerkarten, Zufallsgenerator, NSC-Liste, Quest-Logbuch, Schiff, Seekampf, Tischmitte, SL-Notizen) hat oben einen kleinen Ziehgriff <i class='fa-solid fa-grip-lines'></i>. Daran gepackt, kannst du das Panel per Drag &amp; Drop an eine beliebige Position ziehen - egal ob gerade Hausregeln aktiv sind oder nicht.</p><p>Die Reihenfolge bleibt in diesem Browser gespeichert, auch über einen Reload hinweg. Über <b>Reihenfolge zurücksetzen</b> geht's zurück zur Standard-Anordnung.</p>",
+
+    gmSitzung: "<h3>SL-Sitzung sichern/laden</h3>" +
+               "<p>Alles, was du als Spielleiter aufbaust - Karten (inkl. eigener Feldgröße je Karte), Seekampf, Kampf-Tracker, NSC-Liste, Tischmitte, Schiffs-Inventar, Quest-Log und das gewählte Regelpaket - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
+               "<p><b>Sichern</b> lädt trotzdem eine Datei herunter, die genau diesen Stand einfriert - praktisch als Backup vor größeren Änderungen, oder um auf einem anderen Gerät/Browser weiterzumachen.</p>" +
+               "<p><b>Laden</b> ersetzt die aktuellen SL-Daten in diesem Browser komplett durch den Inhalt der Datei (mit Rückfrage) und lädt die Seite danach neu.</p>" +
+               "<p><i>Das ist nicht dasselbe wie \"Speichern (JSON)\" oben - das sichert nur den Charakterbogen eines einzelnen Spielers. Für Spieler-Notizen gibt es außerdem ein eigenes Archiv (Notizen-Bereich).</i></p>",
     
     gmNotes: "<h3>Notizen-Archiv & Save/Load</h3><p>Das Dashboard speichert zu jedem verbundenen Charakter automatisch ein eigenes, für die Spieler geheimes Notizfeld in deinem Browser.</p><p>Klicke auf <b>Notizen-Archiv</b>, um auch die Notizen von Spielern einzusehen, die gerade offline sind.</p><p>Da die Notizen lokal im Browser liegen, solltest du sie nach jeder Session mit <b>Save</b> als Backup herunterladen und vor der nächsten Session mit <b>Load</b> wiederherstellen!</p>",
     
