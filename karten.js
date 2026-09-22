@@ -33,8 +33,23 @@ const KARTEN_KATEGORIEN = {
     sonstiges: { label: 'Sonstiges', icon: 'fa-map' }
 };
 
+// Kopie von battlemap.js' eigener STANDARD-Rasterkonstante (dort Zeile ~31 -
+// battlemap.js selbst wird nie angefasst, siehe dessen Kopfkommentar, daher
+// hier dupliziert statt importiert). Wird gebraucht, weil applyState() in
+// battlemap.js das Raster per Object.assign MERGT statt zu ersetzen
+// (`if (neu.raster) Object.assign(zustand.raster, neu.raster)`) - ein leeres
+// oder unvollständiges Raster-Objekt beim Kartenwechsel/-neuanlegen würde
+// sonst stillschweigend die Feldgröße/Versatz/Farbe der ZULETZT aktiven
+// Karte übernehmen, statt für die neue/gewechselte Karte zurückzusetzen.
+// Immer ein VOLLSTÄNDIGES Objekt übergeben, dann überschreibt der Merge
+// wirklich jedes Feld - siehe karteLeererZustand()/karteLaden() unten.
+const KARTE_RASTER_STANDARD = {
+    rasterGroesse: 50, rasterVersatzX: 0, rasterVersatzY: 0,
+    rasterSichtbar: true, rasterFarbe: 'rgba(212,162,76,0.30)', einrasten: true
+};
+
 function karteLeererZustand() {
-    return { raster: {}, figuren: [], formen: [], nebel: { aktiv: false, aufgedeckt: [], entwurf: [] }, bild: null };
+    return { raster: Object.assign({}, KARTE_RASTER_STANDARD), figuren: [], formen: [], nebel: { aktiv: false, aufgedeckt: [], entwurf: [] }, bild: null };
 }
 
 // --- Spielleiter --------------------------------------------------------------
@@ -55,6 +70,14 @@ function karteLaden() {
         const stand = roh ? JSON.parse(roh) : null;
         karten = stand && Array.isArray(stand.karten) ? stand.karten : [];
         karteAktivId = stand ? stand.aktivId : null;
+        // Migration: Karten aus der Zeit vor der Raster-Isolation (siehe
+        // KARTE_RASTER_STANDARD oben) hatten ein leeres/unvollständiges
+        // raster-Objekt - fehlende Felder hier einmalig auffüllen, eigene
+        // Werte bleiben dabei unangetastet (Object.assign-Reihenfolge).
+        karten.forEach(k => {
+            if (!k.zustand) k.zustand = karteLeererZustand();
+            k.zustand.raster = Object.assign({}, KARTE_RASTER_STANDARD, k.zustand.raster || {});
+        });
     } catch (e) { karten = []; karteAktivId = null; }
     try { karteOffenGm = localStorage.getItem(KARTEN_OFFEN_KEY) !== '0'; } catch (e) { karteOffenGm = true; }
 }
