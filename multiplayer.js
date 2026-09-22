@@ -969,7 +969,7 @@ function joinMultiplayerSession(codeArg) {
                     changeTheme(payload.theme, true);
                 }
             } else if (payload && payload.type === 'playSound') {
-                if (typeof playAudioFile === 'function') playAudioFile(payload.soundId, payload.volume);
+                if (typeof playAudioFile === 'function') playAudioFile(payload.soundId, payload.volume, payload.loop);
             } else if (payload && payload.type === 'setVolume') {
                 // Der SL verschiebt seinen Pegel; der eigene Regler bleibt darüber liegen.
                 if (typeof currentAudioPlayers !== 'undefined') {
@@ -1303,17 +1303,29 @@ function initPlayerVolumeSlider() {
     updatePlayerVolumeIcon(playerVolume);
 }
 
+// Nächster gesendeter/vorgehörte Sound läuft auf Schleife, bis Ausfaden/Stop
+// gedrückt wird (v.a. für Atmo-Sounds gedacht, siehe Knopf im Soundboard) -
+// bleibt an, bis der SL ihn wieder ausschaltet, wirkt also auf jeden
+// nachfolgenden Play-Klick, nicht nur den einen.
+let gmSoundLoop = false;
+
+function toggleGmSoundLoop() {
+    gmSoundLoop = !gmSoundLoop;
+    const btn = document.getElementById('gm-sound-loop-btn');
+    if (btn) btn.style.opacity = gmSoundLoop ? '1' : '0.5';
+}
+
 function previewGmSound(soundId) {
     const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
-    if (typeof playAudioFile === 'function') playAudioFile(soundId, vol);
+    if (typeof playAudioFile === 'function') playAudioFile(soundId, vol, gmSoundLoop);
 }
 
 function sendGmSound(soundId) {
     const vol = document.getElementById('gm-volume-slider') ? parseFloat(document.getElementById('gm-volume-slider').value) : 0.6;
-    if (typeof playAudioFile === 'function') playAudioFile(soundId, vol);
+    if (typeof playAudioFile === 'function') playAudioFile(soundId, vol, gmSoundLoop);
     Object.values(clientConnections).forEach(conn => {
         if (conn.open) {
-            conn.send({ type: 'playSound', soundId: soundId, volume: vol });
+            conn.send({ type: 'playSound', soundId: soundId, volume: vol, loop: gmSoundLoop });
         }
     });
 }
@@ -1340,7 +1352,7 @@ function sendGmStopSound() {
     });
 }
 
-function playAudioFile(soundId, overrideVolume = 0.6) {
+function playAudioFile(soundId, overrideVolume = 0.6, loop = false) {
     if (typeof appData !== 'undefined' && appData.soundEnabled === false) return;
 
     const soundMap = {
@@ -1391,10 +1403,14 @@ function playAudioFile(soundId, overrideVolume = 0.6) {
 
     if (soundMap[soundId]) {
         const audio = new Audio(soundMap[soundId]);
+        audio.loop = !!loop;
         applyVolume(audio, overrideVolume);
         audio.play().catch(e => console.warn('Audio play blocked:', e));
         currentAudioPlayers.push(audio);
-        
+
+        // Läuft audio.loop, feuert 'ended' nie (der Browser spult selbst zurück
+        // auf 0 statt zu enden) - der Sound bleibt also bis Stop/Ausfaden in
+        // currentAudioPlayers, genau wie gewollt.
         audio.addEventListener('ended', () => {
             currentAudioPlayers = currentAudioPlayers.filter(a => a !== audio);
         });
