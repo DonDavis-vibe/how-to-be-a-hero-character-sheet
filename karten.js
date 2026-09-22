@@ -33,23 +33,29 @@ const KARTEN_KATEGORIEN = {
     sonstiges: { label: 'Sonstiges', icon: 'fa-map' }
 };
 
-// Kopie von battlemap.js' eigener STANDARD-Rasterkonstante (dort Zeile ~31 -
-// battlemap.js selbst wird nie angefasst, siehe dessen Kopfkommentar, daher
-// hier dupliziert statt importiert). Wird gebraucht, weil applyState() in
-// battlemap.js das Raster per Object.assign MERGT statt zu ersetzen
-// (`if (neu.raster) Object.assign(zustand.raster, neu.raster)`) - ein leeres
-// oder unvollständiges Raster-Objekt beim Kartenwechsel/-neuanlegen würde
-// sonst stillschweigend die Feldgröße/Versatz/Farbe der ZULETZT aktiven
-// Karte übernehmen, statt für die neue/gewechselte Karte zurückzusetzen.
-// Immer ein VOLLSTÄNDIGES Objekt übergeben, dann überschreibt der Merge
-// wirklich jedes Feld - siehe karteLeererZustand()/karteLaden() unten.
+function karteLeererZustand() {
+    return { raster: Object.assign({}, KARTE_RASTER_STANDARD), figuren: [], formen: [], nebel: { aktiv: false, aufgedeckt: [], entwurf: [] }, bild: null };
+}
+
+// Spiegel von battlemap.js' eigenen STANDARD-Rasterwerten (siehe dort) - wird
+// hier zusätzlich gebraucht, weil battlemap.js immer nur EINE Zustands-
+// Instanz pro Sitzung lebendig hält (siehe karteMap/karteSpielerMap unten):
+// applyState() MERGT ein übergebenes raster-Objekt nur rein
+// (Object.assign(zustand.raster, neu.raster)), statt es zu ersetzen. Bekäme
+// eine Karte ohne eigene (oder mit unvollständiger) Feldgröße/Versatz/Farbe
+// den Zustand einer anderen Karte einfach so übergeben, würden Lücken vom
+// vorher aktiven Kartenwechsel "durchbluten" - z.B. bliebe eine frisch
+// angelegte Karte auf der zuletzt eingestellten Feldgröße hängen, statt bei
+// den Standardwerten zu starten. karteZustandFuerAnwenden() unten füllt
+// deshalb vor jedem applyState() explizit auf - macht jede Karte inkl. ihrer
+// eigenen Feldgröße wirklich unabhängig von jeder anderen, auch ältere, vor
+// diesem Fix gespeicherte Karten mit unvollständigem raster.
 const KARTE_RASTER_STANDARD = {
     rasterGroesse: 50, rasterVersatzX: 0, rasterVersatzY: 0,
     rasterSichtbar: true, rasterFarbe: 'rgba(212,162,76,0.30)', einrasten: true
 };
-
-function karteLeererZustand() {
-    return { raster: Object.assign({}, KARTE_RASTER_STANDARD), figuren: [], formen: [], nebel: { aktiv: false, aufgedeckt: [], entwurf: [] }, bild: null };
+function karteZustandFuerAnwenden(zustand) {
+    return Object.assign({}, zustand, { raster: Object.assign({}, KARTE_RASTER_STANDARD, (zustand && zustand.raster) || {}) });
 }
 
 // --- Spielleiter --------------------------------------------------------------
@@ -70,14 +76,6 @@ function karteLaden() {
         const stand = roh ? JSON.parse(roh) : null;
         karten = stand && Array.isArray(stand.karten) ? stand.karten : [];
         karteAktivId = stand ? stand.aktivId : null;
-        // Migration: Karten aus der Zeit vor der Raster-Isolation (siehe
-        // KARTE_RASTER_STANDARD oben) hatten ein leeres/unvollständiges
-        // raster-Objekt - fehlende Felder hier einmalig auffüllen, eigene
-        // Werte bleiben dabei unangetastet (Object.assign-Reihenfolge).
-        karten.forEach(k => {
-            if (!k.zustand) k.zustand = karteLeererZustand();
-            k.zustand.raster = Object.assign({}, KARTE_RASTER_STANDARD, k.zustand.raster || {});
-        });
     } catch (e) { karten = []; karteAktivId = null; }
     try { karteOffenGm = localStorage.getItem(KARTEN_OFFEN_KEY) !== '0'; } catch (e) { karteOffenGm = true; }
 }
@@ -157,7 +155,7 @@ function karteEinhaengen(canvas) {
         onChange: () => { karteAktuelleZurueckschreiben(); karteSichern(); karteVerteilen(); }
     });
     const eintrag = karten.find(k => k.id === karteAktivId);
-    karteMap.applyState(eintrag.zustand, eintrag.zustand.bild);
+    karteMap.applyState(karteZustandFuerAnwenden(eintrag.zustand), eintrag.zustand.bild);
     karteSpielerFigurenAbgleichen();
     if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     karteFigurenPortraitsWiederherstellen();
@@ -190,7 +188,7 @@ function karteWechseln(id) {
     const eintrag = karten.find(k => k.id === id);
     if (!eintrag || !karteMap) return;
     karteAktivId = id;
-    karteMap.applyState(eintrag.zustand, eintrag.zustand.bild);
+    karteMap.applyState(karteZustandFuerAnwenden(eintrag.zustand), eintrag.zustand.bild);
     karteSpielerFigurenAbgleichen();
     if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     karteFigurenPortraitsWiederherstellen();
@@ -559,7 +557,7 @@ function karteEmpfangen(payload) {
     renderKarteSpieler();
     if (karteSpielerMap && payload.zustand) {
         karteSpielerMap.setBestaetigung(!payload.zuegeFrei);
-        karteSpielerMap.applyState(payload.zustand, payload.zustand.bild);
+        karteSpielerMap.applyState(karteZustandFuerAnwenden(payload.zustand), payload.zustand.bild);
         const meinPeer = typeof peer !== 'undefined' && peer ? peer.id : null;
         const meineFigur = meinPeer && karteSpielerMap.figuren.find(f => f.besitzer === meinPeer);
         const meinBild = typeof appData !== 'undefined' && typeof safeImageSrc === 'function' ? safeImageSrc(appData.portrait) : null;
@@ -631,7 +629,7 @@ function renderKarteSpieler() {
         if (details) details.addEventListener('toggle', () => { karteSpielerOffen = details.open; if (details.open && karteSpielerMap) karteSpielerMap.zeichnen(); });
         if (karteSpielerLetzte.zustand) {
             karteSpielerMap.setBestaetigung(!karteSpielerLetzte.zuegeFrei);
-            karteSpielerMap.applyState(karteSpielerLetzte.zustand, karteSpielerLetzte.zustand.bild);
+            karteSpielerMap.applyState(karteZustandFuerAnwenden(karteSpielerLetzte.zustand), karteSpielerLetzte.zustand.bild);
         }
     }
 
