@@ -87,8 +87,6 @@ const IR_RUESTUNG_WERTE = {
 };
 const IR_RUESTUNGSSTUFE_LABEL = { ungepanzert: 'Ungepanzert', leicht: 'Leicht', mittel: 'Mittel', schwer: 'Schwer' };
 
-let irDragItemId = null;
-
 // --- Rüstung (getragene Ausrüstung, S.27f) --------------------------------
 
 // Alle sechs Rüstungsteil-Slots als flache Liste, in Anzeige-Reihenfolge.
@@ -488,29 +486,76 @@ function irGroesseAendern(itemId, neueGroesse) {
     renderInventarRaster();
 }
 
-// --- Drag & Drop (native HTML5 - reicht am Desktop) --------------------------
+// --- Drag & Drop (Pointer Events - funktioniert auf Maus, Touch und Stift) ---
+//
+// Ersetzt natives HTML5 Drag&Drop (draggable="true"/dragstart/dragover/drop):
+// das funktioniert auf Touch-Geräten grundsätzlich nicht, der Browser fängt
+// die erste Berührung stattdessen fürs Scrollen ab - ein "dragstart" wird auf
+// reinen Touch-Geräten nie ausgelöst. Pointer Events (pointerdown/move/up)
+// laufen dagegen auf allen Eingabearten identisch, deshalb hier von Hand
+// nachgebaut. Ausgelöst wird nur über einen eigenen Greif-Griff (Icon), nicht
+// über die ganze Karte - sonst würde ein Antippen des Namensfelds oder der
+// Mengen-Knöpfe mit der Zugerkennung kollidieren.
+let irDrag = null; // { itemId, pointerId, startX, startY, element, aktiv, geist, zielEl, zielSlot }
+const IR_DRAG_SCHWELLE = 6; // Pixel Bewegung, bevor aus einem Antippen ein Ziehen wird
 
-function irDragStart(e, itemId) {
-    irDragItemId = itemId;
-    e.dataTransfer.effectAllowed = 'move';
-    try { e.dataTransfer.setData('text/plain', itemId); } catch (err) { /* Safari-Krücke, irDragItemId reicht als Fallback */ }
+function irDragPointerDown(e, itemId, kartenEl) {
+    if (e.button !== undefined && e.button !== 0) return; // nur Primärtaste/erster Finger
+    if (irDrag) return; // schon ein Zug im Gange (z.B. zweiter Finger)
+    irDrag = { itemId, pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, element: kartenEl, aktiv: false, geist: null, zielEl: null, zielSlot: null };
+    document.addEventListener('pointermove', irDragPointerMove);
+    document.addEventListener('pointerup', irDragPointerEnde);
+    document.addEventListener('pointercancel', irDragPointerEnde);
 }
 
-function irDragOver(e) {
+function irDragAktivieren() {
+    irDrag.aktiv = true;
+    irDrag.element.classList.add('ir-karte-wird-gezogen');
+    // "Geist"-Karte folgt dem Finger/Cursor - auf dem Touchscreen verdeckt
+    // der eigene Finger sonst die Original-Karte komplett.
+    const geist = irDrag.element.cloneNode(true);
+    geist.classList.add('ir-karte-geist');
+    geist.style.width = irDrag.element.offsetWidth + 'px';
+    document.body.appendChild(geist);
+    irDrag.geist = geist;
+}
+
+function irDragPointerMove(e) {
+    if (!irDrag || e.pointerId !== irDrag.pointerId) return;
+    const dx = e.clientX - irDrag.startX;
+    const dy = e.clientY - irDrag.startY;
+    if (!irDrag.aktiv) {
+        if (Math.hypot(dx, dy) < IR_DRAG_SCHWELLE) return;
+        irDragAktivieren();
+    }
     e.preventDefault();
-    e.currentTarget.classList.add('ir-slot-over');
+    irDrag.geist.style.left = e.clientX + 'px';
+    irDrag.geist.style.top = e.clientY + 'px';
+    // Geist selbst hat pointer-events:none (CSS) - elementFromPoint trifft
+    // also direkt das darunterliegende Feld, kein Show/Hide-Trick nötig.
+    const unter = document.elementFromPoint(e.clientX, e.clientY);
+    const slotEl = unter ? unter.closest('[data-irslot]') : null;
+    if (irDrag.zielEl && irDrag.zielEl !== slotEl) irDrag.zielEl.classList.remove('ir-slot-over');
+    if (slotEl) slotEl.classList.add('ir-slot-over');
+    irDrag.zielEl = slotEl;
+    irDrag.zielSlot = slotEl ? slotEl.dataset.irslot : null;
 }
 
-function irDragLeave(e) {
-    e.currentTarget.classList.remove('ir-slot-over');
+function irDragPointerEnde(e) {
+    if (!irDrag || e.pointerId !== irDrag.pointerId) return;
+    document.removeEventListener('pointermove', irDragPointerMove);
+    document.removeEventListener('pointerup', irDragPointerEnde);
+    document.removeEventListener('pointercancel', irDragPointerEnde);
+    const drag = irDrag;
+    irDrag = null;
+    if (drag.geist) drag.geist.remove();
+    if (drag.zielEl) drag.zielEl.classList.remove('ir-slot-over');
+    if (!drag.aktiv) return; // reines Antippen/Klicken - normales Verhalten lief schon durch
+    drag.element.classList.remove('ir-karte-wird-gezogen');
+    if (drag.zielSlot) irDrop(drag.itemId, drag.zielSlot);
 }
 
-function irDrop(e, targetSlot) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('ir-slot-over');
-    const itemId = irDragItemId || e.dataTransfer.getData('text/plain');
-    irDragItemId = null;
-    if (!itemId) return;
+function irDrop(itemId, targetSlot) {
     const res = irVerschieben(irRasterDaten(), irItemsById(), itemId, targetSlot);
     if (!res.ok) {
         irStatus(res.grund === 'zuGross' || res.grund === 'passtNicht' ? 'Braucht mehr zusammenhängende freie Felder.' : 'Feld ist belegt.', true);
@@ -535,8 +580,9 @@ function irSlotHtml(slot, item, breite) {
             </div>` : '';
     return `
     <div class="ir-slot ${breite > 1 ? 'ir-slot-breit-' + breite : ''}" data-irslot="${slot}">
-        <div class="inv-item card-layout ir-karte ${item.istWaffe ? 'ir-karte-waffe' : ''}" draggable="true" data-iritem="${escapeHtml(item.id)}" title="Ziehen zum Umsortieren">
+        <div class="inv-item card-layout ir-karte ${item.istWaffe ? 'ir-karte-waffe' : ''}" data-iritem="${escapeHtml(item.id)}">
             <div class="ir-name-reihe">
+                <i class="fa-solid fa-grip-vertical ir-drag-griff" data-irgriff="${escapeHtml(item.id)}" title="Ziehen zum Umsortieren"></i>
                 ${item.istWaffe ? '<i class="fa-solid fa-khanda ir-waffe-icon" title="Waffe"></i>' : ''}
                 <input type="text" class="ir-name" value="${escapeHtml(item.name)}" data-irname="${escapeHtml(item.id)}" placeholder="Name …">
             </div>
@@ -650,12 +696,7 @@ function renderInventarRaster() {
 
     box.querySelectorAll('[data-irruestteil]').forEach(el => el.addEventListener('change', () => irRuestungsteilAendern(el.dataset.irruestteil, el.value)));
 
-    box.querySelectorAll('[data-irslot]').forEach(el => {
-        el.addEventListener('dragover', irDragOver);
-        el.addEventListener('dragleave', irDragLeave);
-        el.addEventListener('drop', (e) => irDrop(e, el.dataset.irslot));
-    });
-    box.querySelectorAll('[data-iritem]').forEach(el => el.addEventListener('dragstart', (e) => irDragStart(e, el.dataset.iritem)));
+    box.querySelectorAll('[data-irgriff]').forEach(el => el.addEventListener('pointerdown', (e) => irDragPointerDown(e, el.dataset.irgriff, el.closest('.ir-karte'))));
     box.querySelectorAll('[data-irname]').forEach(el => el.addEventListener('input', () => irNameAendern(el.dataset.irname, el.value)));
     box.querySelectorAll('[data-irgroesse]').forEach(el => el.addEventListener('change', () => irGroesseAendern(el.dataset.irgroesse, parseFloat(el.value) || 1)));
     box.querySelectorAll('[data-irdel]').forEach(el => el.addEventListener('click', () => irItemEntfernen(el.dataset.irdel)));
