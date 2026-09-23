@@ -175,6 +175,10 @@ randomizerPaketRegistrieren({
      "neben": "Axt"
     },
     {
+     "haupt": "Flasche mit Blitz",
+     "neben": "Bombe"
+    },
+    {
      "haupt": "Dolch der Nacht",
      "neben": "Dolch"
     },
@@ -187,11 +191,15 @@ randomizerPaketRegistrieren({
      "neben": "Faustwaffe"
     },
     {
+     "haupt": "Donnerfaust",
+     "neben": "Faustwaffe"
+    },
+    {
      "haupt": "Dämonenklaue",
      "neben": "Faustwaffe"
     },
     {
-     "haupt": "Donnerfaust",
+     "haupt": "Energiefaust",
      "neben": "Faustwaffe"
     },
     {
@@ -247,6 +255,10 @@ randomizerPaketRegistrieren({
      "neben": "Kopfbedeckung"
     },
     {
+     "haupt": "Krone der Dornen",
+     "neben": "Kopfbedeckung"
+    },
+    {
      "haupt": "Sonnenbrille der Macht",
      "neben": "Kopfbedeckung"
     },
@@ -279,12 +291,84 @@ randomizerPaketRegistrieren({
      "neben": "Muskete"
     },
     {
+     "haupt": "TodesEcho Muskete",
+     "neben": "Muskete"
+    },
+    {
+     "haupt": "Elegantes Bleihemd",
+     "neben": "Oberteil"
+    },
+    {
      "haupt": "Letzter Atem",
      "neben": "Pistole"
     },
     {
      "haupt": "Seelenflüstern",
      "neben": "Pistole"
+    },
+    {
+     "haupt": "Glücksmünze des Kapitäns",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Grabnagel des Totensammlers",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Jadekugel",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Kette des Kalifazius",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Kästchen des Goldes",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Ohrring der Tiefe",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Ring der schwachen Heilung",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Ring des Feuers",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Taschenuhr der Wiederholung",
+     "neben": "Schmuck"
+    },
+    {
+     "haupt": "Federbein",
+     "neben": "Schuhe"
+    },
+    {
+     "haupt": "Sieben Meilen Stiefel",
+     "neben": "Schuhe"
+    },
+    {
+     "haupt": "Stiefel der Schattenwelle",
+     "neben": "Schuhe"
+    },
+    {
+     "haupt": "Arkaner Bogen",
+     "neben": "Schusswaffe"
+    },
+    {
+     "haupt": "ArmArmBrust",
+     "neben": "Schusswaffe"
+    },
+    {
+     "haupt": "Unheilige Hand des Priesters",
+     "neben": "Stab"
+    },
+    {
+     "haupt": "Dauerstange",
+     "neben": "Stock"
     },
     {
      "haupt": "Blutdurst",
@@ -297,6 +381,46 @@ randomizerPaketRegistrieren({
     {
      "haupt": "Revolversäbel",
      "neben": "Säbel"
+    },
+    {
+     "haupt": "Schwert von Astoria",
+     "neben": "Säbel"
+    },
+    {
+     "haupt": "Spiegelfluch",
+     "neben": "Säbel"
+    },
+    {
+     "haupt": "Sturmschwert",
+     "neben": "Säbel"
+    },
+    {
+     "haupt": "Svenssons Silber Sebel",
+     "neben": "Säbel"
+    },
+    {
+     "haupt": "Säbel des Fiebers",
+     "neben": "Säbel"
+    },
+    {
+     "haupt": "Wasserzahn",
+     "neben": "Säbel"
+    },
+    {
+     "haupt": "Totem des Sturmrufers",
+     "neben": "Talisman"
+    },
+    {
+     "haupt": "Drachentöter",
+     "neben": "Zweihandwaffe"
+    },
+    {
+     "haupt": "Flammenberg",
+     "neben": "Zweihandwaffe"
+    },
+    {
+     "haupt": "Odins Harpune",
+     "neben": "Zweihandwaffe"
     }
    ]
   },
@@ -437,6 +561,128 @@ randomizerPaketRegistrieren({
     {
      "haupt": "Schallgenerator",
      "neben": "-10 auf alle Aktionen im 6x6m Bereich für 1W3 Runden"
+    },
+    {
+     "haupt": "Brandöl",
+     "neben": "Waffen erzeugen Feuermarker, hält 3 Runden"
+    },
+    {
+     "haupt": "Haftöl",
+     "neben": "2x2m Ziel kriegt Bewegung -2 für 2 Runden"
+    },
+    {
+     "haupt": "Säureöl",
+     "neben": "Rüstungsdurchbruch +20"
+    },
+    {
+     "haupt": "Frostöl",
+     "neben": "-1 Bewegung, -2W10 Schaden bei Angriffen vom Eingefrorenen, für 3 Runden"
+    },
+    {
+     "haupt": "Kleine Heilsalbe",
+     "neben": "Sofort +2W10 HP"
+    },
+    {
+     "haupt": "Mittlere Heilsalbe",
+     "neben": "Sofort +4W10 HP"
+    },
+    {
+     "haupt": "Große Heilsalbe",
+     "neben": "Sofort +6W10 HP"
+    },
+    {
+     "haupt": "Gegengift",
+     "neben": "Entfernt Gift komplett, egal welche Stufe"
+    },
+    {
+     "haupt": "Blutstillende Paste",
+     "neben": "Stoppt Blutung vollständig"
+    },
+    {
+     "haupt": "Regenerationstrank",
+     "neben": "3 Runden lang +2W10 HP zu Beginn der Runde"
+    },
+    {
+     "haupt": "Notfall-Elixier",
+     "neben": "HP kann in den nächsten 3 Runden einmal nicht unter 0 fallen, sondern stoppt bei 1"
+    },
+    {
+     "haupt": "Geschwindigkeitstrank",
+     "neben": "Für 3 Runden +2 Bewegung"
+    },
+    {
+     "haupt": "Unsichtbarkeitstrank",
+     "neben": "Unsichtbarkeit und Heimlich +30 für 3 Runden, danach sichtbar"
+    },
+    {
+     "haupt": "Eisenhaut",
+     "neben": "+5 Rüstung für 5 Runden"
+    },
+    {
+     "haupt": "Schildtrank",
+     "neben": "+20 Rüstung für 2 Runden"
+    },
+    {
+     "haupt": "Stärketrank",
+     "neben": "+25 Stärke für 3 Runden"
+    },
+    {
+     "haupt": "LifeSteal-Trank",
+     "neben": "50% Lifesteal für 3 Runden"
+    },
+    {
+     "haupt": "Langsames Gegengift",
+     "neben": "6 Runden lang sinkt zu Rundenbeginn die Gift-Stufe um 1"
+    },
+    {
+     "haupt": "Konzentrationstrank",
+     "neben": "+10 auf alle Fertigkeiten für 3 Runden"
+    },
+    {
+     "haupt": "Kampfdroge",
+     "neben": "+2W10 Schaden für 3 Runden, danach -10 auf alle Würfe für 2 Runden"
+    }
+   ]
+  },
+  "handelswaren": {
+   "name": "Handelsware / Vorrat",
+   "kategorie": "items",
+   "eintraege": [
+    {
+     "haupt": "Krug Rum",
+     "neben": "1 Gold - ein Krug guter Rum"
+    },
+    {
+     "haupt": "Mahlzeit inkl. Rum",
+     "neben": "5 Gold - einfache Mahlzeit mit Getränk"
+    },
+    {
+     "haupt": "Übernachtung",
+     "neben": "10 Gold - ein Bett in der Taverne"
+    },
+    {
+     "haupt": "Fass Rum",
+     "neben": "40 Gold - 50 Portionen"
+    },
+    {
+     "haupt": "Fass Wasser",
+     "neben": "30 Gold - 50 Portionen"
+    },
+    {
+     "haupt": "Nahrung",
+     "neben": "60 Gold - 30 Portionen"
+    },
+    {
+     "haupt": "Schwarzpulver",
+     "neben": "50 Gold - 100 Portionen"
+    },
+    {
+     "haupt": "Kiste Kanonenkugeln",
+     "neben": "40 Gold - 20 Kugeln (inkl. Schwarzpulver)"
+    },
+    {
+     "haupt": "Kiste Munition",
+     "neben": "25 Gold - 50 Schuss (inkl. Schwarzpulver)"
     }
    ]
   }

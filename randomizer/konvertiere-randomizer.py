@@ -164,6 +164,7 @@ def bauen():
         'gegenstaende_magisch': tabelle('Magischer Gegenstand', 'items', liste(eldora['gegenstaende_magisch'])),
         'waffen_shop': tabelle('Waffe (Preisliste)', 'waffen', liste(eldora['waffen_shop'])),
         'herstellbare_gegenstaende': tabelle('Herstellbarer Gegenstand', 'items', liste(eldora['herstellbare_gegenstaende'])),
+        'handelswaren': tabelle('Handelsware / Vorrat', 'items', liste(eldora['handelswaren'])),
     }
     eldora_wortlisten = {
         'vornamen_maennlich': eldora['npc_vornamen_maennlich'],
