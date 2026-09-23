@@ -306,6 +306,18 @@ Known simplifications vs. the actual rule (documented in-code and in the in-app 
 
 Entry shape: `{ "id", "name", "amount", "groesse", "description" }` - `groesse` uses the same 0.5/1/2/3 catalog as the grid. "How much you can take" from the ship has two independent limits: the ship's own Lager capacity (enforced GM-side against the sum of item slot-costs aboard), and whether the *requesting player's own grid* has a free matching slot (checked against that player's last-synced `inventarRaster`, accounting for their own armor/pouches). The rulebook doesn't specify how Lager capacity converts to personal item-slot sizes - this reuses the same size table for both as a documented approximation.
 
+**Player chests ("Kisten")** are the opposite of the ship stash above: **private** per player, not shared, added at the request of the group (Discord, 2026-09-23) alongside the stash rather than from RW 4.3 text. Deliberately a simpler capacity model than the stash's size-weighted Lager - a chest just counts entries (`kistenKapazitaet`, one shared number the GM sets for every chest, not per-player), regardless of an item's `amount` or any size field (chest entries have no `groesse` at all, unlike stash entries). GM-authoritative, persisted in the *same* blob as the stash (`htbah_gm_schiff`, now `{ "klasse", "items", "kistenKapazitaet", "kisten": { "<peerId>": [...] } }`) - kept in one file/blob because the feature only makes sense as an addition to the stash, not because the two share any runtime logic. Contents survive a player disconnecting and reconnecting (never cleared on `schiffGetrennt`/close, same as the shared stash never clears).
+
+| Direction | Message | Meaning |
+|---|---|---|
+| GM -> **one** player | `{ "type": "kiste", "items": [...], "kapazitaet" }` | That player's own chest only - sent after every change to *their* chest and on join, never broadcast to everyone else (unlike every other GM->players message in this file, which is unfiltered-but-shared) |
+| player -> GM | `{ "type": "kisteNehmen", "itemId": "kiste_..." }` | Request to take an entry from their own chest |
+| GM -> player | `{ "type": "kisteGeben", "item": {...} }` | Granted (or returned, if a `kisteAblegen` didn't fit) |
+| GM -> player | `{ "type": "kisteAbgelehnt", "itemId": "kiste_...", "grund": "weg" \| "keinPlatz" }` | Same two reasons as the stash |
+| player -> GM | `{ "type": "kisteAblegen", "item": {...} }` | Put one of their own items into their own chest |
+
+The GM's own dashboard shows every connected player's chest inline, all the time (not a "peek on demand" toggle) - that's the whole point of the feature (the group explicitly asked for GM oversight into an otherwise-private space) - plus a small add/remove form per chest so the GM can plant or pull items directly without going through the take/drop request flow a player would use. `kisteAnfrageVerarbeiten()` mirrors `schiffAnfrageVerarbeiten()`'s two request handlers almost exactly (same "return the item via *Geben* if it doesn't fit" pattern on a full drop), just scoped to `kisten[peerId]` and gated on entry-*count* instead of summed slot-cost.
+
 ## Eldara House Rule: Karte (Multi-Map VTT)
 
 GM-authoritative multi-map tabletop, `karten.js`, only active while `eldaraAktiv()`. Generalizes what used to be Seekampf's single private battle map into a library: the GM creates any number of named maps (`karten`, an array of `{ id, name, kategorie, zustand }`, `kategorie` one of `land`/`see`/`schiff`/`sonstiges` - display-only grouping, nothing gates behavior on it), switches which one is "active"/live, and each holds its own independent `battlemap.js` state. Persisted as one blob at `localStorage["htbah_gm_karten"]` (`{ karten, aktivId }`).

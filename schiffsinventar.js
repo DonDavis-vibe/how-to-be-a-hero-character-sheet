@@ -32,6 +32,29 @@
 //
 // Eintrag: { id, name, amount, groesse, description } - groesse wie beim
 // Rasterinventar (0.5/1/2/3, siehe IR_GROESSEN_KATALOG).
+//
+// --- Kisten: private Spieler-Fächer an Bord (Zusatz zum geteilten Pool) ----
+//
+// Wunsch aus der Runde (Discord, JohoSaft): zusätzlich zum geteilten Schiffs-
+// Inventar oben soll jeder Spieler sein EIGENES, privates Fach an Bord haben
+// - andere Spieler sehen es nicht, der SL kann aber jederzeit reinschauen
+// (und auch direkt was reinlegen/rausnehmen). Bewusst ein einfacheres Modell
+// als der geteilte Pool: keine größen-gewichtete "Lager"-Kapazität, sondern
+// eine simple Anzahl "Plätze" (ein Eintrag = ein Platz, unabhängig von
+// dessen `amount`), die der SL frei einstellt (kistenKapazitaet, EIN
+// gemeinsamer Wert für alle Kisten, nicht pro Spieler einzeln).
+//
+// Persistiert im selben localStorage-Blob wie oben (htbah_gm_schiff):
+// { klasse, items, kistenKapazitaet, kisten: { [peerId]: [{id, name,
+// amount, description}] } }.
+//
+// Nachrichten (GEZIELT an genau den einen betroffenen Spieler, nie an alle -
+// anders als der geteilte Pool oben ist eine Kiste kein gemeinsamer Besitz):
+//   SL -> ein Spieler   { type: 'kiste', items: [...], kapazitaet }   kompletter Stand SEINER Kiste
+//   Spieler -> SL       { type: 'kisteNehmen', itemId }
+//   SL -> ein Spieler   { type: 'kisteGeben', item }                  dir gehört's jetzt (auch als Rückgabe)
+//   SL -> ein Spieler   { type: 'kisteAbgelehnt', itemId, grund }      'weg' | 'keinPlatz'
+//   Spieler -> SL       { type: 'kisteAblegen', item }
 
 const SCHIFF_KEY = 'htbah_gm_schiff';
 const SCHIFF_OFFEN_GM_KEY = 'htbah_gm_schiff_offen';
@@ -56,6 +79,25 @@ let schiffOffenGm = true;
 let schiffOffenSpieler = false;
 // Spieler: itemId -> true, solange eine "Nehmen"-Anfrage unterwegs ist
 const schiffAnfragen = {};
+
+// Kisten (SL-seitig kanonisch: peerId -> Item-Array; Spieler kennt nur die
+// eigene, zuletzt synchronisierte Kopie).
+let kisten = {};
+let kistenKapazitaet = 5;
+let meineKiste = [];
+let meineKisteKapazitaet = 5;
+let kisteOffenGm = true;
+let kisteOffenSpieler = false;
+const kistenAnfragen = {};
+
+function kisteNeueId() {
+    return 'kiste_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function kisteFuer(peerId) {
+    if (!Array.isArray(kisten[peerId])) kisten[peerId] = [];
+    return kisten[peerId];
+}
 
 function schiffNeueId() {
     return 'schiff_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -84,20 +126,26 @@ function schiffLaden() {
         if (geladen && Array.isArray(geladen.items)) {
             schiff = geladen.items;
             schiffKlasse = SCHIFF_KLASSEN[geladen.klasse] ? geladen.klasse : 'schoner';
+            kisten = geladen.kisten && typeof geladen.kisten === 'object' ? geladen.kisten : {};
+            kistenKapazitaet = Math.max(1, parseInt(geladen.kistenKapazitaet) || 5);
         } else if (Array.isArray(geladen)) {
             // Alter Stand ohne Schiffsklasse (vor der Lager-Kapazität)
             schiff = geladen;
             schiffKlasse = 'schoner';
+            kisten = {};
+            kistenKapazitaet = 5;
         } else {
             schiff = [];
             schiffKlasse = 'schoner';
+            kisten = {};
+            kistenKapazitaet = 5;
         }
         schiffOffenGm = localStorage.getItem(SCHIFF_OFFEN_GM_KEY) !== '0';
-    } catch (e) { schiff = []; schiffKlasse = 'schoner'; }
+    } catch (e) { schiff = []; schiffKlasse = 'schoner'; kisten = {}; kistenKapazitaet = 5; }
 }
 
 function schiffSichern() {
-    try { localStorage.setItem(SCHIFF_KEY, JSON.stringify({ klasse: schiffKlasse, items: schiff })); } catch (e) { /* voll */ }
+    try { localStorage.setItem(SCHIFF_KEY, JSON.stringify({ klasse: schiffKlasse, items: schiff, kisten, kistenKapazitaet })); } catch (e) { /* voll */ }
 }
 
 function schiffLagerKapazitaet(klasse) {
@@ -241,6 +289,136 @@ function schiffAnfrageVerarbeiten(peerId, payload) {
     return false;
 }
 
+// --- Kisten: Spielleiter -----------------------------------------------------
+
+function kisteSenden(peerId, nachricht) {
+    const conn = typeof clientConnections !== 'undefined' ? clientConnections[peerId] : null;
+    if (!conn || !conn.open) return false;
+    try { conn.send(nachricht); return true; } catch (e) { return false; }
+}
+
+function kisteVerteilenAn(peerId) {
+    kisteSenden(peerId, { type: 'kiste', items: kisteFuer(peerId), kapazitaet: kistenKapazitaet });
+}
+
+function kisteAnVerbindung(conn) {
+    if (!conn || !conn.open) return;
+    try { conn.send({ type: 'kiste', items: kisteFuer(conn.peer), kapazitaet: kistenKapazitaet }); } catch (e) { /* weg */ }
+}
+
+// EIN gemeinsamer Wert für alle Kisten (siehe Datei-Kopfkommentar) - Änderung
+// geht an jeden gerade verbundenen Spieler raus, damit seine Anzeige sofort
+// den neuen Wert zeigt.
+function kistenKapazitaetAendern(wert) {
+    kistenKapazitaet = Math.max(1, parseInt(wert) || 1);
+    schiffSichern();
+    if (typeof connectedPlayersData !== 'undefined') Object.keys(connectedPlayersData).forEach(kisteVerteilenAn);
+    renderSchiffGm();
+}
+
+function kisteHinzufuegen(peerId) {
+    const nameEl = document.getElementById('kiste-neu-name-' + peerId);
+    const mengeEl = document.getElementById('kiste-neu-menge-' + peerId);
+    const descEl = document.getElementById('kiste-neu-desc-' + peerId);
+    const name = (nameEl ? nameEl.value : '').trim();
+    if (!name) { if (nameEl) nameEl.focus(); return; }
+    const liste = kisteFuer(peerId);
+    if (liste.length >= kistenKapazitaet) { alert(`Kiste voll: ${liste.length}/${kistenKapazitaet} Plätze belegt.`); return; }
+    const item = {
+        id: kisteNeueId(), name,
+        amount: Math.max(1, parseInt(mengeEl ? mengeEl.value : 1) || 1),
+        description: (descEl ? descEl.value : '').trim()
+    };
+    kisten[peerId] = [item].concat(liste);
+    schiffSichern();
+    kisteVerteilenAn(peerId);
+    if (typeof addGmLogEntry === 'function') addGmLogEntry('Spielleiter', `legt ${schiffLabel(item)} in ${schiffSpielerName(peerId)}s Kiste.`, '🗝️');
+    renderSchiffGm();
+}
+
+function kisteEntfernen(peerId, itemId) {
+    kisten[peerId] = kisteFuer(peerId).filter(i => i.id !== itemId);
+    schiffSichern();
+    kisteVerteilenAn(peerId);
+    renderSchiffGm();
+}
+
+// Anfragen der Spieler (aus handleIncomingData in multiplayer.js) - dieselbe
+// Nehmen/Ablegen-Mechanik wie beim geteilten Pool, nur pro Kiste isoliert und
+// mit einfacher Platz- statt Größen-Prüfung.
+function kisteAnfrageVerarbeiten(peerId, payload) {
+    if (!payload || typeof payload !== 'object') return false;
+    const name = schiffSpielerName(peerId);
+
+    if (payload.type === 'kisteNehmen') {
+        const liste = kisteFuer(peerId);
+        const item = liste.find(i => i.id === payload.itemId);
+        if (!item) { kisteSenden(peerId, { type: 'kisteAbgelehnt', itemId: payload.itemId, grund: 'weg' }); return true; }
+        const spielerDaten = typeof connectedPlayersData !== 'undefined' ? connectedPlayersData[peerId] : null;
+        if (!schiffSpielerHatPlatz(spielerDaten, 1)) {
+            kisteSenden(peerId, { type: 'kisteAbgelehnt', itemId: payload.itemId, grund: 'keinPlatz' });
+            return true;
+        }
+        kisten[peerId] = liste.filter(i => i.id !== item.id);
+        schiffSichern();
+        kisteSenden(peerId, { type: 'kisteGeben', item });
+        if (typeof addGmLogEntry === 'function') addGmLogEntry(name, `nimmt ${schiffLabel(item)} aus der eigenen Kiste.`, '🗝️');
+        renderSchiffGm();
+        return true;
+    }
+    if (payload.type === 'kisteAblegen' && payload.item && typeof payload.item === 'object') {
+        const roh = payload.item;
+        const item = {
+            id: kisteNeueId(),
+            name: String(roh.name || '').slice(0, 120),
+            amount: Math.max(1, parseInt(roh.amount) || 1),
+            description: String(roh.description || '').slice(0, 1000)
+        };
+        const liste = kisteFuer(peerId);
+        if (liste.length >= kistenKapazitaet) {
+            // Kein Platz mehr - Spieler hat es lokal schon aus dem eigenen
+            // Raster entfernt (siehe kisteAblegen), darum direkt zurückgeben.
+            kisteSenden(peerId, { type: 'kisteGeben', item });
+            if (typeof addGmLogEntry === 'function') addGmLogEntry(name, `wollte ${schiffLabel(item)} in die eigene Kiste legen, aber die ist voll - bleibt bei ${name}.`, '⚠️');
+            return true;
+        }
+        kisten[peerId] = [item].concat(liste);
+        schiffSichern();
+        kisteVerteilenAn(peerId);
+        if (typeof addGmLogEntry === 'function') addGmLogEntry(name, `legt ${schiffLabel(item)} in die eigene Kiste.`, '🗝️');
+        renderSchiffGm();
+        return true;
+    }
+    return false;
+}
+
+function kisteSpielerBlockHtml(peerId) {
+    const liste = kisteFuer(peerId);
+    const zeilen = liste.map(i => `
+        <div class="tm-item schiff-item">
+            <div class="tm-item-kopf">
+                <i class="fa-solid fa-box tm-art-icon"></i>
+                <span class="tm-item-name">${escapeHtml(schiffLabel(i))}</span>
+            </div>
+            ${i.description ? `<div class="tm-item-desc">${escapeHtml(i.description)}</div>` : ''}
+            <div class="tm-item-actions">
+                <button class="x-mini x-mini-danger" data-kistedel="${escapeHtml(i.id)}" data-peer="${escapeHtml(peerId)}" title="Entfernen"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>`).join('');
+    return `
+        <div class="tm-item-kopf" style="margin-top:0.6rem">
+            <span class="tm-item-name">${escapeHtml(schiffSpielerName(peerId))}</span>
+            <span class="nsc-badge ${liste.length >= kistenKapazitaet ? 'ir-warnung' : ''}">${liste.length} / ${kistenKapazitaet}</span>
+        </div>
+        <div class="qs-form">
+            <input type="text" id="kiste-neu-name-${escapeHtml(peerId)}" class="x-input qs-input" placeholder="Gegenstand …">
+            <input type="number" id="kiste-neu-menge-${escapeHtml(peerId)}" class="x-input" style="max-width:80px" value="1" min="1" title="Menge">
+            <input type="text" id="kiste-neu-desc-${escapeHtml(peerId)}" class="x-input qs-input" placeholder="Beschreibung (optional)">
+            <button class="x-mini" data-kisteadd="${escapeHtml(peerId)}" title="In die Kiste legen"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="tm-list">${zeilen || '<div class="x-leer">Leer.</div>'}</div>`;
+}
+
 function renderSchiffGm() {
     const box = document.getElementById('gm-schiff');
     if (!box) return;
@@ -303,15 +481,34 @@ function renderSchiffGm() {
                 <button class="tool-btn" onclick="schiffHinzufuegen()"><i class="fa-solid fa-plus"></i> Ablegen</button>
             </div>
             <div class="tm-list">${zeilen || '<div class="x-leer">Noch nichts an Bord. Leg die Grundausstattung der Crew ab.</div>'}</div>
+        </details>
+        <details class="x-details schiff-details" ${kisteOffenGm ? 'open' : ''} style="margin-top:0.8rem">
+            <summary class="tm-head">
+                <div class="tm-title"><i class="fa-solid fa-chevron-right x-chevron"></i> <i class="fa-solid fa-box-archive"></i> Spieler-Kisten
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('kisten')" title="Hilfe zu den Kisten"></i>
+                </div>
+            </summary>
+            <p class="ir-hint">Privates Fach jedes Spielers an Bord - andere Spieler sehen es nicht, du als SL kannst aber jederzeit reinschauen und direkt was hineinlegen oder herausnehmen.</p>
+            <div class="ir-einstellungen">
+                <label class="ir-einstellung">Plätze pro Kiste
+                    <input type="number" id="kisten-kapazitaet" class="ir-input" style="max-width:80px" value="${kistenKapazitaet}" min="1">
+                </label>
+            </div>
+            ${spieler.length ? spieler.map(p => kisteSpielerBlockHtml(p)).join('') : '<div class="x-leer">Noch niemand verbunden.</div>'}
         </details>`;
 
-    const details = box.querySelector('details');
-    if (details) details.addEventListener('toggle', () => {
-        schiffOffenGm = details.open;
-        try { localStorage.setItem(SCHIFF_OFFEN_GM_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+    const details = box.querySelectorAll('details');
+    if (details[0]) details[0].addEventListener('toggle', () => {
+        schiffOffenGm = details[0].open;
+        try { localStorage.setItem(SCHIFF_OFFEN_GM_KEY, details[0].open ? '1' : '0'); } catch (e) { /* egal */ }
     });
+    if (details[1]) details[1].addEventListener('toggle', () => { kisteOffenGm = details[1].open; });
     const klasseSel = document.getElementById('schiff-klasse');
     if (klasseSel) klasseSel.addEventListener('change', () => schiffKlasseAendern(klasseSel.value));
+    const kapazEl = document.getElementById('kisten-kapazitaet');
+    if (kapazEl) kapazEl.addEventListener('change', () => kistenKapazitaetAendern(kapazEl.value));
+    box.querySelectorAll('[data-kistedel]').forEach(b => b.addEventListener('click', () => kisteEntfernen(b.dataset.peer, b.dataset.kistedel)));
+    box.querySelectorAll('[data-kisteadd]').forEach(b => b.addEventListener('click', () => kisteHinzufuegen(b.dataset.kisteadd)));
     box.querySelectorAll('[data-schiffdel]').forEach(b => b.addEventListener('click', () => schiffEntfernen(b.dataset.schiffdel)));
     box.querySelectorAll('[data-schiffgeben]').forEach(s => s.addEventListener('change', () => { if (s.value) schiffGebenAn(s.dataset.schiffgeben, s.value); }));
 }
@@ -382,6 +579,67 @@ function schiffAblegen() {
     if (typeof renderAll === 'function') renderAll();
 }
 
+// --- Kisten: Spieler ----------------------------------------------------------
+
+function kisteEmpfangen(items, kapazitaet) {
+    meineKiste = Array.isArray(items) ? items : [];
+    meineKisteKapazitaet = Math.max(1, parseInt(kapazitaet) || 5);
+    Object.keys(kistenAnfragen).forEach(id => { if (!meineKiste.some(i => i.id === id)) delete kistenAnfragen[id]; });
+    renderSchiffSpieler();
+}
+
+function kisteNehmen(id) {
+    if (!schiffVerbunden() || kistenAnfragen[id]) return;
+    kistenAnfragen[id] = true;
+    try { hostConnection.send({ type: 'kisteNehmen', itemId: id }); } catch (e) { delete kistenAnfragen[id]; }
+    renderSchiffSpieler();
+}
+
+function kisteGeschenkEmpfangen(item) {
+    if (!item || typeof appData === 'undefined') return;
+    delete kistenAnfragen[item.id];
+    if (!appData.inventory) appData.inventory = [];
+    const neu = {
+        id: 'inv_' + Date.now(),
+        name: String(item.name || '').slice(0, 120),
+        amount: Math.max(1, parseInt(item.amount) || 1),
+        description: String(item.description || '').slice(0, 1000),
+        showDesc: false,
+        irGroesse: 1
+    };
+    appData.inventory.push(neu);
+    if (typeof irAutoPlatzieren === 'function') irAutoPlatzieren(neu.id);
+    if (typeof addActivityLog === 'function') addActivityLog(`Aus der eigenen Kiste genommen: ${schiffLabel(item)}`, 'activity-good', '<i class="fa-solid fa-box-archive"></i>');
+    if (typeof saveData === 'function') saveData();
+    if (typeof renderAll === 'function') renderAll();
+    schiffHinweis(`${schiffLabel(item)} genommen.`);
+}
+
+function kisteAbgelehnt(itemId, grund) {
+    delete kistenAnfragen[itemId];
+    meineKiste = meineKiste.filter(i => i.id !== itemId || grund === 'keinPlatz');
+    renderSchiffSpieler();
+    schiffHinweis(grund === 'keinPlatz' ? 'Kein Platz mehr im eigenen Rasterinventar.' : 'Zu spät - das ist schon weg.', true);
+}
+
+// Eigenen Gegenstand in die eigene Kiste legen. Ist sie voll, kommt der
+// Gegenstand automatisch zurück (siehe kisteAnfrageVerarbeiten).
+function kisteAblegen() {
+    const sel = document.getElementById('kiste-ablegen-select');
+    if (!sel || !sel.value || !schiffVerbunden()) return;
+    const itemId = sel.value;
+    const idx = (appData.inventory || []).findIndex(i => i.id === itemId);
+    if (idx < 0) return;
+    const q = appData.inventory[idx];
+    const item = { name: q.name, amount: q.amount || 1, description: q.description || '' };
+    try { hostConnection.send({ type: 'kisteAblegen', item }); } catch (e) { return; }
+    appData.inventory.splice(idx, 1);
+    if (typeof irOhneItem === 'function' && typeof irRasterDaten === 'function') appData.inventarRaster = irOhneItem(irRasterDaten(), itemId);
+    if (typeof addActivityLog === 'function') addActivityLog(`In die eigene Kiste gelegt: ${schiffLabel(item)}`, 'activity-neutral', '<i class="fa-solid fa-box-archive"></i>');
+    if (typeof saveData === 'function') saveData();
+    if (typeof renderAll === 'function') renderAll();
+}
+
 function schiffHinweis(text, warnung) {
     const el = document.getElementById('schiff-hinweis');
     if (!el) return;
@@ -426,6 +684,23 @@ function renderSchiffSpieler() {
     const belegt = schiffLagerBelegt(schiffSpieler);
     const kapazitaet = schiffLagerKapazitaet(schiffSpielerKlasse);
 
+    const meineKisteKarten = meineKiste.map(i => {
+        const wartet = !!kistenAnfragen[i.id];
+        return `
+        <div class="tm-item card-layout">
+            <div class="tm-item-kopf">
+                <i class="fa-solid fa-box tm-art-icon"></i>
+                <span class="tm-item-name">${escapeHtml(schiffLabel(i))}</span>
+            </div>
+            ${i.description ? `<div class="tm-item-desc">${escapeHtml(i.description)}</div>` : ''}
+            <div class="tm-item-actions">
+                <button class="tool-btn tm-take" data-kistenehmen="${escapeHtml(i.id)}" ${wartet ? 'disabled' : ''}>
+                    <i class="fa-solid ${wartet ? 'fa-spinner fa-spin' : 'fa-hand-back-fist'}"></i> ${wartet ? 'Wird geholt …' : 'Nehmen'}
+                </button>
+            </div>
+        </div>`;
+    }).join('') || '<div class="x-leer">Noch leer.</div>';
+
     section.innerHTML = `
         <details class="x-details schiff-details" ${schiffOffenSpieler ? 'open' : ''}>
             <summary class="tm-head">
@@ -441,11 +716,27 @@ function renderSchiffSpieler() {
                 <select id="schiff-ablegen-select" class="x-select tm-select"><option value="">Eigenes aufs Schiff legen …</option>${eigene.join('')}</select>
                 <button class="tool-btn" onclick="schiffAblegen()" title="Aus deinem Rasterinventar aufs Schiff legen"><i class="fa-solid fa-arrow-up-from-bracket"></i> Ablegen</button>
             </div>` : ''}
+        </details>
+        <details class="x-details schiff-details" ${kisteOffenSpieler ? 'open' : ''} style="margin-top:0.8rem">
+            <summary class="tm-head">
+                <h2 class="cat-title" style="margin:0"><i class="fa-solid fa-chevron-right x-chevron"></i> <i class="fa-solid fa-box-archive category-icon-fa"></i> Deine Kiste
+                    ${meineKiste.length ? `<span class="x-count">${meineKiste.length}</span>` : ''}
+                    <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('kisten')" title="Hilfe zu den Kisten"></i></h2>
+            </summary>
+            <p class="ir-hint">Dein privates Fach an Bord - nur du und der SL sehen den Inhalt. Plätze: ${meineKiste.length} / ${meineKisteKapazitaet}.</p>
+            <div class="tm-list">${meineKisteKarten}</div>
+            ${eigene.length ? `
+            <div class="tm-ablegen">
+                <select id="kiste-ablegen-select" class="x-select tm-select"><option value="">Eigenes in die Kiste legen …</option>${eigene.join('')}</select>
+                <button class="tool-btn" onclick="kisteAblegen()" title="Aus deinem Rasterinventar in die Kiste legen"><i class="fa-solid fa-arrow-up-from-bracket"></i> Ablegen</button>
+            </div>` : ''}
         </details>`;
 
-    const details = section.querySelector('details');
-    if (details) details.addEventListener('toggle', () => { schiffOffenSpieler = details.open; });
+    const alleDetails = section.querySelectorAll('details');
+    if (alleDetails[0]) alleDetails[0].addEventListener('toggle', () => { schiffOffenSpieler = alleDetails[0].open; });
+    if (alleDetails[1]) alleDetails[1].addEventListener('toggle', () => { kisteOffenSpieler = alleDetails[1].open; });
     section.querySelectorAll('[data-schiffnehmen]').forEach(b => b.addEventListener('click', () => schiffNehmen(b.dataset.schiffnehmen)));
+    section.querySelectorAll('[data-kistenehmen]').forEach(b => b.addEventListener('click', () => kisteNehmen(b.dataset.kistenehmen)));
 }
 
 // Beim Spieler eintreffende Nachrichten (aus multiplayer.js). true = verarbeitet.
@@ -454,6 +745,9 @@ function schiffNachrichtVerarbeiten(payload) {
     if (payload.type === 'schiff') { schiffEmpfangen(payload.klasse, payload.items); return true; }
     if (payload.type === 'schiffGeben') { schiffGeschenkEmpfangen(payload.item); return true; }
     if (payload.type === 'schiffAbgelehnt') { schiffAbgelehnt(payload.itemId, payload.grund); return true; }
+    if (payload.type === 'kiste') { kisteEmpfangen(payload.items, payload.kapazitaet); return true; }
+    if (payload.type === 'kisteGeben') { kisteGeschenkEmpfangen(payload.item); return true; }
+    if (payload.type === 'kisteAbgelehnt') { kisteAbgelehnt(payload.itemId, payload.grund); return true; }
     return false;
 }
 
@@ -461,6 +755,9 @@ function schiffBeitritt() {
     schiffSpieler = [];
     schiffOffenSpieler = false;
     Object.keys(schiffAnfragen).forEach(k => delete schiffAnfragen[k]);
+    meineKiste = [];
+    kisteOffenSpieler = false;
+    Object.keys(kistenAnfragen).forEach(k => delete kistenAnfragen[k]);
     renderSchiffSpieler();
 }
 
@@ -468,6 +765,9 @@ function schiffGetrennt() {
     schiffSpieler = [];
     schiffOffenSpieler = false;
     Object.keys(schiffAnfragen).forEach(k => delete schiffAnfragen[k]);
+    meineKiste = [];
+    kisteOffenSpieler = false;
+    Object.keys(kistenAnfragen).forEach(k => delete kistenAnfragen[k]);
     renderSchiffSpieler();
 }
 

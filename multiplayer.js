@@ -277,6 +277,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             if (typeof gruppeAnVerbindung === 'function') gruppeAnVerbindung(conn);
             if (typeof questeAnVerbindung === 'function') questeAnVerbindung(conn);
             if (typeof schiffAnVerbindung === 'function') schiffAnVerbindung(conn);
+            if (typeof kisteAnVerbindung === 'function') kisteAnVerbindung(conn);
             if (typeof skAnVerbindung === 'function') skAnVerbindung(conn);
             if (typeof karteAnVerbindung === 'function') karteAnVerbindung(conn);
             if (typeof kampfAnVerbindung === 'function') kampfAnVerbindung(conn);
@@ -404,6 +405,7 @@ function handleIncomingData(peerId, payload) {
     if (typeof tischmitteAnfrageVerarbeiten === 'function' && tischmitteAnfrageVerarbeiten(peerId, payload)) return;
     // Schiffs-Inventar (schiffsinventar.js): Nehmen / Ablegen
     if (typeof schiffAnfrageVerarbeiten === 'function' && schiffAnfrageVerarbeiten(peerId, payload)) return;
+    if (typeof kisteAnfrageVerarbeiten === 'function' && kisteAnfrageVerarbeiten(peerId, payload)) return;
     // Seekampf (seekampf.js): Zugvorschlag für zugewiesenes Schiff
     if (typeof skAnfrageVerarbeiten === 'function' && skAnfrageVerarbeiten(peerId, payload)) return;
     // Karte (karten.js): Zugvorschlag für die eigene Spieler-Figur
