@@ -6,8 +6,16 @@
 // komplett lokal beim SL, geht nie an Spieler raus - anders als die Tischmitte
 // gibt es hier auch kein "Aufdecken", das wäre hier gar nicht der Punkt.
 //
-// Eintrag: { id, name, ort, rolle, haltung, auffaelligkeit, motivation, wesen, notiz }
+// Eintrag: { id, name, ort, rolle, haltung, auffaelligkeit, motivation, wesen, notiz, bild }
 // notiz ist frei editierbar - der Platz für "wie es mit dem NSC weiterging".
+// bild (optional, Data-URL) ist das Karten-Icon dieses NSCs - wird beim
+// Platzieren (karten.js: karteNsPlatzieren) als Kartentoken-Porträt gesetzt
+// UND auf jeden bereits platzierten Token automatisch nachgezogen, sobald es
+// sich ändert (karteNscBilderAnwenden) - battlemap.js hält Porträts bewusst
+// außerhalb seines eigenen synchronisierten Zustands (siehe dort), die
+// Quelle der Wahrheit ist hier in der NSC-Liste. Bleibt (wie der Rest der
+// Liste) rein SL-seitig - Spieler sehen weiterhin nur Name/Farbe ihrer
+// Kartentoken, keine NSC-Bilder.
 
 const NSC_LISTE_KEY = 'htbah_gm_nscliste';
 const NSC_LISTE_OFFEN_KEY = 'htbah_gm_nscliste_offen';
@@ -47,7 +55,8 @@ function nscListeHinzufuegen(vorlage) {
         auffaelligkeit: String((vorlage && vorlage.auffaelligkeit) || '').slice(0, 300),
         motivation: String((vorlage && vorlage.motivation) || '').slice(0, 300),
         wesen: String((vorlage && vorlage.wesen) || '').slice(0, 300),
-        notiz: String((vorlage && vorlage.notiz) || '').slice(0, 2000)
+        notiz: String((vorlage && vorlage.notiz) || '').slice(0, 2000),
+        bild: (vorlage && vorlage.bild) || null
     };
     nscListe = [eintrag].concat(nscListe);
     nscListeSichern();
@@ -68,6 +77,56 @@ function nscListeFeldAendern(id, feld, wert) {
     if (!eintrag) return;
     eintrag[feld] = wert;
     nscListeSichern();
+}
+
+// Karten-Icon setzen - verkleinert über battlemap.js' eigenes bildVerkleinern
+// (kompakte 240px-Kante statt der 1800px eines Kartenhintergrunds, das hier
+// landet ja nur als kleines Kreis-Token, siehe karteNscBilderAnwenden).
+function nscListeBildHochladen(id, ereignis) {
+    const datei = ereignis.target.files && ereignis.target.files[0];
+    if (!datei || typeof BattleMap === 'undefined') return;
+    BattleMap.bildVerkleinern(datei, 240, 0.75).then(res => {
+        const eintrag = nscListe.find(n => n.id === id);
+        if (!eintrag) return;
+        eintrag.bild = res.dataUrl;
+        nscListeSichern();
+        renderNscListeGm();
+        if (typeof karteNscBilderAnwenden === 'function') karteNscBilderAnwenden();
+    }).catch(() => { alert('Bild konnte nicht geladen werden.'); });
+    ereignis.target.value = '';
+}
+
+function nscListeBildEntfernen(id) {
+    const eintrag = nscListe.find(n => n.id === id);
+    if (!eintrag) return;
+    eintrag.bild = null;
+    nscListeSichern();
+    renderNscListeGm();
+    if (typeof karteNscBilderAnwenden === 'function') karteNscBilderAnwenden();
+}
+
+// Klont einen NSC mit fortlaufender Nummer im Namen - für Gruppen identischer
+// Gegner ("Wache", "Wache 2", "Wache 3", ...). Zählt über ALLE Einträge mit
+// demselben Namensstamm (nicht nur den gerade geklickten), damit auch
+// wiederholtes Duplizieren derselben oder einer bereits nummerierten Kopie
+// sauber weiterzählt, statt Nummern zu wiederholen.
+function nscListeDuplizieren(id) {
+    const original = nscListe.find(n => n.id === id);
+    if (!original) return;
+    const stamm = (original.name.match(/^(.*?)\s+\d+$/) || [null, original.name])[1].trim() || original.name;
+    const stammEscaped = stamm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const vorhandeneNummern = nscListe
+        .map(n => (n.name.match(new RegExp('^' + stammEscaped + '\\s+(\\d+)$')) || [])[1])
+        .filter(Boolean)
+        .map(Number);
+    const naechsteNummer = (vorhandeneNummern.length ? Math.max(...vorhandeneNummern) : 1) + 1;
+    const kopie = JSON.parse(JSON.stringify(original));
+    kopie.id = nscNeueId();
+    kopie.name = `${stamm} ${naechsteNummer}`;
+    nscListe = [kopie].concat(nscListe);
+    nscListeSichern();
+    nscListeOffen = true;
+    renderNscListeGm();
 }
 
 function nscListeManuellHinzufuegen() {
@@ -115,11 +174,17 @@ function renderNscListeGm() {
         return `
         <div class="nsc-item">
             <div class="nsc-item-kopf">
+                <label style="cursor:pointer; display:inline-flex;" title="Karten-Icon hochladen (wird auf platzierten Kartentoken übernommen)">
+                    ${n.bild ? `<img class="gr-bild" src="${n.bild}" alt="">` : `<span class="gr-bild gr-bild-leer"><i class="fa-solid fa-image"></i></span>`}
+                    <input type="file" accept="image/*" style="display:none" data-nscbild="${escapeHtml(n.id)}">
+                </label>
+                ${n.bild ? `<button class="x-mini" data-nscbildweg="${escapeHtml(n.id)}" title="Icon entfernen"><i class="fa-solid fa-xmark"></i></button>` : ''}
                 <span class="nsc-name">${escapeHtml(n.name)}</span>
                 ${n.ort ? `<span class="nsc-badge"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(n.ort)}</span>` : ''}
                 ${n.rolle ? `<span class="nsc-badge">${escapeHtml(n.rolle)}</span>` : ''}
                 ${n.haltung ? `<span class="status-badge ${ton}">${escapeHtml(n.haltung)}</span>` : ''}
                 ${typeof karteNsPlatzieren === 'function' && typeof eldaraAktiv === 'function' && eldaraAktiv() ? `<button class="x-mini" data-nsckarte="${escapeHtml(n.id)}" title="Auf Karte platzieren"><i class="fa-solid fa-map-location-dot"></i></button>` : ''}
+                <button class="x-mini" data-nscdup="${escapeHtml(n.id)}" title="Duplizieren (z.B. Wache 2, Wache 3, ...)"><i class="fa-solid fa-copy"></i></button>
                 <button class="x-mini x-mini-danger" data-nscdel="${escapeHtml(n.id)}" title="NSC entfernen"><i class="fa-solid fa-trash"></i></button>
             </div>
             ${details ? `<div class="nsc-item-details">${details}</div>` : ''}
@@ -164,6 +229,9 @@ function renderNscListeGm() {
         renderNscListeGm();
     });
     box.querySelectorAll('[data-nscdel]').forEach(b => b.addEventListener('click', () => nscListeEntfernen(b.dataset.nscdel)));
+    box.querySelectorAll('[data-nscdup]').forEach(b => b.addEventListener('click', () => nscListeDuplizieren(b.dataset.nscdup)));
+    box.querySelectorAll('[data-nscbild]').forEach(inp => inp.addEventListener('change', (e) => nscListeBildHochladen(inp.dataset.nscbild, e)));
+    box.querySelectorAll('[data-nscbildweg]').forEach(b => b.addEventListener('click', () => nscListeBildEntfernen(b.dataset.nscbildweg)));
     box.querySelectorAll('[data-nsckarte]').forEach(b => b.addEventListener('click', () => {
         const n = nscListe.find(x => x.id === b.dataset.nsckarte);
         if (n && typeof karteNsPlatzieren === 'function') karteNsPlatzieren(n);

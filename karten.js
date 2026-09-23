@@ -131,6 +131,7 @@ function karteSpielerFigurenAbgleichen() {
         });
     });
     karteFigurenPortraitsWiederherstellen();
+    karteNscBilderAnwenden();
 }
 
 // Vom SL entfernt: seine Karten-Figur bleibt sonst als Leiche stehen.
@@ -159,6 +160,7 @@ function karteEinhaengen(canvas) {
     karteSpielerFigurenAbgleichen();
     if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     karteFigurenPortraitsWiederherstellen();
+    karteNscBilderAnwenden();
 }
 
 function karteNeuDialog() {
@@ -192,6 +194,7 @@ function karteWechseln(id) {
     karteSpielerFigurenAbgleichen();
     if (typeof skFigurenAbgleichen === 'function') skFigurenAbgleichen();
     karteFigurenPortraitsWiederherstellen();
+    karteNscBilderAnwenden();
     karteSichern();
     karteVerteilen();
     renderKarteGm();
@@ -268,8 +271,27 @@ function karteNsPlatzieren(nsc) {
     if (karteMap.figuren.find(f => f.id === id)) { renderKarteGm(); return; }
     const pos = karteFreieSpawnPosition();
     karteMap.addFigur({ id, name: nsc.name || 'NSC', x: pos.x, y: pos.y, groesse: 1, besitzer: 'sl', farbe: '#a3342b' });
+    if (nsc.bild) karteMap.setFigurBild(id, nsc.bild);
     if (typeof addGmLogEntry === 'function') addGmLogEntry('Spielleiter', `setzt "${nsc.name || 'NSC'}" auf die Karte.`, '🗺️');
     renderKarteGm();
+}
+
+// Eigenes Icon je NSC (nscliste.js: n.bild) auf jeden schon platzierten Token
+// nachziehen - Porträts sind bewusst nicht Teil von battlemap.js' eigenem
+// Zustand (siehe setFigurBild dort), müssen also nach jedem Sync/Wechsel aus
+// der eigentlichen Quelle (der NSC-Liste) neu gesetzt werden, genau wie bei
+// Spieler-Porträts (karteFigurenPortraitsWiederherstellen) und Schiffs-Icons
+// (skFigurenAbgleichen).
+function karteNscBilderAnwenden() {
+    if (!karteMap || typeof nscListe === 'undefined') return;
+    karteMap.figuren.forEach(f => {
+        if (!f.id.startsWith('nsc:')) return;
+        const n = nscListe.find(x => x.id === f.id.slice('nsc:'.length));
+        // Auch ein entferntes Icon (n.bild null) muss durchgereicht werden -
+        // setFigurBild(id, null) löscht es aus battlemap.js' eigenem Cache,
+        // sonst bliebe ein einmal gesetztes Icon dort für immer hängen.
+        if (n) karteMap.setFigurBild(f.id, n.bild || null);
+    });
 }
 
 function karteFigurEntfernen(id) {
