@@ -102,7 +102,6 @@
             <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
             <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
             <button class="tool-btn" onclick="openWizard()" title="Charakter-Erstellungs-Assistent"><i class="fa-solid fa-hat-wizard"></i> Assistent</button>
-            <button id="btn-hausregeln" class="tool-btn" onclick="openHausregeln()" title="Hausregeln / Regelpaket der Runde"><i class="fa-solid fa-scroll"></i> Hausregeln</button>
             <button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Speichern (JSON)</button>
             <label class="tool-btn">
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
@@ -297,9 +296,6 @@
                 </div>
 
             </div>
-            <!-- Talentbaum (nur sichtbar, wenn ein Regelpaket mit Talentbaum aktiv ist - talentbaum.js) -->
-            <div id="talentbaum-section" class="talentbaum-section" style="display: none;"></div>
-
             <!-- Inventory Section -->
             <div class="inventory-section">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
@@ -482,8 +478,6 @@
     <script src="audio.js"></script>
     <script src="multiplayer.js"></script>
     <script src="app.js"></script>
-    <script src="hausregeln.js"></script>
-    <script src="talentbaum.js"></script>
     <script src="tischmitte.js"></script>
     <script src="gruppe.js"></script>
     <script src="teamwuerfel.js"></script>
@@ -523,15 +517,6 @@
             </label>
             
             <button class="tool-btn" onclick="saveDiscordSettings()" style="width: 100%; justify-content: center; background: #5865F2; border: none; padding: 0.8rem; font-size: 1rem;"><i class="fa-solid fa-floppy-disk"></i> Speichern & Testen</button>
-        </div>
-    </div>
-
-    <!-- Hausregeln / Regelpaket (hausregeln.js) -->
-    <div id="hausregeln-modal-overlay" class="help-modal-overlay" onclick="closeHausregeln()">
-        <div class="help-modal-box hausregeln-modal" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeHausregeln()"><i class="fa-solid fa-xmark"></i></button>
-            <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-scroll"></i> Hausregeln &amp; Regelpakete <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('hausregeln')" title="Hilfe zu Hausregeln"></i></h3>
-            <div id="hausregeln-body"></div>
         </div>
     </div>
 
@@ -657,13 +642,6 @@
 
             <!-- Zeile 2: Werkzeug-Gruppen -->
             <div class="gm-toolbar-row">
-
-                <!-- Gruppe: Hausregeln -->
-                <div class="gm-group">
-                    <span class="gm-group-label"><i class="fa-solid fa-scroll"></i> Regeln</span>
-                    <button class="gm-btn" onclick="openHausregeln()" title="Regelpaket der Runde wählen und an die Spieler senden"><i class="fa-solid fa-scroll"></i> Hausregeln</button>
-                    <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('hausregeln')" title="Hilfe zu Hausregeln"></i>
-                </div>
 
                 <!-- Gruppe: Darstellung -->
                 <div class="gm-group">

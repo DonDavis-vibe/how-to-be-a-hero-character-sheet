@@ -16,18 +16,6 @@
 //     aktion 'geben'          { item: { art, name, amount, damage, description } }
 //     aktion 'status'         { status: { name, value, type } }
 //     aktion 'statusWeg'      { statusId }
-//     aktion 'monsterpunkte'  { betrag } - nur relevant, wenn das aktive
-//                             Regelpaket einen Wesen-Ast im Talentbaum hat
-//                             (talentbaum.js): erhöht/senkt
-//                             appData.hausregeln.wesenWert, den "Attribut-
-//                             Grundwert" dieses Astes. Der SL vergibt ihn,
-//                             nicht der Spieler selbst.
-//     aktion 'sonderAst'      { ast } - schaltet einen der Äste aus
-//                             talentbaum.weitereAeste des aktiven Pakets als
-//                             zusätzliche Wesen-Option für einen einzelnen
-//                             Spieler frei (Sonderfall, den nicht jedes
-//                             Paket überhaupt anbietet).
-//     aktion 'sonderAstWeg'  {} - nimmt die Sonderfreigabe wieder zurück.
 //
 // Das Formular sitzt in einem Modal statt in der Spielerkarte: die Karten
 // werden bei jedem Bogen-Update neu gebaut, Eingaben darin gingen verloren.
@@ -125,43 +113,11 @@ function renderEingriff() {
             </select>
             <button class="tool-btn" onclick="eingriffStatus()"><i class="fa-solid fa-masks-theater"></i> Setzen</button>
         </div>
-        ${d.hausregeln && d.hausregeln.wesen ? `
-        <h4><i class="fa-solid fa-dragon"></i> Wesen/Monster</h4>
-        <p class="hr-hint" style="margin-top:0">Aktuell: <strong>${escapeHtml(d.hausregeln.wesen)}</strong>, Monsterpunkte <strong>${escapeHtml(d.hausregeln.wesenWert || 0)}</strong></p>
-        <div class="eg-zeile">
-            <input type="number" id="eg-mp" class="x-input eg-klein" value="1" min="-99" max="99" title="Positiv = geben, negativ = abziehen" onkeydown="if(event.key==='Enter') eingriffMonsterpunkte()">
-            <button class="tool-btn" onclick="eingriffMonsterpunkte()" title="Nur für besondere Momente gedacht: dunkle Natur erforscht, Ritual überlebt, großer Gegner bezwungen"><i class="fa-solid fa-hand-sparkles"></i> Monsterpunkte geben</button>
-        </div>` : ''}
-        ${eingriffSonderAstHtml(d)}
-
         <div id="eg-status" class="hr-hint" style="min-height:1.2rem"></div>`;
 
     const still = document.getElementById('eg-still');
     if (still) still.addEventListener('change', () => { eingriffStill = still.checked; });
     body.querySelectorAll('[data-egweg]').forEach(b => b.addEventListener('click', () => eingriffStatusWeg(b.dataset.egweg)));
-}
-
-// Seltene Zusatzoption: der SL kann einem einzelnen Spieler einen der Äste
-// aus talentbaum.weitereAeste des aktiven Pakets als zusätzliche Wesen-Option
-// freischalten. Nur sichtbar, wenn das aktive Paket überhaupt solche
-// "weiteren Äste" definiert.
-function eingriffSonderAstHtml(d) {
-    const paket = typeof aktivesPaket === 'function' ? aktivesPaket() : null;
-    const weitere = paket && paket.talentbaum && Array.isArray(paket.talentbaum.weitereAeste) ? paket.talentbaum.weitereAeste : [];
-    if (!weitere.length) return '';
-    const aktuell = d.hausregeln && d.hausregeln.sonderAst;
-    return `
-        <h4><i class="fa-solid fa-unlock"></i> Sonderfreigabe: Talentbaum</h4>
-        <p class="hr-hint" style="margin-top:0">Schaltet einen zusätzlichen Talentbaum als weitere Wesen-Option frei - für den Ausnahmefall, den das aktive Regelpaket dafür vorsieht.</p>
-        ${aktuell ? `<p class="hr-hint">Aktuell freigeschaltet: <strong>${escapeHtml(aktuell)}</strong>
-            <button class="x-mini x-mini-danger" onclick="eingriffSonderAstWeg()" title="Freigabe zurücknehmen">✕</button></p>` : ''}
-        <div class="eg-zeile">
-            <select id="eg-sonderast" class="x-select">
-                <option value="">– Talentbaum wählen –</option>
-                ${weitere.map(a => `<option value="${escapeHtml(a)}" ${a === aktuell ? 'selected' : ''}>${escapeHtml(a)}</option>`).join('')}
-            </select>
-            <button class="tool-btn" onclick="eingriffSonderAst()"><i class="fa-solid fa-unlock"></i> Freischalten</button>
-        </div>`;
 }
 
 function eingriffSenden(nachricht) {
@@ -213,29 +169,6 @@ function eingriffStatus() {
     eingriffMeldung(`✓ Status "${name}" gesetzt${eingriffStill ? ' – verdeckt' : ''}.`);
     if (nameEl) { nameEl.value = ''; nameEl.focus(); }
     const wert = document.getElementById('eg-st-wert'); if (wert) wert.value = '';
-}
-
-function eingriffMonsterpunkte() {
-    const betrag = parseInt((document.getElementById('eg-mp') || {}).value) || 0;
-    if (!betrag) return;
-    if (!eingriffSenden({ aktion: 'monsterpunkte', betrag })) return;
-    if (typeof addGmLogEntry === 'function') addGmLogEntry('Spielleiter', `gibt ${betrag > 0 ? '+' : ''}${betrag} Monsterpunkte an ${eingriffSpielerName()}${eingriffStill ? ' (verdeckt)' : ''}.`, eingriffStill ? '🤫' : '🐉');
-    eingriffMeldung(`✓ ${betrag > 0 ? '+' : ''}${betrag} Monsterpunkte geschickt${eingriffStill ? ' – verdeckt' : ''}.`);
-}
-
-function eingriffSonderAst() {
-    const sel = document.getElementById('eg-sonderast');
-    const ast = sel ? sel.value : '';
-    if (!ast) { if (sel) sel.focus(); return; }
-    if (!eingriffSenden({ aktion: 'sonderAst', ast })) return;
-    if (typeof addGmLogEntry === 'function') addGmLogEntry('Spielleiter', `schaltet den Talentbaum "${ast}" als Sonderfreigabe für ${eingriffSpielerName()} frei${eingriffStill ? ' (verdeckt)' : ''}.`, eingriffStill ? '🤫' : '🔓');
-    eingriffMeldung(`✓ "${ast}" freigeschaltet${eingriffStill ? ' – verdeckt' : ''}.`);
-}
-
-function eingriffSonderAstWeg() {
-    if (!eingriffSenden({ aktion: 'sonderAstWeg' })) return;
-    if (typeof addGmLogEntry === 'function') addGmLogEntry('Spielleiter', `nimmt die Sonderfreigabe bei ${eingriffSpielerName()} zurück${eingriffStill ? ' (verdeckt)' : ''}.`, eingriffStill ? '🤫' : '🔒');
-    eingriffMeldung(`✓ Freigabe zurückgenommen${eingriffStill ? ' – verdeckt' : ''}.`);
 }
 
 function eingriffStatusWeg(statusId) {
@@ -293,32 +226,6 @@ function eingriffEmpfangen(payload) {
         if (!st) return;
         appData.statuses = appData.statuses.filter(s => s.id !== payload.statusId);
         log(`Status entfernt: ${st.name} (vom Spielleiter)`, 'activity-neutral', '<i class="fa-solid fa-heart-circle-check"></i>');
-    } else if (payload.aktion === 'monsterpunkte') {
-        // Der Wesen-Ast (talentbaum.js) wird nicht erspielt, sondern vom SL
-        // direkt vergeben.
-        if (!appData.hausregeln || typeof appData.hausregeln !== 'object') appData.hausregeln = {};
-        const betrag = parseInt(payload.betrag) || 0;
-        const vorher = Math.max(0, parseInt(appData.hausregeln.wesenWert) || 0);
-        appData.hausregeln.wesenWert = Math.max(0, Math.min(99, vorher + betrag));
-        log(`Monsterpunkte ${betrag >= 0 ? '+' : ''}${betrag} (jetzt ${appData.hausregeln.wesenWert}) (vom Spielleiter)`, betrag >= 0 ? 'activity-good' : 'activity-bad', '<i class="fa-solid fa-dragon"></i>');
-        if (typeof renderTalentbaum === 'function') renderTalentbaum();
-    } else if (payload.aktion === 'sonderAst' && payload.ast) {
-        // SL schaltet einen Ast aus talentbaum.weitereAeste als zusätzliche
-        // Wesen-Option frei (siehe talentbaum.js).
-        if (!appData.hausregeln || typeof appData.hausregeln !== 'object') appData.hausregeln = {};
-        appData.hausregeln.sonderAst = String(payload.ast).slice(0, 60);
-        log(`Sonderfreigabe: Talentbaum "${appData.hausregeln.sonderAst}" freigeschaltet (vom Spielleiter)`, 'activity-good', '<i class="fa-solid fa-unlock"></i>');
-        if (typeof renderTalentbaum === 'function') renderTalentbaum();
-    } else if (payload.aktion === 'sonderAstWeg') {
-        if (appData.hausregeln) {
-            const alt = appData.hausregeln.sonderAst;
-            appData.hausregeln.sonderAst = null;
-            // War der zurückgenommene Sonderbaum bereits als Wesen gewählt, geht
-            // die Auswahl sonst ins Leere - zurücksetzen.
-            if (alt && appData.hausregeln.wesen === alt) appData.hausregeln.wesen = null;
-        }
-        log(`Sonderfreigabe entfernt (vom Spielleiter)`, 'activity-neutral', '<i class="fa-solid fa-lock"></i>');
-        if (typeof renderTalentbaum === 'function') renderTalentbaum();
     } else {
         return;
     }

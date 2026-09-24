@@ -257,10 +257,6 @@ function hostMultiplayerSession(preferredCodeArg) {
             delete connectedPlayersData[conn.peer];
             renderGmDashboard();
             if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
-            if (typeof renderSchiffGm === 'function') renderSchiffGm();
-            if (typeof renderSeekampfGm === 'function') renderSeekampfGm();
-            if (typeof renderKampfGm === 'function') renderKampfGm();
-            if (typeof karteSpielerEntfernen === 'function') karteSpielerEntfernen(conn.peer);
             if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
             if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(conn.peer);
             if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
@@ -269,18 +265,10 @@ function hostMultiplayerSession(preferredCodeArg) {
         
         clientConnections[conn.peer] = conn;
 
-        // Hausregeln der Runde (hausregeln.js) gehen automatisch an jeden, der
-        // beitritt - so muss der SL sie nicht jedes Mal von Hand verteilen.
         const begruessen = () => {
-            if (typeof hausregelnAnVerbindung === 'function') hausregelnAnVerbindung(conn);
             if (typeof tischmitteAnVerbindung === 'function') tischmitteAnVerbindung(conn);
             if (typeof gruppeAnVerbindung === 'function') gruppeAnVerbindung(conn);
             if (typeof questeAnVerbindung === 'function') questeAnVerbindung(conn);
-            if (typeof schiffAnVerbindung === 'function') schiffAnVerbindung(conn);
-            if (typeof kisteAnVerbindung === 'function') kisteAnVerbindung(conn);
-            if (typeof skAnVerbindung === 'function') skAnVerbindung(conn);
-            if (typeof karteAnVerbindung === 'function') karteAnVerbindung(conn);
-            if (typeof kampfAnVerbindung === 'function') kampfAnVerbindung(conn);
         };
         if (conn.open) begruessen();
         else conn.on('open', begruessen);
@@ -403,22 +391,11 @@ function exitGmMode() {
 function handleIncomingData(peerId, payload) {
     // Tischmitte (tischmitte.js): Nehmen / Ablegen
     if (typeof tischmitteAnfrageVerarbeiten === 'function' && tischmitteAnfrageVerarbeiten(peerId, payload)) return;
-    // Schiffs-Inventar (schiffsinventar.js): Nehmen / Ablegen
-    if (typeof schiffAnfrageVerarbeiten === 'function' && schiffAnfrageVerarbeiten(peerId, payload)) return;
-    if (typeof kisteAnfrageVerarbeiten === 'function' && kisteAnfrageVerarbeiten(peerId, payload)) return;
-    // Seekampf (seekampf.js): Zugvorschlag für zugewiesenes Schiff
-    if (typeof skAnfrageVerarbeiten === 'function' && skAnfrageVerarbeiten(peerId, payload)) return;
-    // Karte (karten.js): Zugvorschlag für die eigene Spieler-Figur
-    if (typeof karteAnfrageVerarbeiten === 'function' && karteAnfrageVerarbeiten(peerId, payload)) return;
     if (payload.type === 'state') {
         const neuerSpieler = !connectedPlayersData[peerId];
         connectedPlayersData[peerId] = payload.data;
         renderGmDashboard();
         if (neuerSpieler && typeof renderTischmitteGm === 'function') renderTischmitteGm();
-        if (typeof renderSchiffGm === 'function') renderSchiffGm();
-        if (neuerSpieler && typeof renderSeekampfGm === 'function') renderSeekampfGm();
-        if (neuerSpieler && typeof renderKarteGm === 'function') renderKarteGm();
-        if (neuerSpieler && typeof renderKampfGm === 'function') renderKampfGm();
         if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
         if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(peerId);
     } else if (payload.type === 'log') {
@@ -615,14 +592,6 @@ function renderGmDashboard() {
         // Vorher stand hier fest 400, was bei Runden mit abweichendem Budget bei
         // jedem Spieler eine falsche Cheat-Warnung ausgelöst hat.
         let maxPoints = parseInt(pData.maxPoints) || 400;
-        // Mit Hausregel-Kostenstaffel (hausregeln.js) zählt fürs Budget, was die
-        // Punkte gekostet haben - sonst würde jeder Spieler mit aktivem Regelpaket
-        // fälschlich als Cheater gelten.
-        if (typeof hausregelnBudget === 'function' && hausregelnBudget() && pData.hausregeln && pData.hausregeln.paket === hausregeln.paketId) {
-            maxPoints = hausregelnBudget();
-            totalPoints = ['handeln', 'wissen', 'soziales'].reduce((sum, cat) =>
-                sum + (pData[`skills_${cat}`] || []).reduce((n, s) => n + hausregelnTalentKosten(parseInt(s.invested) || 0), 0), 0);
-        }
         let ptsColor = totalPoints > maxPoints ? '#ed4245' : '#9ca3af';
         
         // Status effects
@@ -643,12 +612,8 @@ function renderGmDashboard() {
         const currencyName = (pData.currency && pData.currency.name) ? pData.currency.name : 'Credits';
         const currencyAmount = (pData.currency && pData.currency.amount !== undefined) ? pData.currency.amount : 0;
         
-        // Talentbaum aus der Hausregel-Erweiterung (talentbaum.js), falls der Spieler einen hat
-        const talentbaumHtml = typeof talentbaumDashboardHtml === 'function' ? talentbaumDashboardHtml(pData) : '';
-
         // Check open states
         const skillsOpen = openStates[`${peerId}_skills`] ? 'open' : '';
-        const tbOpen = openStates[`${peerId}_talentbaum`] ? 'open' : '';
         const invOpen = openStates[`${peerId}_inventory`] ? 'open' : '';
         const wpnOpen = openStates[`${peerId}_weapons`] ? 'open' : '';
 
@@ -709,13 +674,7 @@ function renderGmDashboard() {
                     ${skillsHtml || '<i>Keine Skills</i>'}
                 </div>
             </details>
-            
-            ${talentbaumHtml ? `
-            <details data-peer-id="${escapeHtml(peerId)}" data-details-type="talentbaum" ${tbOpen} style="background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
-                <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-diagram-project" style="color: #fbbf24;"></i> Talentbaum</summary>
-                <div style="margin-top: 0.5rem;">${talentbaumHtml}</div>
-            </details>` : ''}
-            
+
             <div style="display: flex; gap: 0.5rem;">
                 <details data-peer-id="${escapeHtml(peerId)}" data-details-type="inventory" ${invOpen} style="flex: 1; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px;">
                     <summary style="cursor: pointer; font-weight: bold; font-size: 0.9rem; outline: none;"><i class="fa-solid fa-box-open" style="color: #fbbf24;"></i> Inventar</summary>
@@ -945,9 +904,6 @@ function joinMultiplayerSession(codeArg) {
             if (typeof renderGruppe === 'function') renderGruppe();
             if (typeof teamwuerfelBeitritt === 'function') teamwuerfelBeitritt();
             if (typeof questeBeitritt === 'function') questeBeitritt();
-            if (typeof schiffBeitritt === 'function') schiffBeitritt();
-            if (typeof skSpielerBeitritt === 'function') skSpielerBeitritt();
-            if (typeof karteSpielerBeitritt === 'function') karteSpielerBeitritt();
         });
 
         hostConnection.on('close', () => {
@@ -957,10 +913,6 @@ function joinMultiplayerSession(codeArg) {
             if (typeof gruppeGetrennt === 'function') gruppeGetrennt();
             if (typeof teamwuerfelGetrennt === 'function') teamwuerfelGetrennt();
             if (typeof questeGetrennt === 'function') questeGetrennt();
-            if (typeof schiffGetrennt === 'function') schiffGetrennt();
-            if (typeof skSpielerGetrennt === 'function') skSpielerGetrennt();
-            if (typeof karteSpielerGetrennt === 'function') karteSpielerGetrennt();
-            if (typeof kampfSpielerGetrennt === 'function') kampfSpielerGetrennt();
             alert("Die Verbindung zum Spielleiter wurde getrennt.");
         });
         
@@ -992,16 +944,6 @@ function joinMultiplayerSession(codeArg) {
                 // erledigt in eingriff.js
             } else if (payload && typeof questeNachrichtVerarbeiten === 'function' && questeNachrichtVerarbeiten(payload)) {
                 // erledigt in quests.js
-            } else if (payload && typeof schiffNachrichtVerarbeiten === 'function' && schiffNachrichtVerarbeiten(payload)) {
-                // erledigt in schiffsinventar.js
-            } else if (payload && typeof skNachrichtVerarbeiten === 'function' && skNachrichtVerarbeiten(payload)) {
-                // erledigt in seekampf.js
-            } else if (payload && typeof karteNachrichtVerarbeiten === 'function' && karteNachrichtVerarbeiten(payload)) {
-                // erledigt in karten.js
-            } else if (payload && typeof kampfNachrichtVerarbeiten === 'function' && kampfNachrichtVerarbeiten(payload)) {
-                // erledigt in kampf.js
-            } else if (payload && payload.type === 'hausregeln') {
-                if (typeof hausregelnEmpfangen === 'function') hausregelnEmpfangen(payload.regeln);
             } else if (payload && payload.type === 'customSound') {
                 // Privater Sound des SL, kommt direkt per WebRTC an - existiert nur für die
                 // Dauer der Wiedergabe im Speicher, wird nirgends gespeichert oder veröffentlicht.
@@ -1185,10 +1127,8 @@ function importGmNotes(event) {
 
 // --- SL-Sitzung sichern/laden ------------------------------------------------
 //
-// Karten (karten.js), Seekampf (seekampf.js), Kampf (kampf.js), NSC-Liste
-// (nscliste.js), Tischmitte (tischmitte.js), Schiffs-Inventar
-// (schiffsinventar.js), Quest-Log (quests.js) und die Regelpaket-Wahl
-// (hausregeln.js) liegen bislang jeder für sich in localStorage und
+// NSC-Liste (nscliste.js), Tischmitte (tischmitte.js) und Quest-Log
+// (quests.js) liegen bislang jeder für sich in localStorage und
 // persistieren dadurch schon automatisch - "an einem anderen Abend nahtlos
 // weiterspielen" funktioniert also im selben Browser bereits ohne Zutun.
 // Diese Funktionen sind der explizite Sicherungsweg obendrauf: eine Datei,
@@ -1199,7 +1139,6 @@ function importGmNotes(event) {
 // Archiv (showGmNotesArchive unten), das dafür schon eine eigene, feinere
 // Lösung hat.
 const GM_SITZUNG_KEYS = [
-    'htbah_hausregeln',
     'htbah_gm_nscliste', 'htbah_gm_nscliste_offen', 'htbah_gm_nscliste_sortierung',
     'htbah_gm_tischmitte', 'htbah_gm_tischmitte_offen',
     'htbah_gm_queste', 'htbah_gm_queste_offen',
@@ -1241,7 +1180,7 @@ function importGmSession(event) {
                 alert('Das ist keine gültige HTBAH-SL-Sitzungsdatei.');
                 return;
             }
-            if (!confirm('Aktuelle SL-Daten in diesem Browser (Karten, Seekampf, Kampf, NSC-Liste, Tischmitte, Schiff, Quests, Regelpaket) werden durch die Datei ersetzt. Fortfahren?')) return;
+            if (!confirm('Aktuelle SL-Daten in diesem Browser (NSC-Liste, Tischmitte, Quests) werden durch die Datei ersetzt. Fortfahren?')) return;
             GM_SITZUNG_KEYS.forEach(k => {
                 if (Object.prototype.hasOwnProperty.call(bundle.daten, k)) sicherSpeichern(k, bundle.daten[k]);
                 else localStorage.removeItem(k);

@@ -83,19 +83,6 @@ Wir haben großen Wert darauf gelegt, die Mechaniken so exakt wie möglich nach 
 
 ---
 
-## 📜 Hausregeln & Regelpakete (Vorbereitung)
-Viele Runden spielen HTBAH mit eigenen Erweiterungen. Über den Button **Hausregeln** (Bogen und GM-Dashboard) lässt sich ein **Regelpaket** aktivieren, das der Spielleiter per Live-Sync an alle Spieler verteilt. Ohne Paket rechnet der Bogen exakt wie bisher.
-
-Ein Paket kann mitbringen:
-* **Feste Talentliste** mit Beschreibungen (per Klick auf den Bogen übernehmen, bestehende Punkte bleiben).
-* **Progressive Talentkosten** und ein eigenes Punktebudget - „Verteilte Punkte“ zeigt dann die Kosten.
-* **Talentbaum**: Hauptbäume + Wesen wählen, Skills mit Rang- und Skillpunkten lernen, die aus den Talentwerten entstehen; gelernte Skills im Kampf abhaken und ihren Schaden direkt würfeln.
-* **Wesen-Effekte** (Boni/Mali) und **Würfeltabellen** (Kochen, Zechen, Orakel ...).
-
-HeroHQ selbst bringt kein eigenes Regelpaket mit. Eigene Pakete lassen sich als JSON laden; das Format steht in [DATA_FORMAT.md](DATA_FORMAT.md).
-
----
-
 ## 🎨 13 Epische Themes
 Wechsle das Design deines Charakterbogens passend zur Kampagne. Alle Themes verändern das Layout, die Farben, die Icons und bringen coole, performance-freundliche CSS/JS-Animationen mit (welche man für schwächere Geräte auch per Klick auf den 🚀 ausschalten kann):
 

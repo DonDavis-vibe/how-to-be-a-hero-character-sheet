@@ -1,9 +1,8 @@
 // How to be a Hero - Sicheres localStorage (Warnung statt stillem Datenverlust)
 //
-// Fast jedes Feature-Modul (Karte, Seekampf, Kampf, NSC-Liste, Schiffs-
-// Inventar, Hausregeln, Quest-Log, Tischmitte, SL-Notizen, ...) speichert
-// seinen eigenen Stand direkt in localStorage. Bisher hat jedes das für sich
-// in einem try/catch verschluckt ("voll oder blockiert") - das Problem
+// Fast jedes Feature-Modul (NSC-Liste, Quest-Log, Tischmitte, SL-Notizen,
+// ...) speichert seinen eigenen Stand direkt in localStorage. Bisher hat
+// jedes das für sich in einem try/catch verschluckt ("voll oder blockiert") - das Problem
 // dabei: der SL bekommt NICHTS davon mit. Schlägt localStorage fehl (voller
 // Speicher durch große Kartenbilder/Porträts, privates Browserfenster,
 // "Cookies blockieren" o.ä. Privatsphäre-Einstellung, Speicher vom Browser

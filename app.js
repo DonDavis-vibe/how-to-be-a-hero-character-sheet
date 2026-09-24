@@ -116,8 +116,6 @@ function renderAll() {
     renderActivityLog();
     // Mein Logbuch (spielerlog.js) - eigenes Tagebuch des Spielers
     if (typeof renderSpielerlog === 'function') renderSpielerlog();
-    // Hausregel-Erweiterung (talentbaum.js) - zeigt sich nur mit aktivem Regelpaket
-    if (typeof renderTalentbaum === 'function') renderTalentbaum();
     // Tischmitte (tischmitte.js) - nur als verbundener Spieler; Inventar-Auswahl fürs Ablegen aktuell halten
     if (typeof renderTischmitteSpieler === 'function') renderTischmitteSpieler();
     if (appData.currency) {
@@ -251,10 +249,6 @@ function renderSkills(attr) {
 
     const skills = appData[`skills_${attr}`];
     const attrVal = parseInt(appData[`attr_${attr}`]) || 0;
-    // Hausregel-Paket mit fester Talentliste (siehe hausregeln.js) ersetzt
-    // die freie Texteingabe durch ein Dropdown - Regelwerk pur bleibt exakt
-    // wie bisher.
-    const talentliste = typeof hausregelnFesteTalentliste === 'function' ? hausregelnFesteTalentliste(attr) : null;
 
     skills.forEach((skill, index) => {
         const item = document.createElement('div');
@@ -263,26 +257,18 @@ function renderSkills(attr) {
         const nameInput = document.createElement('div');
         nameInput.className = 'skill-name-input';
         nameInput.textContent = skill.name || '';
-        // Talente aus einem Regelpaket (hausregeln.js) bringen eine Beschreibung mit
-        if (skill.beschreibung) nameInput.title = skill.beschreibung;
-        if (talentliste) {
-            // Feste Talentliste aktiv: Name kommt aus dem Dropdown beim Anlegen
-            // (siehe renderSkillAddControl), nicht mehr frei eintippbar.
-            nameInput.classList.add('skill-name-fixed');
-        } else {
-            nameInput.contentEditable = true;
-            nameInput.setAttribute('placeholder', 'Skill Name');
-            nameInput.oninput = (e) => {
-                skill.name = e.target.textContent;
-                saveData();
-            };
-            nameInput.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    nameInput.blur();
-                }
-            };
-        }
+        nameInput.contentEditable = true;
+        nameInput.setAttribute('placeholder', 'Skill Name');
+        nameInput.oninput = (e) => {
+            skill.name = e.target.textContent;
+            saveData();
+        };
+        nameInput.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                nameInput.blur();
+            }
+        };
 
         const totalSpan = document.createElement('span');
         totalSpan.className = 'skill-total skill-val clickable';
@@ -374,66 +360,12 @@ function renderSkills(attr) {
         controlsRow.appendChild(plusBtn);
         controlsRow.appendChild(bonusToggleBtn);
         controlsRow.appendChild(totalSpan);
-        // Sondertabelle des Regelpakets (z.B. Kochen, Zechen) direkt am Talent würfeln
-        if (skill.tabelle && typeof hausregelnTabellen === 'function' && hausregelnTabellen()[skill.tabelle]) {
-            const tabBtn = document.createElement('button');
-            tabBtn.className = 'btn-skill-tabelle';
-            tabBtn.innerHTML = '<i class="fa-solid fa-table-list"></i>';
-            tabBtn.title = `Sondertabelle "${hausregelnTabellen()[skill.tabelle].name}" würfeln`;
-            tabBtn.onclick = () => hausregelnTabelleWuerfeln(skill.tabelle);
-            controlsRow.appendChild(tabBtn);
-        }
         controlsRow.appendChild(delBtn);
 
         item.appendChild(nameInput);
         item.appendChild(controlsRow);
         listEl.appendChild(item);
     });
-
-    renderSkillAddControl(attr, talentliste);
-}
-
-// Ersetzt bei fester Talentliste den "+ Skill"-Button durch ein Dropdown mit
-// den noch nicht auf dem Bogen stehenden Paket-Talenten; ohne Talentliste
-// (oder wenn schon alle drauf sind) bleibt/verschwindet einfach der Button.
-function renderSkillAddControl(attr, talentliste) {
-    const btn = document.getElementById(`add-skill-btn-${attr}`);
-    const alteSelect = document.getElementById(`add-skill-select-${attr}`);
-    if (alteSelect) alteSelect.remove();
-    if (!btn) return;
-
-    if (!talentliste) {
-        btn.style.display = '';
-        return;
-    }
-
-    const vorhanden = (appData[`skills_${attr}`] || []).map(s => (s.name || '').trim().toLowerCase());
-    const verfuegbar = talentliste.filter(t => !vorhanden.includes(t.name.toLowerCase()));
-    btn.style.display = 'none';
-    if (!verfuegbar.length) return;
-
-    const select = document.createElement('select');
-    select.id = `add-skill-select-${attr}`;
-    select.className = 'add-skill-select';
-    select.innerHTML = '<option value="" selected disabled>+ Talent hinzufügen …</option>'
-        + verfuegbar.map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join('');
-    select.addEventListener('change', () => {
-        const t = verfuegbar.find(x => x.id === select.value);
-        if (!t) return;
-        if (!Array.isArray(appData[`skills_${attr}`])) appData[`skills_${attr}`] = [];
-        appData[`skills_${attr}`].push({
-            id: 's' + Date.now() + Math.random().toString(36).slice(2, 6),
-            name: t.name,
-            invested: 0,
-            paketTalent: t.id,
-            beschreibung: t.beschreibung || '',
-            tabelle: t.tabelle || undefined
-        });
-        saveData();
-        renderSkills(attr);
-        calculatePoints();
-    });
-    btn.insertAdjacentElement('afterend', select);
 }
 
 // Regelwerk S.8: "keine Fähigkeiten über 100 Punkte haben kann" - markiert Werte über 100 visuell.
@@ -459,18 +391,13 @@ function addSkill(attr) {
 
 function calculatePoints() {
     let totalInvested = 0;
-    // Hausregeln (hausregeln.js): Mit Kostenstaffel zählt fürs Budget nicht der
-    // Talentwert, sondern was er gekostet hat. Ohne Paket ist beides identisch.
-    let totalKosten = 0;
-    const kostenFn = typeof hausregelnTalentKosten === 'function' ? hausregelnTalentKosten : (n => n);
     ['handeln', 'wissen', 'soziales'].forEach(attr => {
         let catSum = 0;
         if (appData[`skills_${attr}`]) {
             appData[`skills_${attr}`].forEach(skill => {
                 const pts = skill.invested !== undefined ? skill.invested : (skill.value !== undefined ? skill.value : 0);
                 catSum += parseInt(pts) || 0;
-                totalKosten += kostenFn(parseInt(pts) || 0);
-                
+
                 // auto-migrate legacy data
                 if (skill.invested === undefined && skill.value !== undefined) {
                     skill.invested = parseInt(skill.value) || 0;
@@ -511,34 +438,21 @@ function calculatePoints() {
         }
     });
     
-    const hausregelBudget = typeof hausregelnBudget === 'function' ? hausregelnBudget() : undefined;
-    const max = hausregelBudget || appData.maxPoints || 400;
-    const verteilt = hausregelBudget ? totalKosten : totalInvested;
-    
+    const max = appData.maxPoints || 400;
+
     const totalEl = document.getElementById('points-total');
     const containerEl = document.getElementById('points-counter');
     if (totalEl) {
-        totalEl.textContent = verteilt;
-        totalEl.title = hausregelBudget ? `Kosten nach Hausregel-Staffel (${totalInvested} Punkte verteilt)` : '';
+        totalEl.textContent = totalInvested;
     }
-    // Das Budget kommt dann aus dem Paket - das Feld zeigt es nur noch an
-    const maxInput = document.getElementById('points-max');
-    if (maxInput) {
-        if (hausregelBudget) maxInput.value = max;
-        maxInput.readOnly = !!hausregelBudget;
-        maxInput.title = hausregelBudget ? 'Budget laut Regelpaket' : '';
-    }
-    
+
     if (containerEl) {
-        if (verteilt > max) {
+        if (totalInvested > max) {
             containerEl.classList.add('over-limit');
         } else {
             containerEl.classList.remove('over-limit');
         }
     }
-
-    // Rang-/Skillpunkte des Talentbaums entstehen aus den Talentwerten
-    if (typeof renderTalentbaum === 'function' && typeof talentbaumRegeln === 'function' && talentbaumRegeln()) renderTalentbaum();
 }
 
 function updateMaxPoints() {

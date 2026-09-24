@@ -7,14 +7,12 @@
 // Aufdecken sichtbar machen).
 //
 // Datenpakete liegen in randomizer/<id>.js und werden erst beim ersten Öffnen
-// des Panels nachgeladen (wie hausregeln.js es mit Regelpaketen macht). Ein
-// Paket ruft randomizerPaketRegistrieren({...}) auf; das Format steht in
-// DATA_FORMAT.md. Eingebaut ist:
+// des Panels nachgeladen. Ein Paket ruft randomizerPaketRegistrieren({...})
+// auf; das Format steht in DATA_FORMAT.md. Eingebaut ist:
 //   - original: setting-neutrale Namen/Orte/Items/NSC-Bausteine/Begegnungen
 //
-// Das Modul kennt hausregeln.js/talentbaum.js nicht und funktioniert unabhängig
-// davon - genau wie jedes der anderen Erweiterungsmodule für sich lauffähig ist.
-// Die einzige Berührung mit einem anderen Modul ist optional: "In Tischmitte
+// Das Modul ist für sich lauffähig und kennt kein anderes Feature-Modul. Die
+// einzige Berührung mit einem anderen Modul ist optional: "In Tischmitte
 // legen" ruft, wenn vorhanden, die Funktionen aus tischmitte.js direkt auf.
 
 const RANDOMIZER_PAKETE_EINGEBAUT = [
@@ -95,8 +93,7 @@ function randomizerPaketLaden(id, cb) {
 }
 
 // Lädt alle eingebauten Pakete auf einmal - sie sind winzig (insgesamt ~50KB),
-// anders als die Regelpakete in hausregeln.js braucht es hier kein Nachladen
-// pro Auswahl.
+// kein Nachladen pro Auswahl nötig.
 function randomizerAlleLaden(cb) {
     if (randomizerAlleGeladen) { cb(); return; }
     let offen = RANDOMIZER_PAKETE_EINGEBAUT.length;

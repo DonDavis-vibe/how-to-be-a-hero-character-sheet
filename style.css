@@ -574,24 +574,6 @@ h2 {
     content: attr(placeholder);
     color: rgba(255,255,255,0.3);
 }
-/* Talent aus einer festen Paket-Talentliste (hausregeln.js) - Name
-   kommt aus dem Dropdown und ist hier bewusst nicht mehr eintippbar. */
-.skill-item .skill-name-input.skill-name-fixed {
-    cursor: default;
-    background: rgba(15, 23, 42, 0.3);
-}
-
-.add-skill-select {
-    width: 100%; margin-top: 1rem;
-    background: rgba(255,255,255,0.05);
-    border: 1px dashed rgba(255,255,255,0.2);
-    color: var(--text-secondary);
-    padding: 0.5rem; border-radius: 8px; cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.85rem;
-}
-.add-skill-select:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
-
 .skill-item input[type="number"] {
     width: 40px;
     text-align: center;
@@ -2231,8 +2213,7 @@ body.theme-ultracore {
 
 
 /* ============================================================
-   Erweiterungen 2.0: Hausregeln, Talentbaum, Tischmitte, Gruppe
-   (hausregeln.js / talentbaum.js / tischmitte.js / gruppe.js)
+   Erweiterungen 2.0: Tischmitte, Gruppe (tischmitte.js / gruppe.js)
 
    Alles hier hängt an den Theme-Variablen (--color-accent, --glass-border,
    --text-*) und an .card-layout, damit die 13 Vibes auch die neuen Teile
@@ -2244,7 +2225,7 @@ body.theme-ultracore {
 
 /* Karten-Grundoptik wie beim Inventar (.inv-item.card-layout); die Themes
    überschreiben .card-layout mit ihrer eigenen Fläche */
-.tm-item, .gr-spieler, .tb-ast, .hr-paket-info {
+.tm-item, .gr-spieler {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -2291,114 +2272,11 @@ body.theme-ultracore {
 .x-input:focus, .x-select:focus { border-color: var(--color-accent); }
 .x-select option { background: #0f172a; color: #f8fafc; }
 
-/* Sondertabellen-Knopf am Talent (z.B. Kochen, Zechen) */
-.btn-skill-tabelle {
-    background: none; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px;
-    color: var(--color-accent); width: 22px; height: 22px; font-size: 0.65rem;
-    cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-}
-.btn-skill-tabelle:hover { border-color: var(--color-accent); }
-
-/* --- Hausregeln-Modal ----------------------------------------------------- */
-.hausregeln-modal { max-width: 640px; max-height: 90vh; overflow-y: auto; }
-.hausregeln-modal h3 { color: var(--color-accent); }
-.hausregeln-modal h4 { margin: 1.1rem 0 0.4rem; color: var(--color-accent); font-size: 0.95rem; font-weight: 600; }
+/* --- Gemeinsame Hinweis-/Checkbox-Bausteine (eingriff.js, randomizer.js) --- */
 .hr-hint { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0.3rem 0; }
 .hr-dim { color: var(--text-secondary); font-size: 0.85rem; }
-.hr-select { flex: 1; min-width: 220px; padding: 0.5rem; font-size: 0.9rem; }
-.hr-paket-info { padding: 0.7rem 0.9rem; font-size: 0.9rem; line-height: 1.5; border-radius: 8px; }
 .hr-check { display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer; padding: 0.35rem 0; font-size: 0.88rem; line-height: 1.4; }
 .hr-check input { width: 18px; height: 18px; margin-top: 0.1rem; flex-shrink: 0; cursor: pointer; }
-.hr-footer { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 1.2rem; padding-top: 0.9rem; border-top: 1px solid var(--glass-border); }
-.hr-primary { border-color: var(--color-accent) !important; }
-
-/* --- Talentbaum-Abschnitt auf dem Bogen ----------------------------------- */
-.talentbaum-section { margin-top: 2rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); }
-.talentbaum-section .cat-title { margin-bottom: 0.8rem; }
-.talentbaum-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
-.tb-kopf { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.6rem; }
-.tb-punkte { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.tb-pill {
-    font-family: var(--font-mono); font-size: 0.78rem; white-space: nowrap;
-    background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
-    padding: 0.25rem 0.6rem; border-radius: 6px; color: var(--text-primary);
-}
-.tb-pill.tb-ueber { color: var(--color-dmg); border-color: var(--color-dmg); }
-.tb-auswahl { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
-.tb-select { flex: 1; min-width: 150px; }
-.tb-select-wesen { border-color: var(--color-accent); }
-.tb-wesen-effekte { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
-/* Wesen-Boni/-Mali in der Optik der Status-Badges */
-.tb-effekt { font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 12px; line-height: 1.3; max-width: 100%; cursor: help; border: 1px solid; }
-.tb-effekt-buff { background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.6); color: #86efac; }
-.tb-effekt-debuff { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.6); color: #fca5a5; }
-
-.tb-baeume { display: flex; gap: 0.8rem; overflow-x: auto; padding-bottom: 0.5rem; }
-.tb-ast {
-    flex: 1 1 0; min-width: 200px; border-radius: 12px; padding: 0.8rem 0.6rem;
-    display: flex; flex-direction: column; align-items: center;
-    border-top-width: 4px; border-top-color: var(--color-accent);
-}
-.tb-ast-wesen { border-top-color: var(--color-action); }
-.tb-ast-titel { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; text-align: center; color: var(--text-primary); }
-/* Rang/SP je Ast als schlichte Textzeile statt eigener Badges - taucht bis zu
-   vier Mal auf dem Bogen auf, eine Pille je Zahl summierte sich schnell zu
-   einer Wand aus Kapseln. */
-.tb-ast-stand { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); text-align: center; margin-bottom: 0.6rem; }
-.tb-ast-stand .tb-ueber { color: var(--color-dmg); font-weight: 700; }
-.tb-rang { width: 100%; }
-.tb-rang-label { font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; text-align: center; margin-bottom: 0.3rem; }
-.tb-rang-knoten { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
-.tb-verbinder { width: 1px; height: 14px; background: var(--glass-border); margin: 0.3rem auto; }
-
-.tb-node {
-    width: 80px; min-height: 58px;
-    background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); border-radius: 8px;
-    padding: 0.35rem 0.3rem; cursor: pointer; user-select: none;
-    display: flex; flex-direction: column; justify-content: space-between;
-    transition: border-color 0.15s, background 0.15s;
-}
-.tb-node:hover { border-color: var(--text-secondary); background: rgba(255,255,255,0.05); }
-.tb-node-aktiv { border-color: var(--color-accent); }
-.tb-node-max { border-color: var(--color-accent); background: rgba(255,255,255,0.06); }
-.tb-node-max .tb-node-level { color: var(--color-accent); }
-.tb-node-gesperrt { opacity: 0.35; cursor: not-allowed; }
-.tb-node-gesperrt:hover { border-color: var(--glass-border); background: rgba(0,0,0,0.25); }
-.tb-node-kopf { display: flex; align-items: flex-start; gap: 0.25rem; }
-.tb-node-name { font-size: 0.7rem; font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; hyphens: auto; }
-.tb-art { font-size: 0.6rem; color: var(--text-secondary); flex-shrink: 0; margin-top: 1px; }
-.tb-art-aktiv { color: var(--color-action); }
-.tb-node-fuss { display: flex; align-items: center; gap: 0.2rem; margin-top: 0.3rem; }
-.tb-node-level { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); flex: 1; }
-.tb-mini-minus { font-weight: 700; font-size: 0.8rem; }
-
-.tb-details { margin-top: 0.8rem; }
-.tb-details > summary { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-weight: 600; font-size: 0.9rem; }
-.tb-refresh { margin-left: auto; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; }
-/* Schlichte Zeilenliste mit Trennlinie statt eigener Karte je Skill - das
-   sind hier potenziell viele Einträge, nicht jeder braucht eine Card-Optik. */
-.tb-gelernt-liste { margin-top: 0.5rem; display: flex; flex-direction: column; }
-.tb-gelernt {
-    display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.2rem;
-    font-size: 0.85rem; border-bottom: 1px solid var(--glass-border);
-}
-.tb-gelernt:last-child { border-bottom: none; }
-.tb-gelernt-verbraucht { opacity: 0.45; }
-.tb-gelernt-verbraucht .tb-gelernt-text > div:first-child { text-decoration: line-through; }
-.tb-gelernt-verwaist { border-bottom-style: dashed; }
-.tb-gelernt-text { flex: 1; min-width: 0; }
-.tb-gelernt-detail { font-size: 0.75rem; }
-.tb-dim { color: var(--text-secondary); font-size: 0.78rem; }
-.tb-check { background: none; border: none; color: var(--color-accent); font-size: 1.1rem; cursor: pointer; padding: 0; flex-shrink: 0; }
-.tb-tabellen { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.8rem; }
-.tb-tabelle-btn { font-size: 0.8rem; padding: 0.3rem 0.7rem; border-radius: 6px; }
-.tb-hinweis-box { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; font-size: 0.9rem; color: var(--text-secondary); }
-.tb-hinweis-box > i { color: var(--color-accent); font-size: 1.3rem; }
-
-@media (max-width: 700px) {
-    .tb-baeume { flex-direction: column; }
-    .tb-ast { min-width: 0; }
-}
 
 /* --- Tischmitte ----------------------------------------------------------- */
 

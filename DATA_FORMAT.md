@@ -65,17 +65,7 @@ The root object of the JSON file represents a single character's state.
   "fxEnabled": true,
   "soundEnabled": true,
   "maxPoints": 400,
-  "portrait": "data:image/jpeg;base64,/9j/4AAQSk...",
-
-  "hausregeln": {
-    "paket": "meine-runde",
-    "hauptbaeume": ["Nahkampf Klingen", "Fernkampf", "Medizin"],
-    "wesen": "Wolf",
-    "wesenWert": 45,
-    "gelernt": { "Nahkampf Klingen::Schlitzer": 2, "Fernkampf::Sniper": 1 },
-    "verbraucht": { "Nahkampf Klingen::Schlitzer": true },
-    "eigenschaften": { "Fluchtreflex": 1, "Athlet": 2 }
-  }
+  "portrait": "data:image/jpeg;base64,/9j/4AAQSk..."
 }
 ```
 
@@ -144,99 +134,6 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
 - `soundEnabled` (Boolean, Optional): Whether UI sound effects are enabled (default `true`).
 - `customThemeLogo` (String, Optional): Base64 Data URI of a custom faction/team logo that overrides the default theme logo.
 
-### House Rules (Optional)
-- `hausregeln` (Object, Optional): Only present when the character is played with a **rule package** (house-rule extension, see below). Everything in here is ignored when no package is active; the base sheet keeps working.
-  - `paket` (String): ID of the rule package the sheet was saved with. If that package is not active when the file is loaded, the sheet shows a hint instead of the talent tree.
-  - `hauptbaeume` (Array of Strings): Chosen main branches of the talent tree (branch names as in the package).
-  - `wesen` (String or null): Chosen "Wesen" (creature/archetype branch).
-  - `wesenWert` (Number, Optional): The Wesen branch's own rank-driving value. Unlike the three main branches (driven by a matching sheet talent, see `baumTalent` below), this one is *not* spent from the character's own talent points - the GM raises/lowers it via the GM Dashboard's per-player "Eingriff" action (`{ "type": "eingriff", "aktion": "monsterpunkte", "betrag": 5 }`, see below). Defaults to 0.
-  - `gelernt` (Object): Learned tree skills, `"<Ast>::<Skillname>" -> level`. The key includes the branch because the same skill name exists in several branches. A skill's *effective* level for damage/effect purposes is the sum across every branch it's been bought in (cross-leveling, RW 4.1 p.17) - `talentbaum.js`'s `tbEffektivesLevel()` computes this; the per-key value here always stays what was actually purchased in that one branch.
-  - `verbraucht` (Object): Skills marked as used in the current fight, `"<Ast>::<Skillname>" -> true`.
-  - `eigenschaften` (Object, Optional): Picked "Besondere Eigenschaften" (RW 4.1 p.18f, package field `talentbaum.eigenschaften`), `"<Name>" -> stufe` (how many times it's been picked, 1-based). Paid from the same shared rank-point pool as a branch's first skill level, not from a branch's own skill points.
-
-## Rule Packages / House Rules
-
-A rule package bundles a group's house rules so the sheet can apply them: a fixed talent list, progressive talent costs, a talent tree with rank/skill points, per-Wesen effects and special roll tables. HeroHQ itself ships with **no built-in package** (`HAUSREGEL_PAKETE_EINGEBAUT` is empty) - a group loads its own package as plain JSON via *Hausregeln -> Aus Datei*. The GM distributes the setting to all connected players over the live sync.
-
-**Which package is active is not part of the character file** - it is stored per browser (`localStorage`, key `htbah_hausregeln`) and sent by the GM. Only the character's *choices* (`hausregeln` above) travel with the JSON.
-
-Illustrative example package (field names/values below are just one possible package, not anything bundled with the tool):
-
-```json
-{
-  "id": "meine-runde",
-  "name": "Meine Hausregeln",
-  "version": "2026-05-18",
-  "beschreibung": "...",
-  "waehrung": "Tchambas",
-
-  "talente": {
-    "handeln":  [ { "id": "athletik", "name": "Athletik", "beschreibung": "Klettern, Rennen, Springen" },
-                  { "id": "kochen", "name": "Kochen", "beschreibung": "...", "tabelle": "table_kochen" } ],
-    "wissen":   [ ],
-    "soziales": [ ]
-  },
-
-  "punkte": {
-    "maxTalentpunkte": 500,
-    "kostenStaffel": [ { "bis": 30, "kosten": 1 }, { "bis": 60, "kosten": 2 }, { "bis": 90, "kosten": 4 }, { "bis": 99, "kosten": 10 } ],
-    "skillpunktSchwellen": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
-  },
-
-  "talentbaum": {
-    "anzahlHauptbaeume": 3,
-    "anzahlWesen": 1,
-    "maxLevel": 3,
-    "kosten": { "erstesLevel": "rangpunkt", "weiteresLevel": "skillpunkt" },
-    "freischaltung": { "modus": "vorRang", "benoetigt": 2 },
-    "hauptbaeume": ["Nahkampf Klingen", "Fernkampf"],
-    "baumTalent": { "Nahkampf Klingen": "Nahkampf", "Fernkampf": "Fernkampf" },
-    "wesen": ["Tiefseepirat", "Kultist"],
-    "weitereAeste": ["Zombie"],
-    "skills": [
-      {
-        "name": "Bodyslam", "ast": "Agilität", "art": "aktiv", "schadenTyp": "physisch", "rang": 1,
-        "info": "Schaden: Nahkampf + 2/3/4w10 an 2/2/3 Zielen in einer Reihe",
-        "stufen": [
-          { "level": 1, "reichweite": "Nahkampf", "schaden": "2W10", "schadenArt": "Nahkampf", "effekt": "Trifft 2 Ziele in einer Reihe" },
-          { "level": 2, "reichweite": "Nahkampf", "schaden": "3W10", "schadenArt": "Nahkampf", "effekt": "Trifft 2 Ziele in einer Reihe" }
-        ]
-      }
-    ],
-    "eigenschaften": [
-      { "name": "Fluchtreflex", "rang": 1, "wirkungen": ["10% Ausweichchance gegen Fernkampf (nach Bewegung)", "15% ...", "20% ..."] }
-    ]
-  },
-
-  "wesenEffekte": {
-    "Tiefseepirat": [ { "typ": "buff", "ziel": "bewegungsweite_wasser_konditionell", "wert": "plus 2 Meter", "beschreibung": "Du erhältst plus 2 Meter Bewegungsweite im Wasser" } ]
-  },
-
-  "wuerfelTabellen": {
-    "table_kochen": {
-      "id": "table_kochen", "name": "Kochen", "wuerfel": "1W10", "art": "probe",
-      "spalten": {
-        "success":    [ { "wurf": 1, "text": "Schlecht aber essbar - satt" }, { "wurf": 2, "text": "Einfaches Essen.", "buffs": [ { "name": "Satt und glücklich.", "targetType": "category", "targetID": "soziales", "value": 3 } ] } ],
-        "no_success": [ { "wurf": 1, "text": "Angebranntes Essen" } ]
-      }
-    },
-    "oracle_piraten_events": { "id": "oracle_piraten_events", "name": "Orakel: Piraten Events", "wuerfel": "1W100", "art": "orakel", "spalten": { "spalte_A_aktion": [ { "wurf": 1, "text": "Angriff" } ], "spalte_B_fokus": [ { "wurf": 1, "text": "Gold" } ] } }
-  }
-}
-```
-
-### Package Field Reference
-- `id`, `name`, `version`, `beschreibung` (String): Identity. `id` must be stable - character files reference it.
-- `waehrung` (String, Optional): Suggested currency name; applied when the talent list is taken over and the sheet still has the default currency.
-- `talente` (Object, Optional): Fixed talent list per category. Applied to the sheet only on explicit click (*Talentliste übernehmen*); existing skills with the same name keep their points, unknown skills are kept.
-- `punkte` (Object, Optional): Point economy.
-  - `maxTalentpunkte`: budget that replaces `maxPoints` while the package is active.
-  - `kostenStaffel`: progressive cost *and* the talent-tree rank thresholds in one: point `n` costs the `kosten` of the first entry with `n <= bis`, and that same entry's position (1st, 2nd, ...) is the tree rank a talent of value `n` has reached. Points above the last entry cost/rank like the last entry. "Verteilte Punkte" on the sheet shows *cost*, not raw points, while `talentbaum.js` reuses the same table for each branch's rank.
-  - `skillpunktSchwellen`: each threshold reached by a branch's driving talent value yields one skill point *for that branch specifically* - branches don't share a skill-point pool.
-- `talentbaum` (Object, Optional): The tree. `hauptbaeume` / `wesen` are the branch names players may pick, `weitereAeste` lists branches that exist in `skills` but are not selectable (NPC/monster branches). `baumTalent` (Object, Optional) maps a main branch name to the sheet talent whose invested value drives that branch's rank/skill-points (several branches can point at the same talent, e.g. two combat styles sharing one talent) - the Wesen branch has no entry here since it's driven by `wesenWert` instead (see the character-file section above). Rank points are a single pool shared by every branch (1 per rank achieved in a *main* branch, Wesen excluded) and pay for a skill's first level (any branch) or an `eigenschaften` pick; skill points are per-branch and pay for a skill's 2nd/3rd level only. `freischaltung.modus`: `vorRang` (rank N in a branch needs `benoetigt` skill points *of that same branch* spent on rank-(N-1) skills), `imAst` (needs `benoetigt` learned skills in the branch of any rank, or the same skill learned in another branch), `frei` (no gating). Each skill: `name`, `ast`, `art` (`aktiv` | `passiv` | `extra`), `schadenTyp` (`physisch` | `magisch` | `heilung` | `keiner`), `rang`, `info`, `stufen[]` (one entry per level; `schaden` in dice notation like `2W10` gets a roll button, anything else is display-only), optional `morphForm`. The same skill name in two of a character's chosen branches cross-levels: its effective level (used for the roll button and the "learned skills" list) is the sum of what was bought in each branch. `eigenschaften[]` (Object, Optional): passive traits bought with rank points instead of skill points - `name`, `rang`, `wirkungen[]` (one string per time it can be picked; picking it again spends another rank point). A rang-R eigenschaft needs 2+ of the character's chosen branches (main + Wesen) at rank R or higher, and 2 already-picked eigenschaften of rank R-1.
-- `wesenEffekte` (Object, Optional): `Wesen name -> [ { typ: "buff"|"debuff", ziel, wert, beschreibung } ]`. Currently display-only.
-- `wuerfelTabellen` (Object, Optional): `art: "probe"` tables have `success` / `no_success` columns and ask whether the preceding check succeeded; `art: "orakel"` tables roll every column at once. `buffs` are carried along and shown in the log but not applied automatically yet.
-
 ## Live-Sync Messages: Tischmitte (Shared Loot)
 
 The shared loot area ("Tischmitte") is not part of the character file. The GM client is the authority; its full list (including hidden entries) lives in the GM's browser (`localStorage`, key `htbah_gm_tischmitte`). Hidden entries never leave the GM's machine. Messages over the PeerJS connection:
@@ -260,9 +157,6 @@ The GM can change a player's sheet directly, optionally *silently* (`still: true
 | `{ "type": "eingriff", "aktion": "geben", "still", "item": { "art", "name", "amount", "damage", "description" } }` | Add an item / weapon / currency (negative `amount` subtracts currency) |
 | `{ "type": "eingriff", "aktion": "status", "still", "status": { "name", "value", "type" } }` | Add a status effect |
 | `{ "type": "eingriff", "aktion": "statusWeg", "still", "statusId" }` | Remove a status effect by its `id` |
-| `{ "type": "eingriff", "aktion": "monsterpunkte", "still", "betrag" }` | Only relevant when the active package has a Wesen branch: raise/lower `hausregeln.wesenWert` by `betrag` (clamped 0-99) - the Wesen branch's rank-driving value, granted by the GM rather than spent from the player's own points |
-| `{ "type": "eingriff", "aktion": "sonderAst", "still", "ast" }` | Grants one branch from the active package's `talentbaum.weitereAeste` as an extra Wesen option for this one player |
-| `{ "type": "eingriff", "aktion": "sonderAstWeg", "still" }` | Revokes that extra Wesen option again |
 
 ## Live-Sync Messages: Group Overview
 

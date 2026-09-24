@@ -13,10 +13,10 @@ const helpData = {
     
     gmSync: "<h3>Theme Sync</h3><p>Wenn du den Haken bei <b>Sync to Players</b> setzt, wird das von dir hier ausgewählte Vibe-Theme <b>automatisch auf alle Bildschirme deiner Spieler erzwungen</b>.</p><p>Das ist ein tolles Werkzeug, um in besonderen Momenten (z.B. bei einem Szenenwechsel in die Unterwelt) die Stimmung am virtuellen Tisch für alle gleichzeitig zu lenken!</p>",
 
-    gmLayout: "<h3>Panels umsortieren</h3><p>Jedes Panel in der Hauptspalte (Spielerkarten, Zufallsgenerator, NSC-Liste, Quest-Logbuch, Schiff, Seekampf, Tischmitte, SL-Notizen) hat oben einen kleinen Ziehgriff <i class='fa-solid fa-grip-lines'></i>. Daran gepackt, kannst du das Panel per Drag &amp; Drop an eine beliebige Position ziehen - egal ob gerade Hausregeln aktiv sind oder nicht.</p><p>Die Reihenfolge bleibt in diesem Browser gespeichert, auch über einen Reload hinweg. Über <b>Reihenfolge zurücksetzen</b> geht's zurück zur Standard-Anordnung.</p>",
+    gmLayout: "<h3>Panels umsortieren</h3><p>Jedes Panel in der Hauptspalte (Spielerkarten, Zufallsgenerator, NSC-Liste, Quest-Logbuch, Tischmitte, SL-Notizen) hat oben einen kleinen Ziehgriff <i class='fa-solid fa-grip-lines'></i>. Daran gepackt, kannst du das Panel per Drag &amp; Drop an eine beliebige Position ziehen.</p><p>Die Reihenfolge bleibt in diesem Browser gespeichert, auch über einen Reload hinweg. Über <b>Reihenfolge zurücksetzen</b> geht's zurück zur Standard-Anordnung.</p>",
 
     gmSitzung: "<h3>SL-Sitzung sichern/laden</h3>" +
-               "<p>Alles, was du als Spielleiter aufbaust - NSC-Liste, Tischmitte, Quest-Log und das gewählte Regelpaket - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
+               "<p>Alles, was du als Spielleiter aufbaust - NSC-Liste, Tischmitte, Quest-Log - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
                "<p><b>Sichern</b> lädt trotzdem eine Datei herunter, die genau diesen Stand einfriert - praktisch als Backup vor größeren Änderungen, oder um auf einem anderen Gerät/Browser weiterzumachen.</p>" +
                "<p><b>Laden</b> ersetzt die aktuellen SL-Daten in diesem Browser komplett durch den Inhalt der Datei (mit Rückfrage) und lädt die Seite danach neu.</p>" +
                "<p><i>Das ist nicht dasselbe wie \"Speichern (JSON)\" oben - das sichert nur den Charakterbogen eines einzelnen Spielers. Für Spieler-Notizen gibt es außerdem ein eigenes Archiv (Notizen-Bereich).</i></p>",
@@ -31,13 +31,6 @@ const helpData = {
     customSound: "<h3>🔒 Eigener privater Sound</h3><p>Hast du einen Song oder Sound, den du <b>nicht öffentlich verwenden darfst</b> (z.B. nur für den privaten Rahmen lizenziert), aber trotzdem in eurer Runde nutzen willst? Lade ihn hier hoch!</p><p>Die Datei wird <b>ausschließlich lokal in deinem Browser</b> gespeichert (nie im Repository, nie auf der öffentlich gehosteten Seite). Beim Klick auf \"Für alle abspielen\" wird sie direkt per WebRTC an die aktuell verbundenen Spieler übertragen, genau wie eure Würfe und HP-Updates auch - es findet keine Veröffentlichung auf irgendeiner Plattform statt.</p><p><i>Hinweis: Die Datei bleibt auf diesem Gerät gespeichert, bis du sie über den Papierkorb-Button wieder entfernst. Bei einem Wechsel des Browsers/Geräts musst du sie erneut hochladen.</i></p>"
 ,
 
-    hausregeln: "<h3>Hausregeln & Regelpakete</h3>" +
-                "<p>Viele Runden spielen HTBAH mit eigenen Erweiterungen. Ein <b>Regelpaket</b> bündelt so eine Erweiterung: eine feste Talentliste, abweichende Punktekosten, einen Talentbaum, Wesen-Boni und Würfeltabellen.</p>" +
-                "<p><b>Ohne Paket</b> rechnet der Bogen exakt nach dem offiziellen Regelwerk - es ändert sich nichts.</p>" +
-                "<p><b>Für den Spielleiter:</b> Wähle das Paket eurer Runde, klicke auf <i>Übernehmen</i> und dann auf <i>An Spieler senden</i>. Alle verbundenen Spieler bekommen die Einstellung sofort, neue Spieler automatisch beim Beitreten.</p>" +
-                "<p><b>Für Spieler:</b> Du musst nichts tun - wenn dein Spielleiter ein Paket verteilt, wird es bei dir übernommen. Du kannst es auch selbst wählen, wenn ihr ohne Live-Sync spielt.</p>" +
-                "<p><i>Eigenes Paket? Das Format ist in DATA_FORMAT.md im Repository beschrieben - ein JSON reicht, es lässt sich über \"Aus Datei\" laden und wird beim Verteilen mit an die Spieler geschickt.</i></p>",
-
     randomizer: "<h3>Zufallsgenerator</h3>" +
                 "<p>Ein reines Prep-Werkzeug für dich als Spielleiter - nichts davon geht automatisch an die Spieler.</p>" +
                 "<p><b>NSC würfeln</b> baut in einem Rutsch einen Charakter: Name, Trefferort/Rolle, Haltung, Auffälligkeit, Motivation. Ort, Namensstil, Geschlecht und Grundhaltung lassen sich einzeln festlegen, wenn du einen bestimmten Charakter brauchst - auf \"Zufällig\" bleibt es eine Überraschung.</p>" +
@@ -46,7 +39,6 @@ const helpData = {
 
     gmEingriff: "<h3>🪄 SL-Eingriff</h3>" +
                 "<p>Über den <i>Eingriff</i>-Knopf in der Spielerkarte greifst du direkt in den Bogen eines Spielers ein: <b>Gegenstand, Waffe oder Geld geben</b> (negativer Betrag zieht Geld ab) und <b>Status-Effekte setzen oder entfernen</b>.</p>" +
-                "<p>Hat das aktive Regelpaket einen <b>Wesen</b>-Ast im Talentbaum, kannst du hier bei einem Spieler mit gewähltem Wesen auch <b>Monsterpunkte</b> vergeben - die treiben Rang und Skillpunkte dieses Astes, statt aus eigenen Talentpunkten zu kommen. Definiert das Paket zusätzliche Äste (\"weitere Äste\"), kannst du außerdem eine <b>Sonderfreigabe: Talentbaum</b> erteilen - einer davon wird dann für genau diesen Spieler als zusätzliche Wesen-Option wählbar. Ein Klick auf ✕ nimmt die Freigabe wieder zurück.</p>" +
                 "<p><b>Verdeckt:</b> Mit dem Haken erscheint beim Spieler weder ein Logbuch-Eintrag noch ein Hinweis - der Wert ist einfach da. Gedacht für Flüche, heimlich zugesteckte Gegenstände oder eine schleichende Vergiftung, die nicht mit Fanfare ankommen sollen. Ohne Haken landet der Eingriff wie jede andere Änderung im Aktions-Logbuch des Spielers, mit dem Zusatz „vom Spielleiter\".</p>" +
                 "<p><i>In deinem Live-Feed steht jeder Eingriff - auch die verdeckten, damit du nachvollziehen kannst, was du wann getan hast.</i></p>",
 
@@ -81,18 +73,6 @@ const helpData = {
                "<p>Das freie <b>Notiz</b>-Feld pro NSC ist der Platz, um festzuhalten, wie es mit ihm weiterging - wer ihn getroffen hat, ob er noch lebt, was er der Gruppe schuldet.</p>" +
                "<p>Über die Sortierung oben rechts lässt sich die Liste nach Ort, Name oder Haltung ordnen, statt nur nach Eintragsreihenfolge.</p>" +
                "<p>Der Kopier-Knopf dupliziert den NSC mit fortlaufender Nummer im Namen - praktisch für mehrere gleiche Gegner (\"Wache\" → \"Wache 2\" → \"Wache 3\", ...).</p>",
-
-    talentbaum: "<h3>Talentbaum</h3>" +
-                "<p>Der Talentbaum kommt aus dem aktiven Regelpaket. Du wählst deine <b>Hauptbäume</b> und dein <b>Wesen</b> - nur deren Skills werden angezeigt. Das Wesen bringt feste Vor- und Nachteile mit (die grünen und roten Kärtchen).</p>" +
-                "<p><b>Skillpunkte (SP)</b> entstehen <i>getrennt je Baum</i>, aus dem Talentwert, der zu diesem Baum gehört (z.B. treibt dein Talent \"Nahkampf\" sowohl \"Nahkampf Klingen\" als auch \"Nahkampf Fäuste\"). Jede erreichte Schwelle (1, 10, 20 … 90, dann jeder Punkt bis 99) bringt einen SP - der zählt nur für Skills <i>dieses</i> Baums.</p>" +
-                "<p><b>Rangpunkte (RP)</b> sind dagegen <i>ein gemeinsamer Topf</i> für alle Bäume: je Rangaufstieg in einem deiner drei Hauptbäume gibt es einen (max. 12). Ein RP bezahlt <b>ausschließlich</b> eine <b>Besondere Eigenschaft</b> weiter unten - Skills in einem Baum kosten nie Rangpunkte, nur Skillpunkte (auch das erste Level).</p>" +
-                "<p><b>Freischaltung:</b> Rang 1 ist immer offen. Für Rang 2 in einem Baum brauchst du dort insgesamt mindestens 2 SP ausgegeben, für Rang 3 mindestens 4, für Rang 4 mindestens 6 - egal auf welche Skills des Baums verteilt (auch mehrere Rang-1-Skills weit hochgelevelt zählen). Gesperrte Skills sind ausgegraut.</p>" +
-                "<p><b>Kreuz-Leveln (⚡):</b> Hast du denselben Skill-Namen in zwei deiner Bäume gelernt, zählt sein <i>effektives Level</i> als Summe beider Käufe - das siehst du am Blitz-Symbol.</p>" +
-                "<p><b>Besondere Eigenschaften</b> kosten je Pick 1 Rangpunkt. Ein Rang wird erst wählbar, wenn mindestens 2 deiner Bäume diesen Rang erreicht haben und du im Rang darunter schon 2 Eigenschaften gewählt hast.</p>" +
-                "<p><b>Wesen/Monster:</b> Dessen Wert steigt nicht durch eigene Talentpunkte, sondern durch <b>Monsterpunkte</b>, die dir dein Spielleiter über seinen Eingriff-Knopf vergibt (z.B. nach einem überlebten Ritual oder einem bezwungenen Monster).</p>" +
-                "<p><b>Im Kampf:</b> Unter <i>Gelernte Fähigkeiten</i> hakst du benutzte Skills ab und würfelst ihren Schaden direkt (🎲). <i>Alle auffrischen</i> setzt die Haken nach dem Kampf zurück.</p>" +
-                "<p><i>Klick auf einen Skill/eine Eigenschaft = ein Level lernen, das kleine − gibt es zurück. Details siehst du, wenn du mit der Maus über der Kachel stehen bleibst.</i></p>" +
-                "<p><i>Hinweis: Welcher Bogen-Talentwert genau zu welchem Hauptbaum gehört, ist eine Annahme, die die Runde mit dem Spielleiter noch bestätigen muss - kann sich also noch ändern.</i></p>",
 
     general: "<h3><i class='fa-solid fa-circle-info'></i> Willkommen bei HeroHQ</h3>" +
              "<p>Dieser interaktive Charakterbogen nimmt dir die Rechenarbeit am Pen&Paper-Tisch ab und bietet ein nahtloses Multiplayer-Erlebnis.</p>" +

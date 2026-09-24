@@ -1,10 +1,10 @@
 // How to be a Hero - SL-Dashboard: Panel-Reihenfolge frei sortierbar
 //
 // Der SL kann die Panels in der Hauptspalte des Dashboards (Spielerkarten,
-// Zufallsgenerator, NSC-Liste, Quests, Schiff, Seekampf, Tischmitte, SL-
-// Notizen) per Drag & Drop in eine beliebige Reihenfolge bringen - egal ob
-// gerade Hausregeln aktiv sind oder nicht. Die Reihenfolge bleibt in diesem
-// Browser gespeichert (localStorage), unabhängig vom geladenen Charakter.
+// Zufallsgenerator, NSC-Liste, Quests, Tischmitte, SL-Notizen) per Drag &
+// Drop in eine beliebige Reihenfolge bringen. Die Reihenfolge bleibt in
+// diesem Browser gespeichert (localStorage), unabhängig vom geladenen
+// Charakter.
 //
 // Technik: jedes Panel steckt in index.html in einem äußeren .gm-panel-slot
 // mit einem kleinen Ziehgriff obendrauf - die eigentlichen render*Gm()-
