@@ -1,0 +1,34 @@
+{
+  "vorname": "Igor",
+  "name": "Karachoski",
+  "geschlecht": "Männlich",
+  "beruf": "Experimenteller Wissenschaftler",
+  "alter": "57",
+  "statur": "Grobschlächtig",
+  "hpCurrent": 100,
+  "hpMax": 100,
+  "attr_handeln": 18,
+  "gbp_handeln": 2,
+  "skills_handeln": [
+    { "id": "h1", "name": "Körperliche Stärke", "invested": 70 },
+    { "id": "h2", "name": "Kampf", "invested": 50 },
+    { "id": "h3", "name": "Werfen", "invested": 35 },
+    { "id": "h4", "name": "Assistieren", "invested": 25 }
+  ],
+  "attr_wissen": 10,
+  "gbp_wissen": 1,
+  "skills_wissen": [
+    { "id": "w1", "name": "Fremdsprachen", "invested": 55 },
+    { "id": "w2", "name": "Medizin", "invested": 45 },
+    { "id": "w3", "name": "Fachchinesisch", "invested": 0 }
+  ],
+  "attr_soziales": 12,
+  "gbp_soziales": 1,
+  "skills_soziales": [
+    { "id": "s1", "name": "Bedrohen", "invested": 55 },
+    { "id": "s2", "name": "Menschenkenntnis", "invested": 45 },
+    { "id": "s3", "name": "Ganoven Geflüster", "invested": 20 }
+  ],
+  "inventory": [],
+  "maxPoints": 400
+}

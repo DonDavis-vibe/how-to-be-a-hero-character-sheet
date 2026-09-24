@@ -62,17 +62,6 @@ function showSaveIndicator() {
     }, 2000);
 }
 
-// Zeigt das Eldara-Piraten-Banner statt des allgemeinen HeroHQ-Banners, sobald
-// die Runde das Hausregel-Paket "eldora-arrrrr" aktiv hat (siehe hausregeln.js).
-function updateHeaderBanner() {
-    const img = document.getElementById('header-banner-img');
-    if (!img) return;
-    const eldoraAktiv = typeof hausregelnAktiv === 'function' && hausregelnAktiv()
-        && appData.hausregeln && appData.hausregeln.paket === 'eldora-arrrrr';
-    const ziel = eldoraAktiv ? 'assets/header-eldora.jpg' : 'assets/header-herohq.jpg';
-    if (img.getAttribute('src') !== ziel) img.setAttribute('src', ziel);
-}
-
 // Rendering
 function renderAll() {
     if (appData.name) {
@@ -129,17 +118,8 @@ function renderAll() {
     if (typeof renderSpielerlog === 'function') renderSpielerlog();
     // Hausregel-Erweiterung (talentbaum.js) - zeigt sich nur mit aktivem Regelpaket
     if (typeof renderTalentbaum === 'function') renderTalentbaum();
-    updateHeaderBanner();
     // Tischmitte (tischmitte.js) - nur als verbundener Spieler; Inventar-Auswahl fürs Ablegen aktuell halten
     if (typeof renderTischmitteSpieler === 'function') renderTischmitteSpieler();
-    // Schiffs-Inventar (schiffsinventar.js) - nur bei aktivem Eldara-Regelpaket
-    if (typeof renderSchiffSpieler === 'function') renderSchiffSpieler();
-    // Seekampf-Karte (seekampf.js) - nur bei aktivem Eldara-Regelpaket
-    if (typeof renderSeekampfSpieler === 'function') renderSeekampfSpieler();
-    // Karte (karten.js) - nur bei aktivem Eldara-Regelpaket
-    if (typeof renderKarteSpieler === 'function') renderKarteSpieler();
-    // Kampf (kampf.js) - nur bei aktivem Eldara-Regelpaket
-    if (typeof renderKampfSpieler === 'function') renderKampfSpieler();
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');
@@ -271,9 +251,9 @@ function renderSkills(attr) {
 
     const skills = appData[`skills_${attr}`];
     const attrVal = parseInt(appData[`attr_${attr}`]) || 0;
-    // Hausregel-Paket mit fester Talentliste (aktuell nur Eldara, siehe
-    // hausregeln.js) ersetzt die freie Texteingabe durch ein Dropdown -
-    // Regelwerk pur bleibt exakt wie bisher.
+    // Hausregel-Paket mit fester Talentliste (siehe hausregeln.js) ersetzt
+    // die freie Texteingabe durch ein Dropdown - Regelwerk pur bleibt exakt
+    // wie bisher.
     const talentliste = typeof hausregelnFesteTalentliste === 'function' ? hausregelnFesteTalentliste(attr) : null;
 
     skills.forEach((skill, index) => {
@@ -629,28 +609,6 @@ function handleDragEnd(e) {
 
 function renderInventory() {
     const listEl = document.getElementById('inventory-list');
-    const rasterBox = document.getElementById('inventar-raster');
-    const addBox = document.getElementById('add-item-box');
-    const weaponsSection = document.getElementById('weapons-section');
-    // Eldara-Hausregel: Rasterinventar (inventarraster.js) statt der freien
-    // Liste - das eigene Formular des Rasters ersetzt add-item-box komplett,
-    // und Waffen wandern als eigener Eintrags-Typ mit ins Raster (siehe
-    // irWaffenNachRasterMigrieren) statt im klassischen Waffen-Panel zu leben.
-    if (typeof eldaraAktiv === 'function' && eldaraAktiv()) {
-        if (typeof irWaffenNachRasterMigrieren === 'function') irWaffenNachRasterMigrieren();
-        // .inventory-list ist per CSS "display: grid !important" gesetzt - eine
-        // normale inline style.display würde dagegen verlieren.
-        listEl.style.setProperty('display', 'none', 'important');
-        listEl.innerHTML = '';
-        if (addBox) addBox.style.display = 'none';
-        if (weaponsSection) weaponsSection.style.display = 'none';
-        if (rasterBox) { rasterBox.style.display = ''; renderInventarRaster(); }
-        return;
-    }
-    if (typeof irWaffenAusRasterMigrieren === 'function') irWaffenAusRasterMigrieren();
-    if (rasterBox) { rasterBox.style.display = 'none'; rasterBox.innerHTML = ''; }
-    if (addBox) addBox.style.display = '';
-    if (weaponsSection) weaponsSection.style.display = '';
     listEl.style.removeProperty('display');
     listEl.innerHTML = '';
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
+<title>Impressum</title>
+<style>
+    /*
+        Eigenstaendige Impressum-Seite, absichtlich ohne Abhaengigkeit zu
+        style.css oder den Theme-Variablen des jeweiligen Tools: soll sich
+        unveraendert in jedes Pen & Paper-Projekt kopieren lassen, egal
+        welches Design die Hauptseite gerade hat.
+
+        Anpassen pro Projekt:
+        - Der "Zurueck"-Link unten zeigt auf "./index.html" - Pfad pruefen,
+          falls das Tool anders aufgebaut ist.
+        - Der Kontaktblock steht NICHT im Quelltext. Er wird beim
+          GitHub-Pages-Deployment aus dem Repo-Secret IMPRESSUM_KONTAKT
+          zwischen die KONTAKT-Marker eingesetzt (siehe
+          .github/workflows/deploy.yml). Wer das forkt und selbst betreibt,
+          hinterlegt die eigenen Pflichtangaben als Secret.
+    */
+    :root {
+        --bg: #0f172a;
+        --panel: #1e293b;
+        --border: rgba(255, 255, 255, 0.12);
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --accent: #8b5cf6;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        padding: 2.5rem 1.25rem 4rem;
+    }
+    .wrap {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+    .back-link:hover { color: var(--text); }
+    h1 {
+        font-size: 1.8rem;
+        margin: 0 0 1.5rem;
+    }
+    h2 {
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin: 2rem 0 0.6rem;
+    }
+    section {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.5rem 1.75rem;
+    }
+    p { margin: 0 0 0.4rem; }
+    a { color: #93c5fd; }
+    .muted { color: var(--text-muted); font-size: 0.85rem; }
+    hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1.75rem 0;
+    }
+    footer {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+</style>
+</head>
+<body>
+    <div class="wrap">
+        <a class="back-link" href="./index.html">&larr; Zurück zum Tool</a>
+
+        <h1>Impressum</h1>
+
+        <section>
+            <!--KONTAKT:START-->
+            <p class="muted">Die Pflichtangaben nach &sect;&nbsp;5 DDG (Name, Anschrift, Kontakt)
+            werden beim Ver&ouml;ffentlichen dieser Seite eingesetzt und sind in der Live-Fassung
+            unter dieser Adresse abrufbar.</p>
+            <!--KONTAKT:END-->
+        </section>
+
+        <footer>
+            <p>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG).</p>
+        </footer>
+    </div>
+
+    <!--
+        Der Kontaktblock (Name, Anschrift, Telefon, E-Mail) steht NICHT im
+        Quelltext. Er wird beim GitHub-Pages-Deployment aus dem Repo-Secret
+        IMPRESSUM_KONTAKT eingesetzt (siehe .github/workflows/deploy.yml), damit
+        die Daten weder in Klons noch in Forks noch in der Git-History landen.
+
+        Das Skript baut nur um, was der eingesetzte Block enthaelt:
+        " [at] " / " [dot] " werden zu @ / . und die getrennten Ziffern zur
+        Rufnummer. Es enthaelt selbst keine Kontaktdaten. Ohne JavaScript bleibt
+        die menschenlesbare Fassung stehen (genuegt Paragraf 5 DDG).
+    -->
+    <script>
+        (function () {
+            function alsLink(el, href, text) {
+                var a = document.createElement('a');
+                a.href = href;
+                a.textContent = text;
+                el.replaceChildren(a);
+            }
+            document.querySelectorAll('.cx-mail').forEach(function (el) {
+                var adr = el.textContent
+                    .replace(/\s*\[\s*at\s*\]\s*/i, '@')
+                    .replace(/\s*\[\s*dot\s*\]\s*/i, '.')
+                    .replace(/\s+/g, '')
+                    .trim();
+                if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(adr)) alsLink(el, 'mailto:' + adr, adr);
+            });
+            document.querySelectorAll('.cx-tel').forEach(function (el) {
+                var ziffern = (el.textContent.match(/\d/g) || []).join('');
+                if (ziffern.length < 6) return;
+                alsLink(el, 'tel:+49' + ziffern.replace(/^0/, ''), ziffern.replace(/^(\d{4})(\d+)$/, '$1 $2'));
+            });
+        })();
+    </script>
+</body>
+</html>

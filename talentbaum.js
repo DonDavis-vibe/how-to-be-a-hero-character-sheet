@@ -34,15 +34,11 @@
 //     Rang R erreicht haben UND bereits 2 Eigenschaften von Rang R-1 gewählt
 //     wurden.
 //
-// ANNAHME, vom Regelwerk nicht wörtlich bestätigt (siehe hausregeln/
-// OFFENE_FRAGEN.md und Memory "Eldara Hausregeln Vorbereitung"): welcher
-// Bogen-Talentwert zu welchem Hauptbaum-Ast gehört (`regeln.baumTalent` in
-// hausregeln/eldora-arrrrr.js, siehe BAUM_TALENT im Konverter-Skript). Diese
-// Zuordnung ist meine plausibelste Lesart, keine bestätigte Regel - bis die
-// Runde das klärt, kann sie sich noch ändern.
+// Welcher Bogen-Talentwert zu welchem Hauptbaum-Ast gehört, legt jedes Paket
+// selbst über `regeln.baumTalent` fest (siehe DATA_FORMAT.md).
 //
 // Charakterdaten (appData.hausregeln, siehe DATA_FORMAT.md):
-//   { paket: 'eldora-arrrrr', hauptbaeume: ['Fernkampf', ...], wesen: 'Tiefseepirat',
+//   { paket: 'meine-runde', hauptbaeume: ['Fernkampf', ...], wesen: 'Wolf',
 //     wesenWert: 0, gelernt: { 'Ast::Skillname': level },
 //     verbraucht: { 'Ast::Skillname': true }, eigenschaften: { 'Name': stufe } }
 //

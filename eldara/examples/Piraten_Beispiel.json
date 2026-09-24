@@ -1,0 +1,150 @@
+{
+  "vorname": "Kalle",
+  "name": "Klabauter",
+  "geschlecht": "männlich",
+  "beruf": "Schiffsjunge & Kartoffelschäler",
+  "alter": "16",
+  "statur": "Schmächtig, aber flink",
+  "hpCurrent": 100,
+  "hpMax": 100,
+  "attr_handeln": 15,
+  "gbp_handeln": 1,
+  "skills_handeln": [
+    {
+      "id": "h1",
+      "name": "Klettern im Rigg",
+      "invested": 50,
+      "value": 65
+    },
+    {
+      "id": "h2",
+      "name": "Säbelkampf",
+      "invested": 40,
+      "value": 55
+    },
+    {
+      "id": "h3",
+      "name": "Flinke Beine",
+      "invested": 30,
+      "value": 45
+    },
+    {
+      "id": "h4",
+      "name": "Knoten binden",
+      "invested": 30,
+      "value": 45
+    }
+  ],
+  "attr_wissen": 10,
+  "gbp_wissen": 0,
+  "skills_wissen": [
+    {
+      "id": "w1",
+      "name": "Piraten-Legenden",
+      "invested": 40,
+      "value": 50
+    },
+    {
+      "id": "w2",
+      "name": "Kartoffel-Kunde",
+      "invested": 20,
+      "value": 30
+    },
+    {
+      "id": "w3",
+      "name": "Seezeichen deuten",
+      "invested": 20,
+      "value": 30
+    },
+    {
+      "id": "w4",
+      "name": "Klabautermann-Mythen",
+      "invested": 20,
+      "value": 30
+    }
+  ],
+  "attr_soziales": 15,
+  "gbp_soziales": 2,
+  "skills_soziales": [
+    {
+      "id": "s1",
+      "name": "Lügen",
+      "invested": 50,
+      "value": 65
+    },
+    {
+      "id": "s2",
+      "name": "Mitleid erregen",
+      "invested": 40,
+      "value": 55
+    },
+    {
+      "id": "s3",
+      "name": "Ausreden erfinden",
+      "invested": 40,
+      "value": 55
+    },
+    {
+      "id": "s4",
+      "name": "Matrosen-Jargon",
+      "invested": 20,
+      "value": 35
+    }
+  ],
+  "inventory": [
+    {
+      "id": "inv1",
+      "name": "Rostiger Kartoffelschäler",
+      "amount": 1
+    },
+    {
+      "id": "inv2",
+      "name": "Glücksmünze",
+      "amount": 1
+    },
+    {
+      "id": "inv3",
+      "name": "Flasche Grog (halb leer)",
+      "amount": 1
+    },
+    {
+      "id": "inv4",
+      "name": "Mysteriöse Schatzkarte",
+      "amount": 1
+    }
+  ],
+  "weapons": [
+    {
+      "id": "wep1",
+      "name": "Stumpfer Säbel",
+      "dmg": "1w6",
+      "attribute": "handeln",
+      "skill": "Säbelkampf"
+    },
+    {
+      "id": "wep2",
+      "name": "Wurfmesser",
+      "dmg": "1w4+1",
+      "attribute": "handeln",
+      "skill": "Flinke Beine"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "stat1",
+      "name": "Leichter Skorbut",
+      "val": "-5",
+      "type": "malus"
+    }
+  ],
+  "currency": {
+    "name": "Dublonen",
+    "amount": 3
+  },
+  "layout3Col": false,
+  "notes": "Der Kapitän hat heute wieder seinen Holzfuß verlegt... ich durfte das ganze Unterdeck putzen.\n\nIch hab beim Fische ausnehmen eine seltsame alte Schatzkarte gefunden. Sie zeigt eine Insel in Form eines Totenkopfs. Ich darf niemandem davon erzählen, sonst klaut sie mir der Maat!\n\nAufgabe: Mehr Kartoffeln schälen.",
+  "theme": "pirates",
+  "maxPoints": 400,
+  "fxEnabled": true,
+  "soundEnabled": true
+}

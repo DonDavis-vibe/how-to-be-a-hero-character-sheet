@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Konvertiert die Rohdaten aus quellen/*.json (Export aus dem Randy-Randelsen-
-Projekt, siehe randomizer/quellen) in die drei Zufallsgenerator-Pakete des
-Tools: original.js (setting-neutral), piraten.js, eldora.js.
+Projekt, siehe randomizer/quellen) in das eingebaute Zufallsgenerator-Paket
+des Tools: original.js (setting-neutral).
 
 Aufruf (aus dem Repo-Wurzelverzeichnis):
 
@@ -81,30 +81,10 @@ def schreibe(datei_id, name, beschreibung, tabellen, generatoren=None):
           + (f', {len(generatoren)} Generatoren' if generatoren else ''))
 
 
-# --- Wesen-Liste & Besondere Eigenschaften (Eldara) --------------------------
-# Beides existiert nirgends in den randy_randelsen-Rohdaten - Single Source of
-# Truth ist die von hausregeln/konvertiere-eldora.py generierte
-# hausregeln/eldora-arrrrr.js (dort `talentbaum.wesen` / `talentbaum.
-# eigenschaften`, dort auch aus dem Regelwerk transkribiert). Wird hier nur
-# ausgelesen, nicht dupliziert - randomizer.js selbst bleibt trotzdem
-# unabhängig von einem aktiven Regelpaket, weil das Ergebnis fest ins
-# generierte eldora.js-Paket geschrieben wird.
-ELDORA_PAKET_DATEI = HIER.parent / 'hausregeln' / 'eldora-arrrrr.js'
-
-
-def lade_eldora_regelpaket():
-    text = ELDORA_PAKET_DATEI.read_text(encoding='utf-8')
-    start = text.index('hausregelPaketRegistrieren(') + len('hausregelPaketRegistrieren(')
-    ende = text.rindex(');')
-    return json.loads(text[start:ende])
-
-
 def bauen():
     original = json.loads((QUELLEN / 'original_de.json').read_text(encoding='utf-8'))
     npc = json.loads((QUELLEN / 'npc_eigenschaften_de.json').read_text(encoding='utf-8'))
     trinkets = json.loads((QUELLEN / 'trinkets_srd_en.json').read_text(encoding='utf-8'))
-    piraten = json.loads((QUELLEN / 'settings_piraten_de.json').read_text(encoding='utf-8'))
-    eldora = json.loads((QUELLEN / 'eldora_de.json').read_text(encoding='utf-8'))
 
     # --- Original (setting-neutral) ------------------------------------------
     trink_attr = (f"{trinkets['source']['title']} – {trinkets['source']['publisher']}, "
@@ -127,67 +107,6 @@ def bauen():
     }
     schreibe('original', 'Allgemein', 'Setting-neutrale Namen, Orte, Gegenstände, NSC-Bausteine und Begegnungen.',
              original_tabellen, generatoren=['name', 'nsc'])
-
-    # --- Piraten (generisches Piraten-Flair, kein Eldara-Kanon) ---------------
-    piraten_tabellen = {
-        'vornamen_maennlich': tabelle('Vornamen (männlich)', 'namen', liste(piraten['piraten_vornamen_maennlich'])),
-        'vornamen_weiblich': tabelle('Vornamen (weiblich)', 'namen', liste(piraten['piraten_vornamen_weiblich'])),
-        'nachnamen': tabelle('Nachnamen', 'namen', liste(piraten['piraten_nachnamen'])),
-        'beinamen': tabelle('Beinamen', 'namen', liste(piraten['piraten_beinamen'])),
-        'schiffsnamen': tabelle('Schiffsnamen', 'sonstiges', liste(piraten['schiffsnamen'])),
-    }
-    crew = piraten['crew_erdig']
-    piraten_wortlisten = {
-        'vornamen_erdig_maennlich': crew['vornamen_erdig_maennlich'],
-        'vornamen_erdig_weiblich': crew['vornamen_erdig_weiblich'],
-        'beinamen_adjektiv': crew['beinamen_adjektiv'],
-        'beinamen_praefix': crew['beinamen_praefix'],
-    }
-    paket = {'id': 'piraten', 'name': 'Piraten (allgemein)',
-             'beschreibung': 'Generisches Piraten-Flair ohne Eldara-Kanon: Namen, Beinamen, Schiffe, einfache Crew.',
-             'tabellen': piraten_tabellen, 'wortlisten': piraten_wortlisten, 'generatoren': ['piratenname', 'crewErdig']}
-    (HIER / 'piraten.js').write_text(
-        '// Zufallsgenerator-Paket "Piraten (allgemein)" - GENERIERT durch\n'
-        '// randomizer/konvertiere-randomizer.py aus randomizer/quellen/*.json.\n'
-        '// Nicht von Hand bearbeiten: Änderungen in die Rohdateien bzw. ins Skript\n'
-        '// und neu generieren.\n'
-        'randomizerPaketRegistrieren(' + json.dumps(paket, ensure_ascii=False, indent=1).replace('</script', '<\\/script') + ');\n',
-        encoding='utf-8', newline='\n')
-    print(f'OK: piraten.js - {sum(len(t["eintraege"]) for t in piraten_tabellen.values())} Einträge in '
-          f'{len(piraten_tabellen)} Tabellen, {sum(len(v) for v in piraten_wortlisten.values())} Wörter für Crew-Generator')
-
-    # --- Eldara (kanonisch, an das Regelpaket eldora-arrrrr gekoppelt) --------
-    eldora_regelpaket = lade_eldora_regelpaket()
-    eldora_talentbaum = eldora_regelpaket.get('talentbaum', {})
-    eldora_tabellen = {
-        'orte': tabelle('Insel / Ort', 'orte_items', liste(eldora['orte'])),
-        'gegenstaende_magisch': tabelle('Magischer Gegenstand', 'items', liste(eldora['gegenstaende_magisch'])),
-        'waffen_shop': tabelle('Waffe (Preisliste)', 'waffen', liste(eldora['waffen_shop'])),
-        'herstellbare_gegenstaende': tabelle('Herstellbarer Gegenstand', 'items', liste(eldora['herstellbare_gegenstaende'])),
-        'handelswaren': tabelle('Handelsware / Vorrat', 'items', liste(eldora['handelswaren'])),
-    }
-    eldora_wortlisten = {
-        'vornamen_maennlich': eldora['npc_vornamen_maennlich'],
-        'vornamen_weiblich': eldora['npc_vornamen_weiblich'],
-        'nachnamen': eldora['npc_nachnamen'],
-    }
-    paket = {'id': 'eldora', 'name': 'Eldara (kanonisch)',
-             'beschreibung': 'Orte, magische Gegenstände und NSC-Namen aus dem Eldara-Regelwerk. Passt zum Regelpaket "eldora-arrrrr".',
-             'tabellen': eldora_tabellen, 'wortlisten': eldora_wortlisten,
-             # Aus hausregeln/eldora-arrrrr.js ausgelesen, nicht dupliziert (s.o.)
-             'wesen': eldora_talentbaum.get('wesen', []),
-             'eigenschaften': eldora_talentbaum.get('eigenschaften', []),
-             'generatoren': ['name', 'nsc', 'magischerGegenstand']}
-    (HIER / 'eldora.js').write_text(
-        '// Zufallsgenerator-Paket "Eldara (kanonisch)" - GENERIERT durch\n'
-        '// randomizer/konvertiere-randomizer.py aus randomizer/quellen/eldora_de.json\n'
-        '// plus wesen/eigenschaften ausgelesen aus hausregeln/eldora-arrrrr.js.\n'
-        '// Nicht von Hand bearbeiten: Änderungen in die Rohdateien bzw. ins Skript\n'
-        '// und neu generieren.\n'
-        'randomizerPaketRegistrieren(' + json.dumps(paket, ensure_ascii=False, indent=1).replace('</script', '<\\/script') + ');\n',
-        encoding='utf-8', newline='\n')
-    print(f'OK: eldora.js - {sum(len(t["eintraege"]) for t in eldora_tabellen.values())} Einträge, '
-          f'{len(paket["wesen"])} Wesen, {len(paket["eigenschaften"])} Eigenschaften (aus eldora-arrrrr.js)')
 
 
 if __name__ == '__main__':

@@ -15,16 +15,12 @@
 
 const HAUSREGELN_KEY = 'htbah_hausregeln';
 
-// Eingebaute Pakete. Die Datei wird per <script>-Tag nachgeladen, damit das
-// Ganze auch direkt von file:// funktioniert (fetch() wäre dort blockiert).
-const HAUSREGEL_PAKETE_EINGEBAUT = [
-    {
-        id: 'eldora-arrrrr',
-        name: 'Eldara – Version Arrrrr',
-        datei: 'hausregeln/eldora-arrrrr.js',
-        kurz: 'Piraten-Setting mit fester Talentliste, progressiven Talentkosten und Talentbaum (3 Hauptbäume + 1 Wesen).'
-    }
-];
+// Eingebaute Pakete. Standardmäßig leer - HeroHQ selbst bringt kein eigenes
+// Regelpaket mit, Runden importieren ihr eigenes über "Aus Datei" (siehe
+// hausregelPaketImportieren) oder eine abgeleitete Produktvariante trägt hier
+// ihr eigenes Paket ein. Die Datei wird per <script>-Tag nachgeladen, damit
+// das Ganze auch direkt von file:// funktioniert (fetch() wäre dort blockiert).
+const HAUSREGEL_PAKETE_EINGEBAUT = [];
 
 const HAUSREGELN_STANDARD = {
     // null = Regelwerk pur, sonst id eines Pakets
@@ -83,13 +79,6 @@ function hausregelnSetzen(regeln) {
 
 function hausregelnAktiv() {
     return !!hausregeln.paketId;
-}
-
-// Schaltet Eldara-spezifische Extra-Features frei (Rasterinventar, Schiff) -
-// anders als der Talentbaum sind das rein optische/UX-Ergänzungen der Runde,
-// keine Punkte-Ökonomie, daher ein eigener, engerer Check statt hausregelnAktiv().
-function eldaraAktiv() {
-    return hausregelnAktiv() && appData.hausregeln && appData.hausregeln.paket === 'eldora-arrrrr';
 }
 
 // Wird von den Paketdateien aufgerufen (und für Datei-Importe direkt).
@@ -209,11 +198,10 @@ function hausregelnTalenteUebernehmen(stumm) {
 
 // Feste Talentliste einer Kategorie, wenn sie für den Bogen gelten soll -
 // sonst null (dann bleibt die freie Texteingabe wie im reinen Regelwerk).
-// Eng an eldaraAktiv() statt an hausregelnAktiv() gebunden: wie beim
-// Rasterinventar/Schiff ist das eine UX-Ergänzung der Eldara-Runde, keine
-// generelle Paket-Eigenschaft, die jede Runde per Häkchen an-/abschalten soll.
+// Gilt für jedes aktive Paket, das eine Talentliste mitbringt (kein eigenes
+// An-/Abschalt-Häkchen, anders als Kostenstaffel/Talentbaum/Würfeltabellen).
 function hausregelnFesteTalentliste(attr) {
-    if (typeof eldaraAktiv !== 'function' || !eldaraAktiv()) return null;
+    if (!hausregelnAktiv()) return null;
     const p = aktivesPaket();
     const liste = p && p.talente && p.talente[attr];
     return Array.isArray(liste) && liste.length ? liste : null;
@@ -481,8 +469,8 @@ function hausregelnImportieren(ereignis) {
     leser.readAsText(datei);
 }
 
-// Ein komplettes Regelpaket (Format wie hausregeln/eldora-arrrrr.js, nur als
-// reines JSON) aus einer Datei laden - für Runden mit eigenem Paket.
+// Ein komplettes Regelpaket (Format siehe DATA_FORMAT.md, als reines JSON)
+// aus einer Datei laden - für Runden mit eigenem Paket.
 function hausregelPaketImportieren(ereignis) {
     const datei = ereignis.target.files[0];
     ereignis.target.value = '';

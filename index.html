@@ -317,10 +317,6 @@
                 <div class="inventory-list" id="inventory-list">
                     <!-- Populated by JS -->
                 </div>
-                <!-- Eldara-Hausregel: Rasterinventar mit begrenzten Plätzen statt der
-                     freien Liste (inventarraster.js) - nur sichtbar, wenn das
-                     Regelpaket "eldora-arrrrr" aktiv ist. -->
-                <div class="inventar-raster" id="inventar-raster" style="display: none;"></div>
                                 <div class="add-item-box" id="add-item-box" style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="text" id="new-item-input" placeholder="Item Name..." style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;" onkeypress="handleNewItemKey(event)">
@@ -335,8 +331,7 @@
                 </div>
             </div>
 
-            <!-- Weapons Section - bei aktivem Eldara-Regelpaket ausgeblendet, weil
-                 Waffen dort im Rasterinventar (inventarraster.js) leben -->
+            <!-- Weapons Section -->
             <div class="weapons-section" id="weapons-section" style="margin-top: 2rem;">
                 <h2 class="cat-title"><img id="icon-waffen" src="assets/icon_handeln.jpg" class="category-icon" alt="" style="filter: hue-rotate(150deg);"> Waffen <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                 <div class="weapons-list" id="weapons-list">
@@ -363,20 +358,6 @@
                  rein lokal, geht nie an den SL raus (spielerlog.js) -->
             <div id="spielerlog-section" class="spielerlog-section" style="display: none;"></div>
 
-            <!-- Schiffs-Inventar: nur bei aktivem Eldara-Regelpaket (schiffsinventar.js) -->
-            <div id="schiff-section" class="schiff-section" style="display: none;"></div>
-
-            <!-- Seekampf-Karte: Live-Ansicht der SL-Karte, nur bei aktivem
-                 Eldara-Regelpaket (seekampf.js) -->
-            <div id="seekampf-section" class="seekampf-section" style="display: none;"></div>
-
-            <!-- Karte (Eldara-VTT): Landkarten/Inseln/Schiffsdeck, nur bei
-                 aktivem Eldara-Regelpaket (karten.js) -->
-            <div id="karte-section" class="karte-section" style="display: none;"></div>
-
-            <!-- Kampf (Eldara-VTT): Initiative-/Zustands-Tracker für allgemeinen
-                 Kampf (Landkampf etc.), nur bei aktivem Eldara-Regelpaket (kampf.js) -->
-            <div id="kampf-section" class="karte-section" style="display: none;"></div>
 
         </div>
 
@@ -509,13 +490,6 @@
     <script src="nscliste.js"></script>
     <script src="quests.js"></script>
     <script src="spielerlog.js"></script>
-    <script src="inventarraster.js"></script>
-    <script src="schiffsinventar.js"></script>
-    <script src="battlemap.js"></script>
-    <script src="seekampf-icons.js"></script>
-    <script src="seekampf.js"></script>
-    <script src="karten.js"></script>
-    <script src="kampf.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
     <script src="gmlayout.js"></script>
@@ -909,36 +883,6 @@
                 <div class="gm-panel-slot" data-panel="quests">
                     <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
                     <div id="gm-quests" class="gm-quests"></div>
-                </div>
-
-                <!-- Schiffs-Inventar: geteilter Vorrat der Crew, nur bei aktivem
-                     Eldara-Regelpaket (schiffsinventar.js) -->
-                <div class="gm-panel-slot" data-panel="schiff">
-                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
-                    <div id="gm-schiff" class="gm-schiff"></div>
-                </div>
-
-                <!-- Seekampf: taktischer Kampf-Tracker mit Karte (battlemap.js +
-                     seekampf.js), SL-only, nur bei aktivem Eldara-Regelpaket -->
-                <div class="gm-panel-slot" data-panel="seekampf">
-                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
-                    <div id="gm-seekampf" class="gm-seekampf"></div>
-                </div>
-
-                <!-- Karte (Eldara-VTT): Kartenbibliothek mit Spieler-/NSC-Figuren
-                     und Nebel des Krieges (battlemap.js + karten.js), SL-only,
-                     nur bei aktivem Eldara-Regelpaket -->
-                <div class="gm-panel-slot" data-panel="karte">
-                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
-                    <div id="gm-karte" class="gm-seekampf"></div>
-                </div>
-
-                <!-- Kampf (Eldara-VTT): Initiative-/Zustands-Tracker für allgemeinen
-                     Kampf/"Landkampf" (kampf.js), SL-only, nur bei aktivem
-                     Eldara-Regelpaket -->
-                <div class="gm-panel-slot" data-panel="kampf">
-                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
-                    <div id="gm-kampf" class="gm-seekampf"></div>
                 </div>
 
                 <!-- Tischmitte: Loot vorbereiten, verstecken, aufdecken (tischmitte.js) -->

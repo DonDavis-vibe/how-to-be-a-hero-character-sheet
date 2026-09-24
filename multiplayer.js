@@ -616,7 +616,8 @@ function renderGmDashboard() {
         // jedem Spieler eine falsche Cheat-Warnung ausgelöst hat.
         let maxPoints = parseInt(pData.maxPoints) || 400;
         // Mit Hausregel-Kostenstaffel (hausregeln.js) zählt fürs Budget, was die
-        // Punkte gekostet haben - sonst würde jeder Eldara-Spieler als Cheater gelten.
+        // Punkte gekostet haben - sonst würde jeder Spieler mit aktivem Regelpaket
+        // fälschlich als Cheater gelten.
         if (typeof hausregelnBudget === 'function' && hausregelnBudget() && pData.hausregeln && pData.hausregeln.paket === hausregeln.paketId) {
             maxPoints = hausregelnBudget();
             totalPoints = ['handeln', 'wissen', 'soziales'].reduce((sum, cat) =>
@@ -1199,12 +1200,8 @@ function importGmNotes(event) {
 // Lösung hat.
 const GM_SITZUNG_KEYS = [
     'htbah_hausregeln',
-    'htbah_gm_karten', 'htbah_gm_karten_offen',
-    'htbah_gm_seekampf', 'htbah_gm_seekampf_offen',
-    'htbah_gm_kampf', 'htbah_gm_kampf_offen',
     'htbah_gm_nscliste', 'htbah_gm_nscliste_offen', 'htbah_gm_nscliste_sortierung',
     'htbah_gm_tischmitte', 'htbah_gm_tischmitte_offen',
-    'htbah_gm_schiff', 'htbah_gm_schiff_offen',
     'htbah_gm_queste', 'htbah_gm_queste_offen',
     'htbah_gm_panel_reihenfolge', 'htbah_gm_randomizer_offen'
 ];

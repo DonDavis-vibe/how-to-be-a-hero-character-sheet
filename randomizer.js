@@ -9,14 +9,8 @@
 // Datenpakete liegen in randomizer/<id>.js und werden erst beim ersten Öffnen
 // des Panels nachgeladen (wie hausregeln.js es mit Regelpaketen macht). Ein
 // Paket ruft randomizerPaketRegistrieren({...}) auf; das Format steht in
-// DATA_FORMAT.md. Drei Pakete sind eingebaut:
+// DATA_FORMAT.md. Eingebaut ist:
 //   - original: setting-neutrale Namen/Orte/Items/NSC-Bausteine/Begegnungen
-//   - piraten:  generisches Piraten-Flair (kein Eldara-Kanon)
-//   - eldora:   kanonische Eldara-Inhalte, inkl. Wesen-Liste und den
-//               "Besonderen Eigenschaften" aus dem Regelwerk (RW 4.1 S.18f) -
-//               dort rein als Flavor-Text für den NSC-Generator, NICHT an die
-//               Talentbaum-Punkte-Ökonomie angebunden (die hängt weiterhin an
-//               talentbaum.js / hausregeln.js und wird separat überarbeitet).
 //
 // Das Modul kennt hausregeln.js/talentbaum.js nicht und funktioniert unabhängig
 // davon - genau wie jedes der anderen Erweiterungsmodule für sich lauffähig ist.
@@ -24,9 +18,7 @@
 // legen" ruft, wenn vorhanden, die Funktionen aus tischmitte.js direkt auf.
 
 const RANDOMIZER_PAKETE_EINGEBAUT = [
-    { id: 'original', name: 'Allgemein', datei: 'randomizer/original.js' },
-    { id: 'piraten', name: 'Piraten (allgemein)', datei: 'randomizer/piraten.js' },
-    { id: 'eldora', name: 'Eldara (kanonisch)', datei: 'randomizer/eldora.js' }
+    { id: 'original', name: 'Allgemein', datei: 'randomizer/original.js' }
 ];
 
 const RZ_KATEGORIEN = [
@@ -45,11 +37,6 @@ const RZ_KATEGORIEN = [
 // Kategorien (Namen, NSC-Bausteine, Gerüchte, ...) sind reiner Flavor-Text.
 const RZ_LOOT_KATEGORIEN = ['items', 'waffen'];
 
-// Rang-Schwellen aus dem Regelwerk (RW 4.1 S.17): welcher Attributwert welchen
-// Talentbaum-Rang ergibt. Hier nur für die NSC-Rang-Würfelei genutzt - dieselbe
-// Verteilung wie beim echten Talentwert eines Charakters.
-const RZ_RANG_STAFFEL = [{ bis: 30, rang: 1 }, { bis: 60, rang: 2 }, { bis: 90, rang: 3 }, { bis: 99, rang: 4 }];
-
 const RANDOMIZER_OFFEN_KEY = 'htbah_gm_randomizer_offen';
 
 const randomizerPaketeGeladen = {};
@@ -63,28 +50,21 @@ try {
     if (gespeichert !== null) randomizerOffen = gespeichert === '1';
 } catch (e) { /* egal */ }
 
-let randomizerAktivesPaket = 'eldora';
+let randomizerAktivesPaket = 'original';
 
 // Kriterien für "NSC würfeln" - der SL kann jede Achse offen lassen ("Zufällig",
 // leerer String bzw. 'zufaellig') oder auf einen konkreten Wert festnageln, wenn
 // er einen bestimmten Charakter für seine Runde braucht statt einer Überraschung.
-let randomizerNamensquelle = 'eldora'; // 'zufaellig' | 'original' | 'piraten' | 'eldora'
+let randomizerNamensquelle = 'original'; // 'zufaellig' | 'original'
 let randomizerNscOrt = '';             // '' = Zufällig, sonst ein "neben"-Wert aus npc_trefforte
 let randomizerNscGeschlecht = 'zufaellig'; // 'zufaellig' | 'maennlich' | 'weiblich'
 let randomizerNscHaltung = '';         // '' = Zufällig, sonst ein "haupt"-Wert aus npc_haltungen
-let randomizerNscWesenModus = 'zufaellig'; // 'zufaellig' (~40%) | 'immer' | 'nie'
 
 let randomizerErgebnisAktuell = null; // { htmlAusgabe, textAusgabe, quelle, attribution?, tischmitteBereit, tischmitteVorlage? }
 let randomizerLetzteAktion = null;    // () => void - fürs "Neu würfeln"
 
 function rzZufall(liste) {
     return liste[Math.floor(Math.random() * liste.length)];
-}
-
-function rzRangWuerfeln() {
-    const wurf = Math.floor(Math.random() * 99) + 1;
-    const treffer = RZ_RANG_STAFFEL.find(s => wurf <= s.bis);
-    return treffer ? treffer.rang : RZ_RANG_STAFFEL[RZ_RANG_STAFFEL.length - 1].rang;
 }
 
 // --- Laden -------------------------------------------------------------------
@@ -131,8 +111,9 @@ function randomizerAlleLaden(cb) {
 // --- Würfel-Funktionen ---------------------------------------------------------
 
 // Namenslisten liegen je nach Paket unterschiedlich ab: "original" hat sie als
-// Tabellen (tabellen.namen_maennlich.eintraege[].haupt), "eldora" als einfache
-// Wortlisten (wortlisten.vornamen_maennlich, reine Strings ohne .eintraege).
+// Tabellen (tabellen.namen_maennlich.eintraege[].haupt), andere Pakete können
+// stattdessen einfache Wortlisten liefern (wortlisten.vornamen_maennlich,
+// reine Strings ohne .eintraege).
 function rzNamenlisten(paketId) {
     const p = randomizerPaketeGeladen[paketId];
     if (!p) return null;
@@ -156,66 +137,11 @@ function rzNameRoh(paketId, geschlecht) {
     return `${vor} ${nach}`;
 }
 
-function rzPiratenNameRoh(geschlecht) {
-    const p = randomizerPaketeGeladen.piraten;
-    if (!p) return null;
-    const weiblich = geschlecht === 'weiblich' ? true : geschlecht === 'maennlich' ? false : Math.random() < 0.5;
-    const vor = rzZufall((weiblich ? p.tabellen.vornamen_weiblich : p.tabellen.vornamen_maennlich).eintraege).haupt;
-    const nach = rzZufall(p.tabellen.nachnamen.eintraege).haupt;
-    let name = `${vor} ${nach}`;
-    if (Math.random() < 0.4) name += ` „${rzZufall(p.tabellen.beinamen.eintraege).haupt}"`;
-    return name;
-}
-
 function rzWuerfelName(paketId) {
     const roh = rzNameRoh(paketId);
     if (!roh) return;
     randomizerErgebnisAktuell = { htmlAusgabe: `<strong>${escapeHtml(roh)}</strong>`, textAusgabe: roh, quelle: 'Zufallsname', tischmitteBereit: false };
     randomizerLetzteAktion = () => rzWuerfelName(paketId);
-    renderRandomizerGm();
-}
-
-function rzWuerfelPiratenname() {
-    const roh = rzPiratenNameRoh();
-    if (!roh) return;
-    randomizerErgebnisAktuell = { htmlAusgabe: `<strong>${escapeHtml(roh)}</strong>`, textAusgabe: roh, quelle: 'Piratenname', tischmitteBereit: false };
-    randomizerLetzteAktion = rzWuerfelPiratenname;
-    renderRandomizerGm();
-}
-
-// "Einfaches Crewmitglied": erdig/komisch statt legendärer Kapitän, nach dem
-// Muster aus dem Piraten-Paket ("der bucklige Bernd" / "Schnürschuh-Bill").
-function rzWuerfelCrewErdig() {
-    const p = randomizerPaketeGeladen.piraten;
-    if (!p || !p.wortlisten) return;
-    const w = p.wortlisten;
-    let roh;
-    if (Math.random() < 0.5) {
-        const weiblich = Math.random() < 0.5;
-        const vor = rzZufall(weiblich ? w.vornamen_erdig_weiblich : w.vornamen_erdig_maennlich);
-        const adj = rzZufall(w.beinamen_adjektiv);
-        roh = `${weiblich ? 'die' : 'der'} ${adj} ${vor}`;
-    } else {
-        const vor = rzZufall(Math.random() < 0.5 ? w.vornamen_erdig_weiblich : w.vornamen_erdig_maennlich);
-        roh = `${rzZufall(w.beinamen_praefix)}-${vor}`;
-    }
-    randomizerErgebnisAktuell = { htmlAusgabe: `<strong>${escapeHtml(roh)}</strong>`, textAusgabe: roh, quelle: 'Einfaches Crewmitglied', tischmitteBereit: false };
-    randomizerLetzteAktion = rzWuerfelCrewErdig;
-    renderRandomizerGm();
-}
-
-function rzWuerfelMagischerGegenstand() {
-    const p = randomizerPaketeGeladen.eldora;
-    if (!p) return;
-    const e = rzZufall(p.tabellen.gegenstaende_magisch.eintraege);
-    randomizerErgebnisAktuell = {
-        htmlAusgabe: `<strong>${escapeHtml(e.haupt)}</strong>${e.neben ? ` <span class="rz-neben">(${escapeHtml(e.neben)})</span>` : ''}`,
-        textAusgabe: e.haupt + (e.neben ? ` (${e.neben})` : ''),
-        quelle: 'Magischer Gegenstand (Eldara)',
-        tischmitteBereit: true,
-        tischmitteVorlage: { art: 'gegenstand', name: e.haupt, description: e.neben || '' }
-    };
-    randomizerLetzteAktion = rzWuerfelMagischerGegenstand;
     renderRandomizerGm();
 }
 
@@ -257,54 +183,12 @@ function rzNscHaltungen() {
     return original.tabellen.npc_haltungen.eintraege.map(e => e.haupt);
 }
 
-// Kleines Easter-Egg fürs Team: ganz selten (~1:200), und nur wenn der SL
-// wirklich jede Achse dem Zufall überlässt (kein Ort/Geschlecht/Haltung/
-// Wesen-Modus festgenagelt) unter dem Eldara-Paket, "würfelt" der Zufalls-
-// generator statt eines normalen NSC den Kartenzeichner der Runde persönlich.
-// Rein Flavor, keine Mechanik dahinter - genau wie ein normaler NSC-Wurf auch.
-const RZ_EASTER_EGG_DON_DAVIS = {
-    name: 'Don Davis',
-    rolle: 'Der Kartenzeichner – zieht heimlich die Fäden im Hintergrund',
-    ort: 'Tief im dunklen Schiffsrumpf, wo ihn niemand vermutet',
-    haltung: 'Freundlich, aber auffällig zurückhaltend – beobachtet lieber, als sich einzumischen',
-    auffaelligkeit: 'Ein mächtiger Bart, eines Kapitäns würdig. Tätowierungen am ganzen Körper – findet seine Körperteile nach jedem Gefecht mühelos wieder. Seine Karten sind immer verdächtig aktuell – fast so, als hätte er die Geschichte schon einmal miterlebt.',
-    motivation: 'Fortschritt kann nur erreicht werden, wenn Wissen allen frei zugänglich gemacht wird',
-    wesen: 'Geist'
-};
-
 // Kompletter NSC: Name + Trefferort/Rolle + Haltung + Auffälligkeit + Motivation
 // (Sprachbausteine immer aus dem "Allgemein"-Paket, unabhängig von der gewählten
-// Namensquelle) + optional ein Wesen/Monster mit passender Eigenschaft (nur wenn
-// das Eldara-Paket geladen ist). Der SL kann jede Achse über randomizerNsc* auf
-// einen konkreten Wert festnageln statt sie dem Zufall zu überlassen.
+// Namensquelle). Der SL kann jede Achse über randomizerNsc* auf einen konkreten
+// Wert festnageln statt sie dem Zufall zu überlassen.
 function rzWuerfelNSC() {
     const original = randomizerPaketeGeladen.original;
-    const eldora = randomizerPaketeGeladen.eldora;
-
-    const komplettZufaellig = !randomizerNscOrt && randomizerNscGeschlecht === 'zufaellig'
-        && !randomizerNscHaltung && randomizerNscWesenModus === 'zufaellig';
-    if (eldora && komplettZufaellig && Math.random() < 1 / 200) {
-        const d = RZ_EASTER_EGG_DON_DAVIS;
-        randomizerErgebnisAktuell = {
-            htmlAusgabe: [
-                `<strong>${escapeHtml(d.name)}</strong>`,
-                `${escapeHtml(d.rolle)} <span class="rz-neben">(${escapeHtml(d.ort)})</span>`,
-                `Haltung: ${escapeHtml(d.haltung)}`,
-                `Auffällig: ${escapeHtml(d.auffaelligkeit)}`,
-                `Motivation: ${escapeHtml(d.motivation)}`,
-                `<strong>Wesen: ${escapeHtml(d.wesen)}</strong>`
-            ].join('<br>'),
-            textAusgabe: [
-                d.name, `${d.rolle} (${d.ort})`, `Haltung: ${d.haltung}`,
-                `Auffällig: ${d.auffaelligkeit}`, `Motivation: ${d.motivation}`, `Wesen: ${d.wesen}`
-            ].join(' · '),
-            quelle: 'NSC', tischmitteBereit: false, nscBereit: true,
-            nscVorlage: Object.assign({}, d)
-        };
-        randomizerLetzteAktion = rzWuerfelNSC;
-        renderRandomizerGm();
-        return;
-    }
 
     let namensquelle = randomizerNamensquelle;
     if (namensquelle === 'zufaellig') {
@@ -312,7 +196,7 @@ function rzWuerfelNSC() {
         namensquelle = geladen.length ? rzZufall(geladen) : 'original';
     }
     const geschlecht = randomizerNscGeschlecht === 'zufaellig' ? undefined : randomizerNscGeschlecht;
-    const name = namensquelle === 'piraten' ? rzPiratenNameRoh(geschlecht) : rzNameRoh(namensquelle, geschlecht);
+    const name = rzNameRoh(namensquelle, geschlecht);
 
     const zeilenHtml = [];
     const zeilenText = [];
@@ -338,27 +222,6 @@ function rzWuerfelNSC() {
         zeilenHtml.push(`Motivation: ${escapeHtml(mot.haupt)}`);
         zeilenText.push(`${wo.haupt} (${wo.neben})`, `Haltung: ${halt.haupt}`, `Auffällig: ${auff.haupt}`, `Motivation: ${mot.haupt}`);
         Object.assign(vorlage, { rolle: wo.haupt, ort: wo.neben, haltung: halt.haupt, auffaelligkeit: auff.haupt, motivation: mot.haupt });
-    }
-
-    if (eldora && eldora.wesen && eldora.eigenschaften) {
-        // Nicht jeder NSC ist etwas Übernatürliches - ohne Vorgabe sind die meisten normale Menschen.
-        const istWesen = randomizerNscWesenModus === 'immer' ? true
-            : randomizerNscWesenModus === 'nie' ? false
-            : Math.random() < 0.4;
-        if (istWesen) {
-            const wesen = rzZufall(eldora.wesen);
-            const rang = rzRangWuerfeln();
-            const kandidaten = eldora.eigenschaften.filter(e => e.rang === rang);
-            const eig = kandidaten.length ? rzZufall(kandidaten) : null;
-            const wirkung = eig ? rzZufall(eig.wirkungen) : '';
-            const zeile = `Wesen: ${wesen} (Rang ${rang})${eig ? ` – ${eig.name}: ${wirkung}` : ''}`;
-            zeilenHtml.push(`<strong>${escapeHtml(zeile)}</strong>`);
-            zeilenText.push(zeile);
-            vorlage.wesen = `${wesen} (Rang ${rang})${eig ? ` – ${eig.name}: ${wirkung}` : ''}`;
-        } else {
-            zeilenHtml.push('Kein Wesen – gewöhnlicher Mensch');
-            zeilenText.push('Kein Wesen – gewöhnlicher Mensch');
-        }
     }
 
     randomizerErgebnisAktuell = {
@@ -448,8 +311,6 @@ function renderRandomizerGm() {
         inhalt = '<p class="hr-hint">Tabellen werden beim ersten Öffnen geladen …</p>';
     } else {
         const original = randomizerPaketeGeladen.original;
-        const piraten = randomizerPaketeGeladen.piraten;
-        const eldora = randomizerPaketeGeladen.eldora;
 
         const quellOptionen = RANDOMIZER_PAKETE_EINGEBAUT
             .map(i => `<option value="${i.id}" ${randomizerNamensquelle === i.id ? 'selected' : ''}>${escapeHtml(i.name)}</option>`).join('');
@@ -457,9 +318,8 @@ function renderRandomizerGm() {
             .map(o => `<option value="${escapeHtml(o)}" ${randomizerNscOrt === o ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
         const haltungOptionen = rzNscHaltungen()
             .map(h => `<option value="${escapeHtml(h)}" ${randomizerNscHaltung === h ? 'selected' : ''}>${escapeHtml(h)}</option>`).join('');
-        // 6 Basistabellen (Vornamen, Nachnamen, Rolle/Ort, Haltung, Auffälligkeit,
-        // Motivation) + Wesen/Eigenschaften, sobald das Eldara-Paket geladen ist.
-        const tabellenAnzahl = original ? 6 + (eldora && eldora.wesen && eldora.eigenschaften ? 2 : 0) : 0;
+        // 6 Basistabellen: Vornamen, Nachnamen, Rolle/Ort, Haltung, Auffälligkeit, Motivation.
+        const tabellenAnzahl = original ? 6 : 0;
 
         const generatorenHtml = `
             <div class="rz-generatoren-reihe">
@@ -468,7 +328,7 @@ function renderRandomizerGm() {
                         <div class="rz-block-titel" style="margin-bottom:0"><i class="fa-solid fa-user-gear"></i> NSC würfeln</div>
                         ${tabellenAnzahl ? `<span class="rz-badge">${tabellenAnzahl} Tabellen kombiniert</span>` : ''}
                     </div>
-                    <p class="rz-nsc-hint">Ort bestimmt eine passende Rolle, dazu Name, Haltung, Auffälligkeit, Motivation${eldora ? ' und optional ein Wesen' : ''} - jede Achse lässt sich festlegen oder dem Zufall überlassen.</p>
+                    <p class="rz-nsc-hint">Ort bestimmt eine passende Rolle, dazu Name, Haltung, Auffälligkeit, Motivation - jede Achse lässt sich festlegen oder dem Zufall überlassen.</p>
                     <div class="rz-kriterien-grid">
                         <div class="rz-feld">
                             <label for="rz-nsc-ort">Ort (bestimmt Rolle)</label>
@@ -499,14 +359,6 @@ function renderRandomizerGm() {
                                 ${haltungOptionen}
                             </select>
                         </div>
-                        ${eldora ? `<div class="rz-feld">
-                            <label for="rz-nsc-wesen">Wesen/Monster</label>
-                            <select id="rz-nsc-wesen" class="x-select">
-                                <option value="zufaellig" ${randomizerNscWesenModus === 'zufaellig' ? 'selected' : ''}>Zufällig (~40%)</option>
-                                <option value="immer" ${randomizerNscWesenModus === 'immer' ? 'selected' : ''}>Immer</option>
-                                <option value="nie" ${randomizerNscWesenModus === 'nie' ? 'selected' : ''}>Nie</option>
-                            </select>
-                        </div>` : ''}
                     </div>
                     <button class="tool-btn rz-btn-primary" id="rz-nsc-btn"><i class="fa-solid fa-dice"></i> Würfeln</button>
                 </div>
@@ -514,9 +366,6 @@ function renderRandomizerGm() {
                     <div class="rz-block-titel"><i class="fa-solid fa-shuffle"></i> Weitere Generatoren</div>
                     <div class="rz-zeile">
                         ${original ? `<button class="tool-btn" data-rzgen="name:original"><i class="fa-solid fa-id-badge"></i> Zufallsname</button>` : ''}
-                        ${piraten ? `<button class="tool-btn" data-rzgen="piratenname"><i class="fa-solid fa-id-badge"></i> Piratenname</button>` : ''}
-                        ${piraten ? `<button class="tool-btn" data-rzgen="crewErdig"><i class="fa-solid fa-user"></i> Einfaches Crewmitglied</button>` : ''}
-                        ${eldora ? `<button class="tool-btn" data-rzgen="magischerGegenstand"><i class="fa-solid fa-wand-sparkles"></i> Magischer Gegenstand</button>` : ''}
                     </div>
                 </div>
             </div>`;
@@ -583,10 +432,7 @@ function renderRandomizerGm() {
     }));
     box.querySelectorAll('[data-rzgen]').forEach(b => b.addEventListener('click', () => {
         const val = b.dataset.rzgen;
-        if (val === 'piratenname') rzWuerfelPiratenname();
-        else if (val === 'crewErdig') rzWuerfelCrewErdig();
-        else if (val === 'magischerGegenstand') rzWuerfelMagischerGegenstand();
-        else if (val.indexOf('name:') === 0) rzWuerfelName(val.split(':')[1]);
+        if (val.indexOf('name:') === 0) rzWuerfelName(val.split(':')[1]);
     }));
 
     const quelle = document.getElementById('rz-quelle');
@@ -597,8 +443,6 @@ function renderRandomizerGm() {
     if (nscGeschlecht) nscGeschlecht.addEventListener('change', () => { randomizerNscGeschlecht = nscGeschlecht.value; });
     const nscHaltung = document.getElementById('rz-nsc-haltung');
     if (nscHaltung) nscHaltung.addEventListener('change', () => { randomizerNscHaltung = nscHaltung.value; });
-    const nscWesen = document.getElementById('rz-nsc-wesen');
-    if (nscWesen) nscWesen.addEventListener('change', () => { randomizerNscWesenModus = nscWesen.value; });
     const nscBtn = document.getElementById('rz-nsc-btn');
     if (nscBtn) nscBtn.addEventListener('click', rzWuerfelNSC);
     const reroll = document.getElementById('rz-reroll');

@@ -48,7 +48,7 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
   * **Farbcodierung:** Weise jedem Spieler eine eigene Farbe zu für perfekten Überblick.
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
-  * **🎲 Zufallsgenerator:** SL-Vorbereitungswerkzeug im Dashboard - Namen, NSC (inkl. optionalem Eldara-Wesen mit passender Eigenschaft), Orte, magische Gegenstände, Begägnungen und Gerüchte würfeln. Ergebnisse lassen sich per Klick in die SL-Notizen übernehmen oder (bei Gegenständen) direkt versteckt in die Tischmitte legen. Rein lokal beim SL, nichts geht automatisch an Spieler raus.
+  * **🎲 Zufallsgenerator:** SL-Vorbereitungswerkzeug im Dashboard - Namen, NSC, Orte, Gegenstände, Begegnungen und Gerüchte würfeln. Ergebnisse lassen sich per Klick in die SL-Notizen übernehmen oder (bei Gegenständen) direkt versteckt in die Tischmitte legen. Rein lokal beim SL, nichts geht automatisch an Spieler raus.
   * **🪄 SL-Eingriff:** Per Knopf in der Spielerkarte einem Charakter direkt Gegenstände, Waffen oder Geld geben und Status-Effekte setzen oder entfernen - auf Wunsch **verdeckt**, also ohne Logbuch-Eintrag oder Hinweis beim Spieler (für Flüche, heimlich zugesteckte Dinge, schleichende Vergiftungen). In deinem Live-Feed steht jeder Eingriff.
   * **🤯 Tischmitte (Loot-Ablage):** Beute (Gegenstände, Waffen, Geld) schon vor der Session anlegen und **versteckt** halten - nur du siehst sie. Findet die Gruppe die Truhe, ein Klick auf *Aufdecken* und die Beute erscheint bei allen Spielern; per *Geben an …* landet etwas direkt bei einem Charakter. Die Tischmitte bleibt in deinem Browser gespeichert.
   * **🎛️ Integriertes Live-Soundboard:** 43 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
@@ -92,7 +92,7 @@ Ein Paket kann mitbringen:
 * **Talentbaum**: Hauptbäume + Wesen wählen, Skills mit Rang- und Skillpunkten lernen, die aus den Talentwerten entstehen; gelernte Skills im Kampf abhaken und ihren Schaden direkt würfeln.
 * **Wesen-Effekte** (Boni/Mali) und **Würfeltabellen** (Kochen, Zechen, Orakel ...).
 
-Eingebaut ist das Paket *Eldara – Version Arrrrr* einer Piraten-Runde. Eigene Pakete lassen sich als JSON laden; das Format steht in [DATA_FORMAT.md](DATA_FORMAT.md).
+HeroHQ selbst bringt kein eigenes Regelpaket mit. Eigene Pakete lassen sich als JSON laden; das Format steht in [DATA_FORMAT.md](DATA_FORMAT.md).
 
 ---
 

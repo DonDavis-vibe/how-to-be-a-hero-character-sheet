@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/sitemap.xml

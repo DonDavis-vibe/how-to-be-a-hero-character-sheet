@@ -8,12 +8,11 @@
 //
 // Technik: jedes Panel steckt in index.html in einem äußeren .gm-panel-slot
 // mit einem kleinen Ziehgriff obendrauf - die eigentlichen render*Gm()-
-// Funktionen der einzelnen Module (nscliste.js, quests.js, schiffsinventar.js,
-// seekampf.js, tischmitte.js, randomizer.js) fassen weiterhin nur ihr eigenes
-// inneres <div id="gm-..."> an und wissen nichts vom Umsortieren. Ein
-// MutationObserver auf jedes innere Div spiegelt dessen style.display auf
-// den Slot, damit ein ausgeblendetes Panel (z.B. Seekampf ohne Eldara) auch
-// keinen leeren Rahmen mit Ziehgriff hinterlässt.
+// Funktionen der einzelnen Module (nscliste.js, quests.js, tischmitte.js,
+// randomizer.js) fassen weiterhin nur ihr eigenes inneres <div id="gm-...">
+// an und wissen nichts vom Umsortieren. Ein MutationObserver auf jedes
+// innere Div spiegelt dessen style.display auf den Slot, damit ein
+// ausgeblendetes Panel auch keinen leeren Rahmen mit Ziehgriff hinterlässt.
 
 const GM_PANEL_ORDER_KEY = 'htbah_gm_panel_reihenfolge';
 let gmPanelGezogen = null;
@@ -59,7 +58,7 @@ function gmPanelsInitialisieren() {
 
         // Sichtbarkeit des inneren Panels auf den Slot spiegeln, damit ein per
         // style.display="none" ausgeblendetes Panel keinen leeren Rahmen +
-        // Ziehgriff übrig lässt (z.B. Schiff/Seekampf ohne aktives Eldara-Paket).
+        // Ziehgriff übrig lässt.
         if (inneresPanel) {
             const sync = () => { slot.style.display = inneresPanel.style.display === 'none' ? 'none' : ''; };
             sync();

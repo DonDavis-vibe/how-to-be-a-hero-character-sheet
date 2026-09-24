@@ -16,26 +16,18 @@
 //     aktion 'geben'          { item: { art, name, amount, damage, description } }
 //     aktion 'status'         { status: { name, value, type } }
 //     aktion 'statusWeg'      { statusId }
-//     aktion 'monsterpunkte'  { betrag } - Eldara-Hausregel (talentbaum.js):
-//                             erhöht/senkt appData.hausregeln.wesenWert, den
-//                             "Attribut-Grundwert" des Wesen/Monster-Astes.
-//                             Der SL vergibt sie, nicht der Spieler selbst
-//                             (RW 4.1 S.18).
-//     aktion 'sonderAst'      { ast } - Eldara-Hausregel: schaltet einen der
-//                             19 NSC-/Monster-Talentbäume (Werwolf, Vampir, …)
-//                             als zusätzliche Wesen-Option frei. Normalerweise
-//                             nur die 11 Spieler-Wesen wählbar - RW 4.3 S.15:
-//                             "Wollt ihr einen Talentbaum aus diesem Bereich,
-//                             kontaktiert bitte den Spielleiter" - das ist
-//                             genau diese Ausnahme, seltener SL-Sonderfall.
+//     aktion 'monsterpunkte'  { betrag } - nur relevant, wenn das aktive
+//                             Regelpaket einen Wesen-Ast im Talentbaum hat
+//                             (talentbaum.js): erhöht/senkt
+//                             appData.hausregeln.wesenWert, den "Attribut-
+//                             Grundwert" dieses Astes. Der SL vergibt ihn,
+//                             nicht der Spieler selbst.
+//     aktion 'sonderAst'      { ast } - schaltet einen der Äste aus
+//                             talentbaum.weitereAeste des aktiven Pakets als
+//                             zusätzliche Wesen-Option für einen einzelnen
+//                             Spieler frei (Sonderfall, den nicht jedes
+//                             Paket überhaupt anbietet).
 //     aktion 'sonderAstWeg'  {} - nimmt die Sonderfreigabe wieder zurück.
-//     aktion 'hp'             { betrag, grund } - Eldara-Hausregel (kampf.js):
-//                             Schaden (negativ) oder Heilung (positiv) aus dem
-//                             Kampf-Tracker, z.B. eine tickende Blutung oder
-//                             ein Rettungswurf-Ergebnis. Wird IMMER offen
-//                             angewendet (kein "still" für Kampfschaden -
-//                             der Spieler muss seine eigene HP-Änderung
-//                             sehen), reuse von adjustHp() (app.js).
 //
 // Das Formular sitzt in einem Modal statt in der Spielerkarte: die Karten
 // werden bei jedem Bogen-Update neu gebaut, Eingaben darin gingen verloren.
@@ -149,9 +141,10 @@ function renderEingriff() {
     body.querySelectorAll('[data-egweg]').forEach(b => b.addEventListener('click', () => eingriffStatusWeg(b.dataset.egweg)));
 }
 
-// Seltene Ausnahme (RW 4.3 S.15): der SL kann einem einzelnen Spieler einen
-// der 19 NSC-/Monster-Talentbäume als zusätzliche Wesen-Option freischalten.
-// Nur sichtbar, wenn das aktive Paket überhaupt solche "weiteren Äste" hat.
+// Seltene Zusatzoption: der SL kann einem einzelnen Spieler einen der Äste
+// aus talentbaum.weitereAeste des aktiven Pakets als zusätzliche Wesen-Option
+// freischalten. Nur sichtbar, wenn das aktive Paket überhaupt solche
+// "weiteren Äste" definiert.
 function eingriffSonderAstHtml(d) {
     const paket = typeof aktivesPaket === 'function' ? aktivesPaket() : null;
     const weitere = paket && paket.talentbaum && Array.isArray(paket.talentbaum.weitereAeste) ? paket.talentbaum.weitereAeste : [];
@@ -159,7 +152,7 @@ function eingriffSonderAstHtml(d) {
     const aktuell = d.hausregeln && d.hausregeln.sonderAst;
     return `
         <h4><i class="fa-solid fa-unlock"></i> Sonderfreigabe: Talentbaum</h4>
-        <p class="hr-hint" style="margin-top:0">Schaltet einen NSC-/Monster-Talentbaum als zusätzliche Wesen-Option frei - für den Ausnahmefall aus RW 4.3 S.15 ("kontaktiert bitte den Spielleiter").</p>
+        <p class="hr-hint" style="margin-top:0">Schaltet einen zusätzlichen Talentbaum als weitere Wesen-Option frei - für den Ausnahmefall, den das aktive Regelpaket dafür vorsieht.</p>
         ${aktuell ? `<p class="hr-hint">Aktuell freigeschaltet: <strong>${escapeHtml(aktuell)}</strong>
             <button class="x-mini x-mini-danger" onclick="eingriffSonderAstWeg()" title="Freigabe zurücknehmen">✕</button></p>` : ''}
         <div class="eg-zeile">
@@ -301,8 +294,8 @@ function eingriffEmpfangen(payload) {
         appData.statuses = appData.statuses.filter(s => s.id !== payload.statusId);
         log(`Status entfernt: ${st.name} (vom Spielleiter)`, 'activity-neutral', '<i class="fa-solid fa-heart-circle-check"></i>');
     } else if (payload.aktion === 'monsterpunkte') {
-        // Eldara-Hausregel (talentbaum.js): der Wesen/Monster-Ast wird nicht
-        // erspielt, sondern vom SL direkt vergeben.
+        // Der Wesen-Ast (talentbaum.js) wird nicht erspielt, sondern vom SL
+        // direkt vergeben.
         if (!appData.hausregeln || typeof appData.hausregeln !== 'object') appData.hausregeln = {};
         const betrag = parseInt(payload.betrag) || 0;
         const vorher = Math.max(0, parseInt(appData.hausregeln.wesenWert) || 0);
@@ -310,19 +303,12 @@ function eingriffEmpfangen(payload) {
         log(`Monsterpunkte ${betrag >= 0 ? '+' : ''}${betrag} (jetzt ${appData.hausregeln.wesenWert}) (vom Spielleiter)`, betrag >= 0 ? 'activity-good' : 'activity-bad', '<i class="fa-solid fa-dragon"></i>');
         if (typeof renderTalentbaum === 'function') renderTalentbaum();
     } else if (payload.aktion === 'sonderAst' && payload.ast) {
-        // Seltene Ausnahme (RW 4.3 S.15): SL schaltet einen NSC-/Monster-Ast
-        // als zusätzliche Wesen-Option frei (siehe talentbaum.js).
+        // SL schaltet einen Ast aus talentbaum.weitereAeste als zusätzliche
+        // Wesen-Option frei (siehe talentbaum.js).
         if (!appData.hausregeln || typeof appData.hausregeln !== 'object') appData.hausregeln = {};
         appData.hausregeln.sonderAst = String(payload.ast).slice(0, 60);
         log(`Sonderfreigabe: Talentbaum "${appData.hausregeln.sonderAst}" freigeschaltet (vom Spielleiter)`, 'activity-good', '<i class="fa-solid fa-unlock"></i>');
         if (typeof renderTalentbaum === 'function') renderTalentbaum();
-    } else if (payload.aktion === 'hp' && typeof payload.betrag === 'number' && payload.betrag) {
-        // Eldara-Hausregel (kampf.js): Schaden/Heilung aus dem Kampf-Tracker.
-        // Läuft immer offen (nicht "still"): adjustHp() loggt selbst und
-        // aktualisiert hp-bar/Eingabefeld direkt, das braucht der Spieler,
-        // um seine eigene HP-Änderung nachzuvollziehen.
-        if (typeof adjustHp === 'function') adjustHp(payload.betrag, payload.grund ? String(payload.grund).slice(0, 120) : undefined);
-        return;
     } else if (payload.aktion === 'sonderAstWeg') {
         if (appData.hausregeln) {
             const alt = appData.hausregeln.sonderAst;
