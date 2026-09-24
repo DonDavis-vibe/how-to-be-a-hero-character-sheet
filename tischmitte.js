@@ -68,7 +68,7 @@ function tischmitteLaden() {
 }
 
 function tischmitteSichern() {
-    try { localStorage.setItem(TISCHMITTE_GM_KEY, JSON.stringify(tischmitte)); } catch (e) { /* voll */ }
+    sicherSpeichern(TISCHMITTE_GM_KEY, JSON.stringify(tischmitte));
 }
 
 // Jede Änderung beim SL läuft hier durch: sichern, an alle verteilen, zeichnen.
@@ -257,7 +257,7 @@ function renderTischmitteGm() {
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {
         tischmitteOffenGm = details.open;
-        try { localStorage.setItem(TISCHMITTE_GM_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(TISCHMITTE_GM_OFFEN_KEY, details.open ? '1' : '0');
     });
     box.querySelectorAll('[data-tmtoggle]').forEach(b => b.addEventListener('click', () => tischmitteVerstecktToggle(b.dataset.tmtoggle)));
     box.querySelectorAll('[data-tmdel]').forEach(b => b.addEventListener('click', () => tischmitteEntfernen(b.dataset.tmdel)));

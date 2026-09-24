@@ -40,7 +40,7 @@ function nscListeLaden() {
 }
 
 function nscListeSichern() {
-    try { localStorage.setItem(NSC_LISTE_KEY, JSON.stringify(nscListe)); } catch (e) { /* voll */ }
+    sicherSpeichern(NSC_LISTE_KEY, JSON.stringify(nscListe));
 }
 
 // Vorlage darf jedes Feld weglassen - beim manuellen Anlegen ist meist nur der
@@ -220,12 +220,12 @@ function renderNscListeGm() {
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {
         nscListeOffen = details.open;
-        try { localStorage.setItem(NSC_LISTE_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(NSC_LISTE_OFFEN_KEY, details.open ? '1' : '0');
     });
     const sortSel = document.getElementById('nsc-sortierung');
     if (sortSel) sortSel.addEventListener('change', () => {
         nscListeSortierung = sortSel.value;
-        try { localStorage.setItem(NSC_SORTIERUNG_KEY, sortSel.value); } catch (e) { /* egal */ }
+        sicherSpeichern(NSC_SORTIERUNG_KEY, sortSel.value);
         renderNscListeGm();
     });
     box.querySelectorAll('[data-nscdel]').forEach(b => b.addEventListener('click', () => nscListeEntfernen(b.dataset.nscdel)));

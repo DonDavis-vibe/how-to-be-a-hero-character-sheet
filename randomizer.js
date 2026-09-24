@@ -572,7 +572,7 @@ function renderRandomizerGm() {
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {
         randomizerOffen = details.open;
-        try { localStorage.setItem(RANDOMIZER_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(RANDOMIZER_OFFEN_KEY, details.open ? '1' : '0');
         if (details.open && !randomizerAlleGeladen) randomizerAlleLaden(() => renderRandomizerGm());
     });
 

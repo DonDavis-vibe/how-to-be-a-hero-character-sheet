@@ -199,7 +199,7 @@ function skLaden() {
 }
 
 function skSichern() {
-    try { localStorage.setItem(SEEKAMPF_KEY, JSON.stringify(seekampf)); } catch (e) { /* voll oder blockiert */ }
+    sicherSpeichern(SEEKAMPF_KEY, JSON.stringify(seekampf));
     skVerteilen();
 }
 
@@ -915,7 +915,7 @@ function renderSeekampfGm() {
         const details = box.querySelector('details');
         if (details) details.addEventListener('toggle', () => {
             skOffenGm = details.open;
-            try { localStorage.setItem(SEEKAMPF_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+            sicherSpeichern(SEEKAMPF_OFFEN_KEY, details.open ? '1' : '0');
         });
     }
     // Neu hinzugekommene/entfernte Einheiten und Marker seit dem letzten Render abgleichen.

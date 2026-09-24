@@ -81,7 +81,7 @@ function karteLaden() {
 }
 
 function karteSichern() {
-    try { localStorage.setItem(KARTEN_KEY, JSON.stringify({ karten, aktivId: karteAktivId })); } catch (e) { /* voll oder blockiert */ }
+    sicherSpeichern(KARTEN_KEY, JSON.stringify({ karten, aktivId: karteAktivId }));
 }
 
 // Schreibt den lebenden Kartenzustand zurück in karten[], bevor gewechselt
@@ -516,7 +516,7 @@ function renderKarteGm() {
         const details = box.querySelector('details');
         if (details) details.addEventListener('toggle', () => {
             karteOffenGm = details.open;
-            try { localStorage.setItem(KARTEN_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+            sicherSpeichern(KARTEN_OFFEN_KEY, details.open ? '1' : '0');
             if (details.open && karteMap) karteMap.zeichnen();
         });
     } else {

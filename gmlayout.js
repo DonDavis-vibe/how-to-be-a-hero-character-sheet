@@ -86,7 +86,7 @@ function gmPanelReihenfolgeSichern() {
     const spalte = document.getElementById('gm-panels-spalte');
     if (!spalte) return;
     const reihenfolge = [...spalte.querySelectorAll(':scope > .gm-panel-slot')].map(s => s.dataset.panel);
-    try { localStorage.setItem(GM_PANEL_ORDER_KEY, JSON.stringify(reihenfolge)); } catch (e) { /* voll oder blockiert */ }
+    sicherSpeichern(GM_PANEL_ORDER_KEY, JSON.stringify(reihenfolge));
 }
 
 function gmPanelReihenfolgeZuruecksetzen() {

@@ -62,7 +62,7 @@ function hausregelnLaden() {
 }
 
 function hausregelnSichern() {
-    try { localStorage.setItem(HAUSREGELN_KEY, JSON.stringify(hausregeln)); } catch (e) { /* Speicher evtl. voll (Paketdaten!) */ }
+    sicherSpeichern(HAUSREGELN_KEY, JSON.stringify(hausregeln));
 }
 
 // Übernimmt ein (evtl. unvollständiges oder älteres) Regelobjekt in den Standard.

@@ -145,7 +145,7 @@ function schiffLaden() {
 }
 
 function schiffSichern() {
-    try { localStorage.setItem(SCHIFF_KEY, JSON.stringify({ klasse: schiffKlasse, items: schiff, kisten, kistenKapazitaet })); } catch (e) { /* voll */ }
+    sicherSpeichern(SCHIFF_KEY, JSON.stringify({ klasse: schiffKlasse, items: schiff, kisten, kistenKapazitaet }));
 }
 
 function schiffLagerKapazitaet(klasse) {
@@ -500,7 +500,7 @@ function renderSchiffGm() {
     const details = box.querySelectorAll('details');
     if (details[0]) details[0].addEventListener('toggle', () => {
         schiffOffenGm = details[0].open;
-        try { localStorage.setItem(SCHIFF_OFFEN_GM_KEY, details[0].open ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(SCHIFF_OFFEN_GM_KEY, details[0].open ? '1' : '0');
     });
     if (details[1]) details[1].addEventListener('toggle', () => { kisteOffenGm = details[1].open; });
     const klasseSel = document.getElementById('schiff-klasse');

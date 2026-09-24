@@ -2415,7 +2415,7 @@ function openWizard() {
 
 function closeWizard(markSeen) {
     if (markSeen) {
-        try { localStorage.setItem(WIZARD_SEEN_KEY, '1'); } catch (e) { /* localStorage evtl. blockiert */ }
+        sicherSpeichern(WIZARD_SEEN_KEY, '1');
     }
     const modal = document.getElementById('wizard-modal-overlay');
     if (!modal) return;

@@ -109,7 +109,7 @@ function renderSpielerlog() {
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {
         spielerlogOffen = details.open;
-        try { localStorage.setItem(SPIELERLOG_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(SPIELERLOG_OFFEN_KEY, details.open ? '1' : '0');
     });
     box.querySelectorAll('[data-sldel]').forEach(b => b.addEventListener('click', () => spielerlogEntfernen(b.dataset.sldel)));
     box.querySelectorAll('[data-slnpc]').forEach(i => i.addEventListener('input', () => spielerlogFeldAendern(i.dataset.slnpc, 'npc', i.value)));

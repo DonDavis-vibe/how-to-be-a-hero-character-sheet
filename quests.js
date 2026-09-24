@@ -44,7 +44,7 @@ function questeLaden() {
 }
 
 function questeSichern() {
-    try { localStorage.setItem(QUESTE_KEY, JSON.stringify(queste)); } catch (e) { /* voll */ }
+    sicherSpeichern(QUESTE_KEY, JSON.stringify(queste));
 }
 
 // Nur das, was der SL freigegeben hat - versteckte Quests, Hinweise und Ziele
@@ -281,7 +281,7 @@ function renderQuesteGm() {
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {
         questeOffenGm = details.open;
-        try { localStorage.setItem(QUESTE_OFFEN_KEY, details.open ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(QUESTE_OFFEN_KEY, details.open ? '1' : '0');
     });
     box.querySelectorAll('[data-qstoggle]').forEach(b => b.addEventListener('click', () => questeVerstecktToggle(b.dataset.qstoggle)));
     box.querySelectorAll('[data-qsdel]').forEach(b => b.addEventListener('click', () => questeEntfernen(b.dataset.qsdel)));

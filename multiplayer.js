@@ -171,7 +171,7 @@ function saveTurnSettings() {
         return;
     }
 
-    localStorage.setItem('multiplayer_turn', JSON.stringify({
+    sicherSpeichern('multiplayer_turn', JSON.stringify({
         urls: url,
         username: user,
         credential: pass
@@ -479,7 +479,7 @@ function getColorForPlayer(name) {
 }
 
 function setColorForPlayer(name, color) {
-    localStorage.setItem('gmPlayerColor_' + name, color);
+    sicherSpeichern('gmPlayerColor_' + name, color);
     renderGmDashboard();
     if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
 }
@@ -739,7 +739,7 @@ function renderGmDashboard() {
         
         // Add event listener to save notes
         card.querySelector('textarea').addEventListener('input', (e) => {
-            localStorage.setItem('gmNotes_' + e.target.dataset.charname, e.target.value);
+            sicherSpeichern('gmNotes_' + e.target.dataset.charname, e.target.value);
         });
         
         const eingriffBtn = card.querySelector('[data-eingriff]');
@@ -791,7 +791,7 @@ function loadGmLogHistory() {
 function saveGmLogHistory() {
     // Keep max 50 entries
     if (gmLogHistory.length > 50) gmLogHistory = gmLogHistory.slice(0, 50);
-    localStorage.setItem('gmLogHistory', JSON.stringify(gmLogHistory));
+    sicherSpeichern('gmLogHistory', JSON.stringify(gmLogHistory));
 }
 
 function addGmLogEntry(charName, message, emoji) {
@@ -1135,7 +1135,7 @@ function sendMultiplayerLog(message, emoji = "🎲", bigNumber = null, subtitle 
 }
 
 function saveGmGeneralNotes(val) {
-    localStorage.setItem('gm_general_notes', val);
+    sicherSpeichern('gm_general_notes', val);
 }
 // --- GM Notes Management ---
 
@@ -1165,7 +1165,7 @@ function importGmNotes(event) {
             const data = JSON.parse(e.target.result);
             for (const key in data) {
                 if (key.startsWith('gmNotes_') || key === 'gm_general_notes') {
-                    localStorage.setItem(key, data[key]);
+                    sicherSpeichern(key, data[key]);
                 }
             }
             alert('SL Notizen erfolgreich geladen!');
@@ -1246,7 +1246,7 @@ function importGmSession(event) {
             }
             if (!confirm('Aktuelle SL-Daten in diesem Browser (Karten, Seekampf, Kampf, NSC-Liste, Tischmitte, Schiff, Quests, Regelpaket) werden durch die Datei ersetzt. Fortfahren?')) return;
             GM_SITZUNG_KEYS.forEach(k => {
-                if (Object.prototype.hasOwnProperty.call(bundle.daten, k)) localStorage.setItem(k, bundle.daten[k]);
+                if (Object.prototype.hasOwnProperty.call(bundle.daten, k)) sicherSpeichern(k, bundle.daten[k]);
                 else localStorage.removeItem(k);
             });
             location.reload();
@@ -1282,7 +1282,7 @@ function showGmNotesArchive() {
             `;
             
             box.querySelector('textarea').addEventListener('input', (e) => {
-                localStorage.setItem(key, e.target.value);
+                sicherSpeichern(key, e.target.value);
                 // Also update live dashboard if player is currently connected
                 if (typeof isGmMode !== 'undefined' && isGmMode) renderGmDashboard(); 
             });
@@ -1359,9 +1359,7 @@ function changePlayerVolume(vol) {
     const v = parseFloat(vol);
     if (isNaN(v)) return;
     playerVolume = Math.max(0, Math.min(1, v));
-    try {
-        localStorage.setItem(PLAYER_VOLUME_KEY, String(playerVolume));
-    } catch (e) { /* localStorage evtl. blockiert - dann gilt der Wert nur für diese Sitzung */ }
+    sicherSpeichern(PLAYER_VOLUME_KEY, String(playerVolume));
     // Bereits laufende Sounds sofort nachziehen, nicht erst beim nächsten Abspielen
     currentAudioPlayers.forEach(audio => applyVolume(audio, audio.gmVolume));
     updatePlayerVolumeIcon(playerVolume);

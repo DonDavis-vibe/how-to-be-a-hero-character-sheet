@@ -147,7 +147,7 @@ function kampfLaden() {
 }
 
 function kampfSichern() {
-    try { localStorage.setItem(KAMPF_KEY, JSON.stringify(kampf)); } catch (e) { /* voll oder blockiert */ }
+    sicherSpeichern(KAMPF_KEY, JSON.stringify(kampf));
     kampfVerteilen();
 }
 
@@ -796,7 +796,7 @@ function renderKampfGm() {
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {
         kampfOffenGm = details.open;
-        try { localStorage.setItem(KAMPF_OFFEN_KEY, kampfOffenGm ? '1' : '0'); } catch (e) { /* egal */ }
+        sicherSpeichern(KAMPF_OFFEN_KEY, kampfOffenGm ? '1' : '0');
     });
 }
 
