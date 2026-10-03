@@ -48,6 +48,7 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
   * **Save & Load:** Exportiere und importiere all deine SL-Notizen als JSON-Datei.
   * **Farbcodierung:** Weise jedem Spieler eine eigene Farbe zu für perfekten Überblick.
   * **🤫 Anflüstern:** Schick einem oder mehreren Spielern eine **private Nachricht** ("Der Wirt lügt"). Sie erscheint nur bei den Gewählten als Hinweiskarte, bleibt stehen, bis sie als gelesen bestätigt ist, und du siehst die Lesebestätigung. Läuft bewusst nicht durch Logbuch und Discord.
+  * **🕸️ Beziehungsnetz & Sprungleiste:** Eine Mindmap aus Helden und NSC-Liste mit beschrifteten Beziehungen, dazu eine Leiste oben im Dashboard, die direkt zu jedem Panel springt.
   * **📣 Wurf mit Gruppe teilen:** Deine eigenen Würfe bleiben geheim - ein Klick unter der Würfel-Box schickt genau den letzten Wurf an alle Spieler.
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
@@ -63,6 +64,10 @@ Einfach den 4-stelligen Code des Spielleiters eingeben und auf "Beitreten" klick
 **🤫 Flüsterpost:** Private Nachrichten vom Spielleiter erscheinen als Hinweiskarte oben im Bild und lassen sich später unter *Flüsterpost* in der Symbolleiste nachlesen.
 
 **🎲 Team-Würfel:** Der letzte Wurf der Gruppe steht groß im Panel. Du entscheidest selbst, ob deine Würfe an die ganze Gruppe gehen (sonst nur an den SL), und kannst optional Sound oder Popup bei Würfen von **Mitspielern** einschalten.
+
+**🧭 Schnellnavigation:** Eine mitscrollende Leiste springt direkt zu Inventar, Waffen, Logbuch & Co. - am Handy unten am Rand, am Desktop schwebend. Bereiche, die gerade im Bild sind, werden markiert; am Handy zeigt eine schlanke Leiste oben dauerhaft deine Lebenspunkte.
+
+**🕸️ Beziehungsnetz & Aktuelle Werte:** Eine eigene Mindmap, wer wen kennt (verknüpft mit deinem Logbuch), und eine freie Merkliste für gerade gültige Werte wie Waffenschaden oder Bewegung.
 
 **⚡ Status mit Wirkung:** Ein Status-Effekt kann auf eine Fertigkeit wirken - eine Zahl im Wert-Feld wird dann bei jeder Probe darauf automatisch eingerechnet (Malus zieht ab, Bonus addiert).
 

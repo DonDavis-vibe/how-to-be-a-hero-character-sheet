@@ -430,6 +430,8 @@ function enterGmMode(roomCode) {
     loadGmLogHistory();
     addGmLogSystemMessage(`Session gestartet! Raum-Code: ${roomCode}`);
     if (typeof refreshCustomSoundUI === 'function') refreshCustomSoundUI();
+    // Das Dashboard war bis eben ausgeblendet - Sprungleiste erst jetzt aufbauen
+    if (typeof gmjumpRender === 'function') gmjumpRender();
 }
 
 function exitGmMode() {

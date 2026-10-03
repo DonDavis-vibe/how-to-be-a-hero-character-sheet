@@ -217,6 +217,10 @@ function updateHpBarVisual() {
     } else {
         bar.style.backgroundColor = 'var(--color-dmg)'; // danger red
     }
+
+    // Handy-Statusleiste (mobilestatus.js) synchron halten - ein einziger Hook
+    // statt jeden HP-Änderungspfad einzeln anzufassen, da alle hier durchlaufen.
+    if (typeof mobilestatusRender === 'function') mobilestatusRender(perc);
 }
 
 // Event Listeners for simple fields

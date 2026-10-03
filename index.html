@@ -67,6 +67,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+
+    <!-- Handy-Statusleiste: bleibt oben stehen und zeigt immer die aktuellen
+         Lebenspunkte, nur unterhalb der Mobile-Breakpoint sichtbar (mobilestatus.js) -->
+    <div id="mobile-status-bar" class="mobile-status-bar" role="button" aria-label="Zu Lebenspunkte springen"></div>
+
+    <!-- Schnellnavigation: mitscrollende Leiste mit Sprunglinks zu allen gerade
+         sichtbaren Panels (mobilenav.js) -->
+    <nav id="mobile-nav" class="mobile-nav" aria-label="Schnellnavigation"></nav>
     <h1 class="sr-only">HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero</h1>
     
     <!-- Floating Info Button -->
@@ -155,7 +163,7 @@
         <!-- Left Side: Character Sheet -->
         <div class="character-sheet glass-panel">
             
-            <header class="character-header">
+            <header class="character-header" id="charakter-kopf">
                 <label class="portrait-container" for="portrait-upload">
                     <img src="assets/giphy.gif" alt="Character Portrait" class="character-portrait" id="portrait-img">
                     <div class="portrait-overlay"><i class="fa-solid fa-camera"></i></div>
@@ -222,7 +230,7 @@
 
 
             <!-- Attributes Section -->
-            <div class="attributes-grid">
+            <div class="attributes-grid" id="attributes-grid">
                 
                 <!-- Handeln -->
                 <div class="attribute-card" style="--accent: var(--color-action);">
@@ -322,7 +330,7 @@
             </details>
 
             <!-- Inventory Section -->
-            <div class="inventory-section">
+            <div class="inventory-section" id="inventory-section">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
                     <h2 class="cat-title" style="margin: 0;"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon" alt=""> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                     <div class="currency-badge" style="display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; background: rgba(10,10,15,0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(251,191,36,0.45); padding: 0.45rem 1rem; border-radius: 20px; color: #fbbf24; font-weight: bold; font-size: 1.05rem; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">
@@ -408,7 +416,7 @@
         <div class="tools-panel">
             
             <!-- Lebenspunkte (HP) -->
-            <div class="hp-tracker glass-panel">
+            <div class="hp-tracker glass-panel" id="hp-panel">
                 <h2 class="cat-title"><img id="icon-hp" src="assets/icon_hp.jpg" class="category-icon" alt=""> Lebenspunkte</h2>
                 <div class="hp-display">
                     <input type="number" id="hp-current" value="100" onchange="updateHp()">
@@ -437,7 +445,7 @@
             </div>
 
             <!-- Dice Roller -->
-            <div class="dice-roller glass-panel">
+            <div class="dice-roller glass-panel" id="dice-panel">
                 <h2><i class="fa-solid fa-dice-d20"></i> Würfel Tool <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('dice')" title="Hilfe zu Custom Dice & Bonus"></i></h2>
                 
                 <div class="dice-buttons">
@@ -484,7 +492,7 @@
             <!-- Gruppenübersicht: Mitspieler mit HP und Status, nur als verbundener Spieler (gruppe.js) -->
             <div id="gruppe-panel" class="glass-panel gruppe-panel" style="margin-top: 1rem; display: none;"></div>
 
-            <div class="glass-panel" style="margin-top: 1rem;">
+            <div class="glass-panel" style="margin-top: 1rem;" id="activity-log-panel">
                 <details class="activity-log-container" open>
                     <summary class="logbuch-summary" style="display: flex; justify-content: space-between; align-items: center; outline: none; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
                         <h3 style="margin:0;"><i class="fa-solid fa-book"></i> Logbuch <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('logs')" title="Hilfe zum Logbuch Drag & Drop"></i></h3>
@@ -520,9 +528,12 @@
     <script src="netzwerk.js"></script>
     <script src="spielernetz.js"></script>
     <script src="fluestern.js"></script>
+    <script src="mobilenav.js"></script>
+    <script src="mobilestatus.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
     <script src="gmlayout.js"></script>
+    <script src="gmjump.js"></script>
 <div id="crit-fail-overlay"></div>
 
     <!-- Discord Modal -->
@@ -884,6 +895,8 @@
                  vom Umsortieren - gmlayout.js beobachtet nur dessen
                  style.display, um den Slot mit auszublenden. -->
             <div class="gm-panels-spalte" id="gm-panels-spalte">
+                <div class="gm-jump-bar" id="gm-jump-bar"></div>
+
 
                 <!-- Player Cards Grid -->
                 <div class="gm-panel-slot" data-panel="spieler">
