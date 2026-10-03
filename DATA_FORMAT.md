@@ -125,6 +125,11 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `name` (String): The name of the currency (e.g. "Credits").
   - `amount` (Number): The current amount.
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
+- `beziehungsnetz` (Object, Optional): The player's personal relationship map. `knoten`: `[{ id, name, x, y, ich? }]` (the node with `ich: true` is the character itself, its label comes from first/last name), `relationen`: `[{ id, vonId, zuId, label, logId? }]` (`logId` optionally references a `questlog` entry as evidence). Stays with the character file, never sent to the GM.
+- `aktuelleWerte` (Array of Objects, Optional): Free note list of "what is currently in effect" (weapon damage, movement, armor, ...). Pure memory aid - nothing is calculated from it.
+  - `id` (String): Unique identifier.
+  - `name` (String): Label, e.g. `Waffenschaden Dolch`.
+  - `wert` (String): Free-text value, e.g. `2w10+2`.
 - `teamwuerfelTeilen` (Boolean, Optional): Whether the player's own rolls are passed on to the whole group (default `true`; `false` = only the GM sees them).
 - `teamwuerfelSound` / `teamwuerfelPopup` (Boolean, Optional): Opt-in sound / popup when a *teammate* rolls (default `false`).
 - `questlog` (Array of Objects, Optional): The player's own structured adventure journal (separate from the GM's quest log, see *Quest-Logbuch* below) - which NPC was met when, and what they said or hinted at. Never transmitted to the GM's dashboard.

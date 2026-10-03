@@ -13,10 +13,10 @@ const helpData = {
     
     gmSync: "<h3>Theme Sync</h3><p>Wenn du den Haken bei <b>Sync to Players</b> setzt, wird das von dir hier ausgewählte Vibe-Theme <b>automatisch auf alle Bildschirme deiner Spieler erzwungen</b>.</p><p>Das ist ein tolles Werkzeug, um in besonderen Momenten (z.B. bei einem Szenenwechsel in die Unterwelt) die Stimmung am virtuellen Tisch für alle gleichzeitig zu lenken!</p>",
 
-    gmLayout: "<h3>Panels umsortieren</h3><p>Jedes Panel in der Hauptspalte (Spielerkarten, Zufallsgenerator, NSC-Liste, Quest-Logbuch, Tischmitte, SL-Notizen) hat oben einen kleinen Ziehgriff <i class='fa-solid fa-grip-lines'></i>. Daran gepackt, kannst du das Panel per Drag &amp; Drop an eine beliebige Position ziehen.</p><p>Die Reihenfolge bleibt in diesem Browser gespeichert, auch über einen Reload hinweg. Über <b>Reihenfolge zurücksetzen</b> geht's zurück zur Standard-Anordnung.</p>",
+    gmLayout: "<h3>Panels umsortieren</h3><p>Jedes Panel in der Hauptspalte (Spielerkarten, Zufallsgenerator, NSC-Liste, Beziehungsnetz, Quest-Logbuch, Tischmitte, SL-Notizen) hat oben einen kleinen Ziehgriff <i class='fa-solid fa-grip-lines'></i>. Daran gepackt, kannst du das Panel per Drag &amp; Drop an eine beliebige Position ziehen.</p><p>Die Reihenfolge bleibt in diesem Browser gespeichert, auch über einen Reload hinweg. Über <b>Reihenfolge zurücksetzen</b> geht's zurück zur Standard-Anordnung.</p>",
 
     gmSitzung: "<h3>SL-Sitzung sichern/laden</h3>" +
-               "<p>Alles, was du als Spielleiter aufbaust - NSC-Liste, Tischmitte, Quest-Log - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
+               "<p>Alles, was du als Spielleiter aufbaust - NSC-Liste, Beziehungsnetz, Tischmitte, Quest-Log - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
                "<p><b>Sichern</b> lädt trotzdem eine Datei herunter, die genau diesen Stand einfriert - praktisch als Backup vor größeren Änderungen, oder um auf einem anderen Gerät/Browser weiterzumachen.</p>" +
                "<p><b>Laden</b> ersetzt die aktuellen SL-Daten in diesem Browser komplett durch den Inhalt der Datei (mit Rückfrage) und lädt die Seite danach neu.</p>" +
                "<p><i>Das ist nicht dasselbe wie \"Speichern (JSON)\" oben - das sichert nur den Charakterbogen eines einzelnen Spielers. Für Spieler-Notizen gibt es außerdem ein eigenes Archiv (Notizen-Bereich).</i></p>",
@@ -62,6 +62,19 @@ const helpData = {
                "<p><b>Für den SL:</b> Über <i>Anflüstern</i> in der Spielerkarte oder in der Leiste oben wählst du Empfänger und Text. Im Verlauf siehst du, wer die Nachricht schon als gelesen bestätigt hat.</p>" +
                "<p><b>Für Spieler:</b> Eine Flüsternachricht erscheint als Hinweiskarte oben im Bild und bleibt stehen, bis du auf <i>Gelesen</i> klickst. Später nachlesen kannst du sie unter <i>Flüsterpost</i> in der Symbolleiste.</p>" +
                "<p><i>Flüsternachrichten laufen bewusst nicht durchs Logbuch und nicht an Discord. Beim Spieler bleiben sie nur bis zum Schließen des Tabs erhalten und landen nicht im Charakter-Export.</i></p>",
+
+    aktuelleWerte: "<h3>Aktuelle Werte</h3><p>Eine freie Tag-Liste direkt unter den Fertigkeiten - für alles, was sich gerade durch Ausrüstung, Zauber oder Effekte ändert und du griffbereit haben willst: Waffenschaden, Bewegung, Rüstung, ein Fertigkeitsbonus, eine Attributwert-Änderung, was auch immer. Kein festes Schema, genau wie bei den Status-Effekten - du trägst Bezeichnung und Wert einmal ein und passt bei Bedarf einfach die Zahl im Tag an (anklicken).</p><p>Anders als \"Wirkt auf\" bei den Status-Effekten rechnet sich hier <b>nichts automatisch</b> in Würfe ein - das ist bewusst eine reine Gedächtnisstütze, die du selbst pflegst und im Blick behältst.</p><p>Klicke auf das Kreuz an einem bestehenden Tag, um ihn wieder zu löschen.</p>",
+
+    netzwerk: "<h3>Beziehungsnetz</h3>" +
+               "<p>Eine frei verschiebbare Mindmap für Beziehungen zwischen den <b>Helden</b> der Gruppe und deinen <b>NSCs</b> (aus der NSC-Liste) - wer hasst wen, wer schuldet wem was, wer ist mit wem verbündet.</p>" +
+               "<p>Helden trägst du hier oben per Namen selbst ein - unabhängig davon, ob sie gerade online verbunden sind, bleiben sie dauerhaft als Knoten erhalten. NSCs kommen automatisch aus deiner NSC-Liste mit, Name/Löschen pflegst du weiterhin dort.</p>" +
+               "<p><b>Klick</b> auf einen Knoten öffnet ihn zum Bearbeiten: neue Beziehung zu einem anderen Knoten anlegen (mit freiem Beziehungstext wie <i>misstraut</i> oder <i>Bruder von</i>), bestehende löschen, bei Helden auch Name ändern/Knoten löschen. <b>Ziehen</b> verschiebt den Knoten, <b>Mausrad</b> zoomt, auf freier Fläche <b>ziehen</b> verschiebt die ganze Ansicht.</p>" +
+               "<p><i>Bleibt wie die NSC-Liste komplett lokal bei dir, geht nie an Spieler raus.</i></p>",
+
+    spielernetz: "<h3>Mein Beziehungsnetz</h3>" +
+                 "<p>Deine eigene Mindmap: wer kennt wen, wer mag wen nicht. Du bist der Knoten in der Mitte, weitere NSCs trägst du per Namen ein (oder übernimmst sie mit <b>Aus Logbuch</b> automatisch aus deinem Logbuch).</p>" +
+                 "<p><b>Antippen</b> eines Knotens öffnet ihn: Beziehung zu einem anderen Knoten anlegen (mit freiem Text wie <i>misstraut</i> oder <i>Bruder von</i>), bestehende löschen, Namen ändern. Zu jeder Beziehung kannst du optional einen <b>Logbuch-Eintrag als Beleg</b> verknüpfen - außerdem zeigt jeder NSC-Knoten automatisch alle Logbuch-Einträge, deren NSC-Feld genauso heißt.</p>" +
+                 "<p><b>Ziehen</b> verschiebt Knoten bzw. die ganze Ansicht (am Handy mit dem Finger), die Knöpfe unten rechts zoomen, am PC geht auch Strg + Mausrad. Bleibt wie das Logbuch bei dir und wandert mit <b>Speichern (JSON)</b> mit.</p>",
 
     quests: "<h3>Quest-Logbuch</h3>" +
             "<p><b>Für den Spielleiter:</b> Lege Quests mit Name, Beschreibung und optional einer Verknüpfung zu einem NSC aus deiner NSC-Liste an. Jede neue Quest ist erst <b>versteckt</b> - nur du siehst sie. Über das Augen-Symbol teilst du sie mit der ganzen Gruppe.</p>" +

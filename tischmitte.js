@@ -271,6 +271,12 @@ function tischmitteVerbunden() {
 }
 
 // Neuer Stand vom SL
+// Spieler: true bis zum ersten tischmitteEmpfangen nach einem (Wieder-)Beitritt -
+// der allererste Sync liefert den kompletten Altbestand, kein Hinweis dafür
+// (siehe tischmittePopup), sonst gäbe jeder Beitritt einen falschen "neu
+// aufgedeckt"-Alarm für längst bekannten Loot.
+let tischmitteErstSyncAusstehend = true;
+
 function tischmitteEmpfangen(items) {
     tischmitte = Array.isArray(items) ? items : [];
     // Anfragen zu Dingen, die nicht mehr da sind, sind erledigt
@@ -279,9 +285,40 @@ function tischmitteEmpfangen(items) {
     // damit niemand die Beute übersieht. Eigene Ablagen zählen nicht als neu.
     const ich = typeof appData !== 'undefined' ? [appData.vorname, appData.name].filter(Boolean).join(' ') : '';
     const neu = tischmitte.filter(i => !tischmitteBekannt.has(i.id) && !(i.von && i.von === ich));
-    if (neu.length) tischmitteOffenSpieler = true;
+    // Der erste Sync zählt immer als Altbestand - auch wenn er leer ist, sonst
+    // würde der erste später aufgedeckte Fund fälschlich verschluckt.
+    const ersterSync = tischmitteErstSyncAusstehend;
+    tischmitteErstSyncAusstehend = false;
+    if (neu.length) {
+        tischmitteOffenSpieler = true;
+        if (!ersterSync) tischmittePopup(neu);
+    }
     tischmitteBekannt = new Set(tischmitte.map(i => i.id));
     renderTischmitteSpieler();
+}
+
+// Unübersehbarer, aber nicht blockierender Hinweis, sobald der SL live etwas Neues
+// in die Tischmitte legt oder aufdeckt - das stille Aufklappen des Panels reicht
+// allein nicht, wer gerade woanders im Tool schaut, würde die Beute sonst leicht
+// verpassen. Kein alert(): der würde das Tool samt Live-Sync anhalten.
+let tischmittePopupTimer = null;
+function tischmittePopup(neu) {
+    if (!neu || !neu.length) return;
+    let el = document.getElementById('tm-popup');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'tm-popup';
+        el.className = 'tw-popup';
+        el.onclick = () => el.classList.remove('tw-popup-sichtbar');
+        document.body.appendChild(el);
+    }
+    el.innerHTML = `<i class="fa-solid fa-hand-holding"></i>
+        <div><strong>Neu in der Tischmitte</strong><br>${neu.map(i => escapeHtml(tischmitteLabel(i))).join(', ')}</div>`;
+    el.classList.remove('tw-popup-sichtbar');
+    void el.offsetWidth;
+    el.classList.add('tw-popup-sichtbar');
+    clearTimeout(tischmittePopupTimer);
+    tischmittePopupTimer = setTimeout(() => el.classList.remove('tw-popup-sichtbar'), 6000);
 }
 
 function tischmitteNehmen(id) {
@@ -444,6 +481,7 @@ function tischmitteNachrichtVerarbeiten(payload) {
 // Beitritt als Spieler: was hier evtl. aus einer eigenen SL-Sitzung liegt,
 // gehört nicht zu dieser Runde - leer starten, der SL schickt seinen Stand.
 function tischmitteBeitritt() {
+    tischmitteErstSyncAusstehend = true;
     tischmitte = [];
     tischmitteBekannt = new Set();
     tischmitteOffenSpieler = false;
@@ -453,6 +491,7 @@ function tischmitteBeitritt() {
 
 // Verbindung zum SL weg: Kopie verwerfen, Abschnitt ausblenden
 function tischmitteGetrennt() {
+    tischmitteErstSyncAusstehend = true;
     tischmitte = [];
     tischmitteBekannt = new Set();
     tischmitteOffenSpieler = false;

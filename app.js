@@ -116,9 +116,12 @@ function renderAll() {
 
     renderWeapons();
     renderStatuses();
+    if (typeof renderAktuelleWerte === 'function') renderAktuelleWerte();
     renderActivityLog();
     // Mein Logbuch (spielerlog.js) - eigenes Tagebuch des Spielers
     if (typeof renderSpielerlog === 'function') renderSpielerlog();
+    // Mein Beziehungsnetz (spielernetz.js) - mit dem Logbuch verknüpft
+    if (typeof renderSpielernetz === 'function') renderSpielernetz();
     // Tischmitte (tischmitte.js) - nur als verbundener Spieler; Inventar-Auswahl fürs Ablegen aktuell halten
     if (typeof renderTischmitteSpieler === 'function') renderTischmitteSpieler();
     if (appData.currency) {

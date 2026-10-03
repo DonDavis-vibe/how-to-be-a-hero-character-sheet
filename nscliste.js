@@ -42,6 +42,8 @@ function nscListeSichern() {
 // Anstoß taucht ein neuer NSC dort erst nach einem Neuladen auf.
 function nscListeAndereAnsichtenAktualisieren() {
     if (typeof renderQuesteGm === 'function') renderQuesteGm();
+    // Beziehungsnetz (netzwerk.js) zeigt die NSCs live aus nscListe
+    if (typeof renderNetzwerkGm === 'function') renderNetzwerkGm();
 }
 
 function nscListeHinzufuegen(vorlage) {
@@ -67,6 +69,9 @@ function nscListeHinzufuegen(vorlage) {
 function nscListeEntfernen(id) {
     if (!confirm('Diesen NSC aus der Liste entfernen?')) return;
     nscListe = nscListe.filter(n => n.id !== id);
+    // Beziehungsnetz hat keine eigene Kopie der NSCs - Beziehungen zu einem
+    // gelöschten NSC räumt es selbst auf.
+    if (typeof netzwerkNscGeloescht === 'function') netzwerkNscGeloescht(id);
     nscListeSichern();
     renderNscListeGm();
     nscListeAndereAnsichtenAktualisieren();

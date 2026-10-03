@@ -1238,8 +1238,8 @@ function importGmNotes(event) {
 
 // --- SL-Sitzung sichern/laden ------------------------------------------------
 //
-// NSC-Liste (nscliste.js), Tischmitte (tischmitte.js) und Quest-Log
-// (quests.js) liegen bislang jeder für sich in localStorage und
+// NSC-Liste (nscliste.js), Beziehungsnetz (netzwerk.js), Tischmitte
+// (tischmitte.js) und Quest-Log (quests.js) liegen bislang jeder für sich in localStorage und
 // persistieren dadurch schon automatisch - "an einem anderen Abend nahtlos
 // weiterspielen" funktioniert also im selben Browser bereits ohne Zutun.
 // Diese Funktionen sind der explizite Sicherungsweg obendrauf: eine Datei,
@@ -1252,6 +1252,7 @@ function importGmNotes(event) {
 const GM_SITZUNG_KEYS = [
     'htbah_gm_nscliste', 'htbah_gm_nscliste_offen', 'htbah_gm_nscliste_sortierung',
     'htbah_gm_tischmitte', 'htbah_gm_tischmitte_offen',
+    'htbah_gm_netzwerk',
     'htbah_gm_queste', 'htbah_gm_queste_offen',
     'htbah_gm_panel_reihenfolge', 'htbah_gm_randomizer_offen'
 ];
@@ -1291,7 +1292,7 @@ function importGmSession(event) {
                 alert('Das ist keine gültige HTBAH-SL-Sitzungsdatei.');
                 return;
             }
-            if (!confirm('Aktuelle SL-Daten in diesem Browser (NSC-Liste, Tischmitte, Quests) werden durch die Datei ersetzt. Fortfahren?')) return;
+            if (!confirm('Aktuelle SL-Daten in diesem Browser (NSC-Liste, Beziehungsnetz, Tischmitte, Quests) werden durch die Datei ersetzt. Fortfahren?')) return;
             GM_SITZUNG_KEYS.forEach(k => {
                 if (Object.prototype.hasOwnProperty.call(bundle.daten, k)) sicherSpeichern(k, bundle.daten[k]);
                 else localStorage.removeItem(k);

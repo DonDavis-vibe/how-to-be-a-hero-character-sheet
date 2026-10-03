@@ -2614,3 +2614,45 @@ body.theme-ultracore {
     font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;
 }
 .tw-teilen-toggle input { cursor: pointer; }
+
+/* --- Aktuelle Werte (aktuelleWerte.js) - größer als die normalen Status-Badges,
+   damit Einträge wie "Waffenschaden Dolch: 2w10+2" nicht eng wirken. Eigene
+   Klasse statt die geteilte .status-badge-Basis zu ändern. */
+#aktuelle-werte-container.status-tags { gap: 0.7rem; margin-top: 1.1rem; }
+.av-badge { font-size: 1rem; padding: 0.4rem 0.9rem; gap: 0.3rem; }
+.av-wert-input { font-size: 1rem !important; }
+
+/* --- Beziehungsnetz (netzwerk.js) ------------------------------------------ */
+.nw-board-container {
+    position: relative; overflow: hidden; height: 420px; margin-top: 0.9rem;
+    border-radius: 8px; border: 1px solid var(--panel-border);
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.25) 100%);
+    cursor: grab; touch-action: none;
+}
+.nw-board-container:active { cursor: grabbing; }
+.nw-board { width: 4000px; height: 4000px; position: absolute; transform-origin: 0 0; }
+.nw-thread-layer { position: absolute; top: 0; left: 0; width: 4000px; height: 4000px; pointer-events: none; transform-origin: 0 0; }
+.nw-node {
+    position: absolute; padding: 0.5rem 1rem; border-radius: 30px;
+    background: rgba(15, 23, 42, 0.92); border: 2px solid var(--panel-border);
+    color: var(--text-primary); font-weight: 600; font-size: 0.85rem;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); user-select: none; white-space: nowrap;
+}
+.nw-node-pc { border-color: var(--color-accent); color: var(--color-accent); }
+.nw-node-nsc { border-color: #fbbf24; color: #fbbf24; }
+.nw-node:hover { box-shadow: 0 0 15px rgba(255,255,255,0.25); }
+.nw-linie { stroke: var(--text-secondary); stroke-width: 2; stroke-dasharray: 4,4; fill: none; }
+.nw-linie-label {
+    fill: var(--text-primary); font-size: 12px; font-weight: 700; text-anchor: middle;
+    paint-order: stroke; stroke: rgba(15, 23, 42, 0.9); stroke-width: 4px; stroke-linejoin: round;
+}
+.nw-relation-liste { list-style: none; margin: 0 0 0.4rem 0; padding: 0; max-height: 180px; overflow-y: auto; }
+.nw-relation-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.2rem; border-bottom: 1px solid var(--panel-border); font-size: 0.85rem;
+}
+.nw-relation-item:last-child { border-bottom: none; }
+.speicher-warnung-banner i { margin-right: 0.4rem; }
+
+/* Zoom-Knöpfe im Spieler-Beziehungsnetz (spielernetz.js) - Handy hat kein Mausrad */
+.sn-zoom { position: absolute; right: 0.5rem; bottom: 0.5rem; display: flex; flex-direction: column; gap: 0.3rem; z-index: 5; }

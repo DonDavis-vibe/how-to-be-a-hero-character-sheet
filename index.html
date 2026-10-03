@@ -304,6 +304,23 @@
                 </div>
 
             </div>
+            <!-- Aktuelle Werte: freie Tag-Liste für Sachen, die sich durch Items/Ausrüstung/
+                 Zauber gerade ändern (Waffenschaden, Bewegung, Rüstung, Fertigkeiten,
+                 Attributwerte) - der Spieler trägt das selbst ein und hält es aktuell,
+                 statt es sich jedes Mal neu zusammenzurechnen. Siehe aktuelleWerte.js. -->
+            <details class="x-details" id="aktuelle-werte-details" style="margin-bottom: 2rem;">
+                <summary><h2 class="cat-title" style="margin:0; display: inline-flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-chevron-right x-chevron"></i> <i class="fa-solid fa-gauge-high" style="color: var(--color-accent);"></i> Aktuelle Werte <i class="fa-solid fa-circle-question help-icon" onclick="event.preventDefault(); event.stopPropagation(); showHelp('aktuelleWerte')" title="Hilfe zu Aktuelle Werte"></i></h2></summary>
+                <div class="status-tags" id="aktuelle-werte-container" style="justify-content: flex-start; margin-bottom: 0.5rem;">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="add-status-row" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="new-aktueller-wert-name" placeholder="Bezeichnung (z.B. Waffenschaden Dolch)" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; padding: 0.35rem 0.6rem; outline: none; font-size: 1rem; width: 260px; max-width: 100%;" onkeydown="if(event.key==='Enter') document.getElementById('new-aktueller-wert-val').focus()">
+                    <input type="text" id="new-aktueller-wert-val" placeholder="Wert (z.B. 2w10+2)" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; padding: 0.35rem 0.6rem; outline: none; font-size: 1rem; width: 150px; max-width: 100%;" onkeydown="if(event.key==='Enter') addAktuellerWert()">
+                    <button onclick="addAktuellerWert()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; cursor: pointer; padding: 0.35rem 0.7rem; font-size: 1rem; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="fa-solid fa-plus"></i> Hinzufügen</button>
+                </div>
+                <p class="hr-hint">Frei für alles, was sich gerade durch Ausrüstung/Zauber/Effekte ändert - z.B. Waffenschaden, Bewegung, Rüstung, Fertigkeiten oder Attributwerte. Einmal eintragen, bei Änderungen einfach den Wert im Tag anpassen.</p>
+            </details>
+
             <!-- Inventory Section -->
             <div class="inventory-section">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
@@ -364,6 +381,9 @@
             <!-- Mein Logbuch: eigenes Tagebuch des Spielers (getroffene NSCs, Hinweise) -
                  rein lokal, geht nie an den SL raus (spielerlog.js) -->
             <div id="spielerlog-section" class="spielerlog-section" style="display: none;"></div>
+
+            <!-- Mein Beziehungsnetz: eigene Mindmap, mit dem Logbuch verknüpft (spielernetz.js) -->
+            <div id="spielernetz-section" class="spielerlog-section" style="display: none;"></div>
 
 
         </div>
@@ -496,6 +516,9 @@
     <script src="nscliste.js"></script>
     <script src="quests.js"></script>
     <script src="spielerlog.js"></script>
+    <script src="aktuelleWerte.js"></script>
+    <script src="netzwerk.js"></script>
+    <script src="spielernetz.js"></script>
     <script src="fluestern.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
@@ -530,6 +553,22 @@
             </label>
             
             <button class="tool-btn" onclick="saveDiscordSettings()" style="width: 100%; justify-content: center; background: #5865F2; border: none; padding: 0.8rem; font-size: 1rem;"><i class="fa-solid fa-floppy-disk"></i> Speichern & Testen</button>
+        </div>
+    </div>
+
+    <!-- Mein Beziehungsnetz (Spieler): Knoten bearbeiten (spielernetz.js) -->
+    <div id="spielernetz-modal-overlay" class="help-modal-overlay" onclick="snModalSchliessen()">
+        <div class="help-modal-box" style="width: 420px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="snModalSchliessen()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="spielernetz-modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Beziehungsnetz: Knoten bearbeiten/Beziehungen verwalten (netzwerk.js) -->
+    <div id="netzwerk-modal-overlay" class="help-modal-overlay" onclick="netzwerkModalSchliessen()">
+        <div class="help-modal-box" style="width: 420px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="netzwerkModalSchliessen()"><i class="fa-solid fa-xmark"></i></button>
+            <div id="netzwerk-modal-body"></div>
         </div>
     </div>
 
@@ -870,6 +909,12 @@
                 <div class="gm-panel-slot" data-panel="nscliste">
                     <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
                     <div id="gm-nscliste" class="gm-nscliste"></div>
+                </div>
+
+                <!-- Beziehungsnetz: Mindmap aus Helden + NSC-Liste (netzwerk.js) -->
+                <div class="gm-panel-slot" data-panel="netzwerk">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-netzwerk" class="gm-nscliste"></div>
                 </div>
 
                 <!-- Quest-Logbuch: Quests vor/während der Runde anlegen und gezielt
