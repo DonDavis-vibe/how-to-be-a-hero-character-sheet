@@ -37,6 +37,13 @@ function nscListeSichern() {
 
 // Vorlage darf jedes Feld weglassen - beim manuellen Anlegen ist meist nur der
 // Name gesetzt, beim Übernehmen aus dem Generator (randomizer.js) alles.
+// Hinzufügen/Entfernen/Duplizieren: die NSC-Auswahl im Quest-Formular
+// (quests.js) kennt die Liste nur von ihrem letzten Rendern - ohne diesen
+// Anstoß taucht ein neuer NSC dort erst nach einem Neuladen auf.
+function nscListeAndereAnsichtenAktualisieren() {
+    if (typeof renderQuesteGm === 'function') renderQuesteGm();
+}
+
 function nscListeHinzufuegen(vorlage) {
     const eintrag = {
         id: nscNeueId(),
@@ -53,6 +60,7 @@ function nscListeHinzufuegen(vorlage) {
     nscListeSichern();
     nscListeOffen = true;
     renderNscListeGm();
+    nscListeAndereAnsichtenAktualisieren();
     return eintrag;
 }
 
@@ -61,6 +69,7 @@ function nscListeEntfernen(id) {
     nscListe = nscListe.filter(n => n.id !== id);
     nscListeSichern();
     renderNscListeGm();
+    nscListeAndereAnsichtenAktualisieren();
 }
 
 function nscListeFeldAendern(id, feld, wert) {
@@ -92,6 +101,7 @@ function nscListeDuplizieren(id) {
     nscListeSichern();
     nscListeOffen = true;
     renderNscListeGm();
+    nscListeAndereAnsichtenAktualisieren();
 }
 
 function nscListeManuellHinzufuegen() {

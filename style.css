@@ -2527,3 +2527,90 @@ body.theme-ultracore {
     box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 .speicher-warnung-banner i { margin-right: 0.4rem; }
+
+/* Hinweis unter der HP-Leiste: bewusstlos / tot (Regelwerk 3.2) */
+.hp-zustand {
+    margin-top: 0.6rem; padding: 0.45rem 0.7rem; border-radius: 8px; text-align: center;
+    font-size: 0.85rem; font-weight: 700; color: #fff;
+    background: color-mix(in srgb, var(--color-dmg) 55%, transparent);
+    border: 1px solid var(--color-dmg);
+}
+.hp-zustand i { margin-right: 0.35rem; }
+
+/* --- Anflüstern (fluestern.js) --------------------------------------------- */
+.fluestern-modal { max-width: 520px; }
+.fl-empfaenger { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; align-items: center; }
+.fl-chip {
+    display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;
+    padding: 0.3rem 0.65rem; border-radius: 20px; font-size: 0.82rem;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: var(--text-secondary);
+}
+.fl-chip input { display: none; }
+.fl-chip::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--fl-farbe, var(--color-accent)); opacity: 0.6; }
+.fl-chip-an { color: var(--text-primary); border-color: var(--fl-farbe, var(--color-accent)); background: rgba(255,255,255,0.12); }
+.fl-chip-an::before { opacity: 1; }
+.fl-text { width: 100%; resize: vertical; min-height: 5rem; box-sizing: border-box; }
+.fl-fuss { display: flex; justify-content: space-between; align-items: center; margin: 0.4rem 0; }
+.fl-h4 { margin: 1rem 0 0.4rem; color: var(--color-accent); font-size: 0.9rem; font-weight: 600; }
+.fl-verlauf { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.fl-verlauf li { padding: 0.45rem 0.6rem; background: rgba(0,0,0,0.3); border-radius: 6px; border-left: 3px solid #a855f7; }
+.fl-verlauf-kopf { display: block; font-size: 0.72rem; opacity: 0.65; margin-bottom: 0.15rem; }
+.fl-verlauf-text { display: block; white-space: pre-wrap; word-break: break-word; font-size: 0.88rem; }
+
+/* Hinweiskarten beim Spieler: bleiben stehen, bis sie als gelesen bestätigt sind */
+#fluestern-toasts {
+    position: fixed; left: 50%; transform: translateX(-50%); top: calc(0.8rem + env(safe-area-inset-top, 0px));
+    z-index: 1600; /* über den Modals */
+    display: flex; flex-direction: column; gap: 0.5rem; width: min(440px, 94vw); pointer-events: none;
+}
+#fluestern-toasts:empty { display: none; }
+.fl-toast {
+    pointer-events: auto; padding: 0.75rem 0.9rem; border-radius: 12px;
+    background: rgba(24, 12, 40, 0.97); border: 1px solid #a855f7; box-shadow: 0 8px 28px rgba(0,0,0,0.6), 0 0 18px rgba(168,85,247,0.35);
+    animation: fl-herein 0.35s ease;
+}
+.fl-toast-kopf { font-size: 0.78rem; font-weight: 700; color: #c4a1ff; margin-bottom: 0.35rem; display: flex; gap: 0.4rem; align-items: center; }
+.fl-toast-kopf span { margin-left: auto; font-family: var(--font-mono); font-weight: 400; opacity: 0.7; }
+.fl-toast-text { white-space: pre-wrap; word-break: break-word; line-height: 1.45; font-size: 0.95rem; margin-bottom: 0.6rem; color: var(--text-primary); }
+.fl-toast-ok { width: 100%; justify-content: center; }
+.fl-zahl { background: #a855f7; color: #fff; border-radius: 10px; padding: 0 0.4rem; font-size: 0.72rem; margin-left: 0.2rem; }
+@keyframes fl-herein { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+
+/* Team-Würfel-Popup beim Spieler (teamwuerfel.js, teamwuerfelPopupZeigen) -
+   mit der Farbe des würfelnden Mitspielers. */
+.tw-popup {
+    position: fixed; top: 1.2rem; left: 50%; transform: translateX(-50%) translateY(-30px);
+    z-index: 2000; display: flex; align-items: center; gap: 0.9rem;
+    background: rgba(15, 23, 42, 0.95); border: 1px solid var(--tw-farbe, var(--color-accent));
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7); border-radius: 12px; padding: 1rem 1.5rem;
+    max-width: min(90vw, 420px);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s, transform 0.4s;
+    color: var(--text-primary); font-family: var(--font-main); cursor: pointer;
+}
+.tw-popup.tw-popup-sichtbar { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.tw-popup i { font-size: 1.8rem; color: var(--tw-farbe, var(--color-accent)); flex-shrink: 0; }
+.tw-popup strong { color: var(--tw-farbe, var(--color-accent)); }
+
+/* Team-Würfel-Panel: letzter Wurf immer sichtbar + Schalter */
+.tw-letzter {
+    background: rgba(0,0,0,0.3); border-radius: 12px; padding: 0.8rem 1rem;
+    text-align: center; margin-bottom: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    border-left: 3px solid var(--tw-farbe, var(--text-secondary));
+    animation: slideIn 0.3s ease-out;
+}
+.tw-letzter-kopf { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.tw-letzter-name { font-weight: 700; font-size: 0.85rem; color: var(--tw-farbe, var(--text-primary)); }
+.tw-letzter-zeit { color: var(--text-secondary); font-size: 0.75rem; }
+.tw-letzter-zahl {
+    display: block; font-size: 1.9rem; font-weight: 800;
+    font-family: var(--font-mono); color: var(--tw-farbe, #fbbf24);
+    text-shadow: 0 0 16px rgba(255,255,255,0.15);
+}
+.tw-letzter-sub { font-size: 0.8rem; color: var(--text-secondary); }
+
+.tw-teilen-toggle {
+    display: flex; align-items: center; gap: 0.5rem; margin: 0.8rem 0 0;
+    font-size: 0.8rem; color: var(--text-secondary); cursor: pointer;
+}
+.tw-teilen-toggle input { cursor: pointer; }

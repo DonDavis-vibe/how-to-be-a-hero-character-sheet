@@ -260,6 +260,14 @@ function renderQuesteGm() {
         </div>`;
     }).join('');
 
+    // Halb getippte Eingaben im Anlegen-Formular überstehen das Neuzeichnen
+    // (z.B. wenn gerade ein NSC hinzugefügt wurde und die Auswahl neu aufgebaut wird)
+    const formMerken = {};
+    ['qs-neu-name', 'qs-neu-beschreibung', 'qs-neu-nsc'].forEach(id => {
+        const feld = document.getElementById(id);
+        if (feld) formMerken[id] = feld.value;
+    });
+
     box.innerHTML = `
         <details class="x-details qs-details" ${questeOffenGm ? 'open' : ''}>
             <summary class="qs-head">
@@ -277,6 +285,11 @@ function renderQuesteGm() {
             <p class="qs-hint">Neue Quests sind erst <b>versteckt</b> - Symbol <i class="fa-solid fa-eye"></i> teilt sie mit der Gruppe. Genauso lassen sich einzelne Hinweise und Ziele unabhängig freigeben.</p>
             <div class="qs-list">${karten || '<div class="x-leer">Noch keine Quests. Leg eine an - sie bleibt versteckt, bis du sie freigibst.</div>'}</div>
         </details>`;
+
+    Object.keys(formMerken).forEach(id => {
+        const feld = document.getElementById(id);
+        if (feld && formMerken[id]) feld.value = formMerken[id];
+    });
 
     const details = box.querySelector('details');
     if (details) details.addEventListener('toggle', () => {

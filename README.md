@@ -40,12 +40,15 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
 
 ### 👑 Für den Spielleiter (GM):
 * **1-Klick Hosting:** Klicke im 📡-Menü auf "Als Spielleiter (GM) hosten". Du erhältst einen kurzen Raum-Code (z.B. `1A2B`), den du deinen Spielern gibst.
+* **🔗 Einladungslink:** Im Dashboard neben dem Raum-Code auf *Link kopieren* - wer den Link öffnet, landet direkt im Beitreten-Fenster mit eingetragenem Code.
 * **Live-Dashboard:** Sobald Spieler beitreten, tauchen sie in deinem Dashboard auf. Das Dashboard bietet:
   * **Echtzeit-Spielerkarten:** HP, Profilbild, Skills, Inventar, Waffen, Status und Währung aller Spieler auf einen Blick.
   * **Anti-Cheat System:** Rote Warnung, falls ein Spieler mehr Punkte verteilt hat als sein Budget hergibt (standardmäßig 400, auf dem Bogen einstellbar - das Dashboard übernimmt den eingestellten Wert).
   * **Notizen & Archiv:** Geheime SL-Notizen pro Charakter + allgemeine Kampagnen-Notizen. Das Notizen-Archiv zeigt auch Notizen abwesender Spieler.
   * **Save & Load:** Exportiere und importiere all deine SL-Notizen als JSON-Datei.
   * **Farbcodierung:** Weise jedem Spieler eine eigene Farbe zu für perfekten Überblick.
+  * **🤫 Anflüstern:** Schick einem oder mehreren Spielern eine **private Nachricht** ("Der Wirt lügt"). Sie erscheint nur bei den Gewählten als Hinweiskarte, bleibt stehen, bis sie als gelesen bestätigt ist, und du siehst die Lesebestätigung. Läuft bewusst nicht durch Logbuch und Discord.
+  * **📣 Wurf mit Gruppe teilen:** Deine eigenen Würfe bleiben geheim - ein Klick unter der Würfel-Box schickt genau den letzten Wurf an alle Spieler.
   * **Live-Logbuch:** Jeder Wurf und jede Aktion der Spieler poppt sofort im GM-Logbuch auf!
   * **GM Würfel-Box:** Eigene Würfel für den SL (1W100, 1W6, Custom), deren Ergebnisse (inkl. Konfetti bei Krits!) lokal angezeigt werden.
   * **🎲 Zufallsgenerator:** SL-Vorbereitungswerkzeug im Dashboard - Namen, NSC, Orte, Gegenstände, Begegnungen und Gerüchte würfeln. Ergebnisse lassen sich per Klick in die SL-Notizen übernehmen oder (bei Gegenständen) direkt versteckt in die Tischmitte legen. Rein lokal beim SL, nichts geht automatisch an Spieler raus.
@@ -56,6 +59,12 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
 
 ### 🦸‍♂️ Für die Spieler:
 Einfach den 4-stelligen Code des Spielleiters eingeben und auf "Beitreten" klicken. Ab jetzt werden alle eure Würfe, Lebenspunkte-Updates und Inventar-Änderungen live auf den Monitor des Spielleiters synchronisiert.
+
+**🤫 Flüsterpost:** Private Nachrichten vom Spielleiter erscheinen als Hinweiskarte oben im Bild und lassen sich später unter *Flüsterpost* in der Symbolleiste nachlesen.
+
+**🎲 Team-Würfel:** Der letzte Wurf der Gruppe steht groß im Panel. Du entscheidest selbst, ob deine Würfe an die ganze Gruppe gehen (sonst nur an den SL), und kannst optional Sound oder Popup bei Würfen von **Mitspielern** einschalten.
+
+**⚡ Status mit Wirkung:** Ein Status-Effekt kann auf eine Fertigkeit wirken - eine Zahl im Wert-Feld wird dann bei jeder Probe darauf automatisch eingerechnet (Malus zieht ab, Bonus addiert).
 
 **👥 Gruppe:** Rechts zwischen Würfel-Tool und Logbuch siehst du deine Mitspieler - Name, Lebenspunkte und Status-Effekte, live. Mehr bewusst nicht; Skills, Inventar und Notizen der anderen bleiben privat.
 

@@ -115,6 +115,7 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `name` (String): Name of the status (e.g. "Wahnsinn").
   - `value` (String, Optional): Intensity or duration (e.g. "60%").
   - `type` (String): Defines the badge color. Supported: `malus` (red), `bonus` (green), `neutral` (gray).
+  - `wirktAufSkill` (String or null, Optional): `id` of a skill (any category) this status acts on. If `value` is a number, it is added to every roll on that skill automatically - `malus` subtracts it, `bonus` adds it, `neutral` uses the number as typed. A non-numeric `value` is never applied.
 - `activityLog` (Array of Objects, Optional): The persistent action history of the character.
   - `time` (String): The timestamp (HH:MM).
   - `cssClass` (String): The visual color class (`activity-good`, `activity-bad`, `activity-neutral`).
@@ -124,6 +125,8 @@ For each category `<cat>` (`handeln`, `wissen`, `soziales`), the following keys 
   - `name` (String): The name of the currency (e.g. "Credits").
   - `amount` (Number): The current amount.
 - `notes` (String): Free text area for character notes, backstory, or quest logs.
+- `teamwuerfelTeilen` (Boolean, Optional): Whether the player's own rolls are passed on to the whole group (default `true`; `false` = only the GM sees them).
+- `teamwuerfelSound` / `teamwuerfelPopup` (Boolean, Optional): Opt-in sound / popup when a *teammate* rolls (default `false`).
 - `questlog` (Array of Objects, Optional): The player's own structured adventure journal (separate from the GM's quest log, see *Quest-Logbuch* below) - which NPC was met when, and what they said or hinted at. Never transmitted to the GM's dashboard.
   - `id` (String): Unique identifier.
   - `npc` (String, Optional): Free-text name of the NPC involved.
@@ -157,6 +160,19 @@ The GM can change a player's sheet directly, optionally *silently* (`still: true
 | `{ "type": "eingriff", "aktion": "geben", "still", "item": { "art", "name", "amount", "damage", "description" } }` | Add an item / weapon / currency (negative `amount` subtracts currency) |
 | `{ "type": "eingriff", "aktion": "status", "still", "status": { "name", "value", "type" } }` | Add a status effect |
 | `{ "type": "eingriff", "aktion": "statusWeg", "still", "statusId" }` | Remove a status effect by its `id` |
+
+## Live-Sync Messages: Whisper (Anflüstern)
+
+Private GM -> player messages that never go through the activity log or Discord and are not part of the character file (the player keeps them in `sessionStorage` until the tab closes).
+
+| Direction | Message | Meaning |
+|---|---|---|
+| GM -> chosen players | `{ "type": "fluestern", "id", "text", "zeit" }` | Private note (max. 600 chars); shown as a pinned card until acknowledged |
+| player -> GM | `{ "type": "fluesternGelesen", "id" }` | Read receipt |
+
+## Live-Sync Messages: Team Rolls
+
+`{ "type": "log", ..., "bigNumber", "subtitle", "mitGruppeTeilen": false }` from a player carries the opt-out flag: the GM always sees the roll, but only forwards it to the group (as `{ "type": "teamWurf", "name", "farbe", "message", "emoji", "bigNumber", "subtitle", "zeit" }`) unless `mitGruppeTeilen === false`. The GM can also send a `teamWurf` of their own (name `Spielleiter`) with the *Mit Gruppe teilen* button.
 
 ## Live-Sync Messages: Group Overview
 

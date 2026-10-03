@@ -16,6 +16,7 @@ function init() {
     appData = JSON.parse(JSON.stringify(blankData));
 
     renderAll();
+    waffenRichtwerteAufbauen();
     setupEventListeners();
     setupMouseSpotlight();
     calculatePoints();
@@ -24,7 +25,9 @@ function init() {
 
     // Assistenten beim allerersten Besuch automatisch anbieten (rein UI-seitiges Flag, keine Charakterdaten)
     try {
-        if (!localStorage.getItem(WIZARD_SEEN_KEY)) {
+        // Wer über einen Einladungslink kommt (multiplayer.js), soll direkt beitreten
+        // können - ohne davorliegenden Assistenten. Nicht als gesehen markiert.
+        if (!localStorage.getItem(WIZARD_SEEN_KEY) && !MULTIPLAYER_EINLADUNG) {
             setTimeout(openWizard, 600);
         }
     } catch (e) { /* localStorage evtl. blockiert */ }
@@ -121,8 +124,8 @@ function renderAll() {
     if (appData.currency) {
         const cName = document.getElementById('currency-name');
         const cVal = document.getElementById('currency-val');
-        if(cName) { cName.value = appData.currency.name || 'Credits'; autoSizeCurrencyName(cName); }
-        if(cVal) cVal.value = appData.currency.amount || 0;
+        if(cName) { cName.value = appData.currency.name || 'Credits'; autoSizeCurrencyField(cName); }
+        if(cVal) { cVal.value = appData.currency.amount || 0; autoSizeCurrencyField(cVal); }
     }
 
     // Theme
@@ -153,6 +156,36 @@ function renderAll() {
     }
 }
 
+// Regelwerk 3.2 (Lebenspunkte): unter 10 LP ist der Charakter bewusstlos und braucht
+// medizinische Hilfe, bei 0 stirbt er. Verliert er auf einen Schlag mehr als 60 LP,
+// wird er ebenfalls bewusstlos. Das Tool rechnet nichts davon aus - es weist nur
+// sichtbar darauf hin, damit es am Tisch nicht untergeht.
+// Der Zustand "Schlag über 60" gehört nicht zum Charakterbogen (kein Export) und
+// endet bei der nächsten Heilung.
+let hpSchwerVerwundet = false;
+
+function hpSchlagPruefen(alt, neu) {
+    if (alt - neu > 60) {
+        hpSchwerVerwundet = true;
+        if (typeof addActivityLog === 'function') {
+            addActivityLog(`Mehr als 60 LP auf einen Schlag verloren: bewusstlos, braucht medizinische Hilfe`, 'activity-bad', '<i class="fa-solid fa-bed-pulse"></i>');
+        }
+    } else if (neu > alt) {
+        hpSchwerVerwundet = false;
+    }
+}
+
+function hpZustandAnzeigen() {
+    const el = document.getElementById('hp-zustand');
+    if (!el) return;
+    let text = '';
+    if (appData.hpCurrent <= 0) text = '<i class="fa-solid fa-skull"></i> Tot';
+    else if (appData.hpCurrent < 10) text = '<i class="fa-solid fa-bed-pulse"></i> Bewusstlos - braucht medizinische Hilfe';
+    else if (hpSchwerVerwundet) text = '<i class="fa-solid fa-bed-pulse"></i> Bewusstlos (mehr als 60 LP auf einen Schlag) - braucht medizinische Hilfe';
+    el.innerHTML = text;
+    el.style.display = text ? '' : 'none';
+}
+
 function updateHpBarVisual() {
     let perc = (appData.hpCurrent / appData.hpMax) * 100;
     if (perc > 100) perc = 100;
@@ -171,6 +204,8 @@ function updateHpBarVisual() {
         if(hpContainer) hpContainer.classList.remove('low-hp-warning');
         if(hpInput) hpInput.classList.remove('hp-text-danger');
     }
+
+    hpZustandAnzeigen();
 
     if (perc > 50) {
         bar.style.backgroundColor = 'var(--color-heal)';
@@ -199,6 +234,7 @@ function adjustHp(amount, grund) {
     appData.hpCurrent += amount;
     if (appData.hpCurrent > appData.hpMax) appData.hpCurrent = appData.hpMax;
     const diff = appData.hpCurrent - oldHp;
+    hpSchlagPruefen(oldHp, appData.hpCurrent);
     const zusatz = grund ? ` (${grund})` : '';
     if (diff > 0) addActivityLog(`Heilung um ${diff} HP${zusatz}`, 'activity-good', '<i class="fa-solid fa-heart"></i>');
     else if (diff < 0) addActivityLog(`Schaden erlitten: ${Math.abs(diff)} HP${zusatz}`, 'activity-bad', '<i class="fa-solid fa-heart-crack"></i>');
@@ -221,6 +257,7 @@ function adjustHp(amount, grund) {
 
 function updateHp() {
     let val = parseInt(document.getElementById('hp-current').value) || 0;
+    hpSchlagPruefen(appData.hpCurrent, val);
     appData.hpCurrent = val;
     updateHpBarVisual();
     saveData();
@@ -277,7 +314,7 @@ function renderSkills(attr) {
         totalSpan.onclick = () => {
             const currentAttrVal = parseInt(appData[`attr_${attr}`]) || 0;
             const currentTotal = (skill.excludeBonus ? 0 : currentAttrVal) + (skill.invested || 0);
-            rollSkillCheck(skill.name, currentTotal, false, attr);
+            rollSkillCheck(skill.name, currentTotal, false, attr, skill.id);
         };
 
         // Regelwerk S.4: "Der Bonus wird zu jeder Fähigkeit addiert, es sei denn, ein Spieler
@@ -366,6 +403,8 @@ function renderSkills(attr) {
         item.appendChild(controlsRow);
         listEl.appendChild(item);
     });
+
+    statusSkillAuswahlAktualisieren();
 }
 
 // Regelwerk S.8: "keine Fähigkeiten über 100 Punkte haben kann" - markiert Werte über 100 visuell.
@@ -1187,6 +1226,7 @@ function importData(event) {
         try {
             const imported = JSON.parse(e.target.result);
             appData = Object.assign(appData, imported);
+            hpSchwerVerwundet = false;
             saveData();
             isDirty = false;
             renderAll();
@@ -1210,6 +1250,7 @@ window.addEventListener('beforeunload', function (e) {
 
 function resetData() {
     if (confirm("Möchtest du wirklich einen komplett neuen Charakter erstellen? Alle aktuellen Daten werden gelöscht!")) {
+        hpSchwerVerwundet = false;
         appData = {
             vorname: '', name: '', geschlecht: '', beruf: '', alter: '', statur: '',
             hpCurrent: 100, hpMax: 100,
@@ -2000,6 +2041,49 @@ function applyTheme(theme) {
 
 
 // ==================== UTILITY PACK FUNCTIONS ====================
+// Alle Fertigkeiten über die 3 Begabungen hinweg flach - fürs "Wirkt auf"-Dropdown
+// bei Status-Effekten. Referenziert wird per stabiler id, nicht per (umbenennbarem) Namen.
+function alleSkills() {
+    const kategorien = [
+        { attr: 'handeln', label: 'Handeln' },
+        { attr: 'wissen', label: 'Wissen' },
+        { attr: 'soziales', label: 'Soziales' }
+    ];
+    const liste = [];
+    kategorien.forEach(k => {
+        (appData[`skills_${k.attr}`] || []).forEach(sk => {
+            if (sk && sk.id) liste.push({ id: sk.id, name: sk.name || '(unbenannt)', kategorie: k.label });
+        });
+    });
+    return liste;
+}
+
+// Summe aller Status-Effekte, die explizit auf diese Fertigkeit wirken
+// (statusObj.wirktAufSkill === skillId). Nur eine ganze Zahl im Wert-Feld zählt; ein
+// Info-Status wie "Wahnsinn: 60%" oder "1W6" wird nie verrechnet.
+// Das Vorzeichen folgt der Farbe: bei "Malus" wird die Zahl abgezogen (5 und -5
+// sind beide -5), bei "Bonus" addiert, bei "Neutral" gilt die Zahl wie getippt.
+function statusBonusFuerSkill(skillId) {
+    const leer = { summe: 0, quellen: [] };
+    if (!skillId || !appData.statuses) return leer;
+    let summe = 0;
+    const quellen = [];
+    appData.statuses.forEach(st => {
+        if (!st || st.wirktAufSkill !== skillId) return;
+        // Nur eine reine ganze Zahl (optional mit Vorzeichen) zählt - "60%" oder "1W6"
+        // sind Info-Werte und bleiben unangetastet (parseInt würde dort 60 bzw. 1 lesen).
+        const roh = String(st.value === undefined ? '' : st.value).trim();
+        if (!/^[+-]?\d+$/.test(roh)) return;
+        let n = parseInt(roh, 10);
+        if (n === 0) return;
+        if (st.type === 'bonus') n = Math.abs(n);
+        else if (st.type === 'malus' || !st.type) n = -Math.abs(n);
+        summe += n;
+        quellen.push(st.name);
+    });
+    return { summe, quellen };
+}
+
 function renderStatuses() {
     const container = document.getElementById('status-container');
     if (!container) return;
@@ -2011,6 +2095,8 @@ function renderStatuses() {
         appData.statuses = appData.statuses.map(s => ({ id: 'st_' + Math.random().toString(36).substr(2, 9), name: s, value: '' }));
         saveData();
     }
+
+    const skills = alleSkills();
 
     appData.statuses.forEach(statusObj => {
         const badge = document.createElement('span');
@@ -2036,6 +2122,18 @@ function renderStatuses() {
             badge.appendChild(valInput);
         }
 
+        // Wirkt dieser Status auf eine konkrete Fertigkeit? Kleiner Zielscheiben-Hinweis,
+        // damit sichtbar bleibt, wo der Wert automatisch mit einfließt - ändern geht
+        // nur über löschen und neu anlegen, wie bei Name/Typ auch.
+        if (statusObj.wirktAufSkill) {
+            const skill = skills.find(sk => sk.id === statusObj.wirktAufSkill);
+            const zielSpan = document.createElement('span');
+            zielSpan.title = 'Wirkt automatisch auf Würfe dieser Fertigkeit';
+            zielSpan.style = 'margin-left: 0.4rem; opacity: 0.75; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.2rem;';
+            zielSpan.innerHTML = `<i class="fa-solid fa-crosshairs"></i> ${escapeHtml(skill ? skill.name : '?')}`;
+            badge.appendChild(zielSpan);
+        }
+
         const delIcon = document.createElement('i');
         delIcon.className = 'fa-solid fa-times';
         delIcon.style = 'margin-left: 0.5rem; opacity: 0.7; cursor: pointer; padding: 0.2rem;';
@@ -2049,6 +2147,20 @@ function renderStatuses() {
         
         container.appendChild(badge);
     });
+
+    statusSkillAuswahlAktualisieren();
+}
+
+// "Wirkt auf"-Auswahl beim Anlegen frisch halten (Fertigkeiten können sich
+// jederzeit ändern) - aktuelle Auswahl nach Möglichkeit beibehalten.
+function statusSkillAuswahlAktualisieren() {
+    const skillSel = document.getElementById('new-status-skill');
+    if (!skillSel) return;
+    const skills = alleSkills();
+    const vorher = skillSel.value;
+    skillSel.innerHTML = '<option value="">Wirkt auf: keine Fertigkeit</option>' +
+        skills.map(sk => `<option value="${escapeHtml(sk.id)}">${escapeHtml(sk.kategorie)}: ${escapeHtml(sk.name)}</option>`).join('');
+    if (skills.some(sk => sk.id === vorher)) skillSel.value = vorher;
 }
 
 function removeStatus(id) {
@@ -2075,25 +2187,30 @@ function addCustomStatus() {
         if (!appData.statuses) appData.statuses = [];
         const typeInput = document.getElementById('new-status-type');
         const statusType = typeInput ? typeInput.value : 'malus';
-        appData.statuses.push({ id: 'st_' + Date.now(), name: name, value: val, type: statusType });
+        const skillSel = document.getElementById('new-status-skill');
+        const wirktAufSkill = skillSel && skillSel.value ? skillSel.value : null;
+        appData.statuses.push({ id: 'st_' + Date.now(), name: name, value: val, type: statusType, wirktAufSkill });
         const cssMap = { 'bonus': 'activity-good', 'malus': 'activity-bad', 'neutral': 'activity-neutral' };
         addActivityLog(`Neuer Status: ${name}`, cssMap[statusType] || 'activity-neutral', '<i class="fa-solid fa-masks-theater"></i>');
         nameInput.value = '';
         if (valInput) valInput.value = '';
+        if (skillSel) skillSel.value = '';
         saveData();
         renderStatuses();
     }
 }
 
-function autoSizeCurrencyName(el) {
+function autoSizeCurrencyField(el) {
     if (!el) return;
     // ch-Einheiten orientieren sich an der Breite der Ziffer "0" - bei fetter Proportionalschrift
     // reicht das nicht, echte Buchstaben sind breiter. Deshalb wird die Textbreite exakt per
     // Canvas gemessen (im aktuell auf dem Feld angewendeten Font) und als px-Breite gesetzt.
-    if (!autoSizeCurrencyName._ctx) {
-        autoSizeCurrencyName._ctx = document.createElement('canvas').getContext('2d');
+    // Gilt für Währungsname UND -betrag - ein fest verdrahtetes width:50px am Betragsfeld
+    // schnitt größere Summen (4+ Stellen) sonst einfach ab.
+    if (!autoSizeCurrencyField._ctx) {
+        autoSizeCurrencyField._ctx = document.createElement('canvas').getContext('2d');
     }
-    const ctx = autoSizeCurrencyName._ctx;
+    const ctx = autoSizeCurrencyField._ctx;
     const cs = getComputedStyle(el);
     ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     const textWidth = ctx.measureText(el.value || ' ').width;
@@ -2640,6 +2757,65 @@ function useGBP(category) {
     }
 }
 
+// Regelwerk 4.3.2 (Verteidigung): einmal pro Runde darf ein Charakter versuchen, einen
+// Angriff zu parieren - ein Wurf auf Handeln (Begabung, daher kein kritischer Erfolg).
+// Kritische Angriffe und Schusswaffen lassen sich nicht parieren; Boni/Mali für
+// Schild oder Waffe gibt der Spielleiter über das Bonus/Malus-Feld.
+function rollParade() {
+    const handeln = parseInt(appData['attr_handeln']) || 0;
+    rollSkillCheck('Parade', handeln, true, 'handeln');
+}
+
+// Regelwerk 2.3: Geistesblitzpunkte gelten einen Abend bzw. ein Abenteuer lang und
+// regenerieren sich erst, wenn es beendet ist (bei mehreren Abenden bis zum nächsten).
+function gbpAuffrischen() {
+    if (!confirm('Neuer Abend / neues Abenteuer: alle Geistesblitzpunkte auf das Maximum auffüllen?')) return;
+    ['handeln', 'wissen', 'soziales'].forEach(attr => {
+        appData[`gbp_${attr}`] = Math.round((parseInt(appData[`attr_${attr}`]) || 0) / 10);
+    });
+    calculatePoints();
+    addActivityLog('Geistesblitzpunkte aufgefrischt (neuer Abend)', 'activity-good', '<i class="fa-solid fa-lightbulb"></i>');
+    saveData();
+}
+
+// Richtwerte aus dem Regelwerk (Waffenarten / Schaden) - ausdrücklich nur Anhaltspunkt,
+// der Spielleiter darf Bonus oder Malus draufgeben (z.B. 5W10 + 10 für ein legendäres Schwert).
+const WAFFEN_RICHTWERTE = [
+    { name: 'Improvisierte Waffe / waffenloser Kampf', schaden: '1w10' },
+    { name: 'Stock', schaden: '1w10+5' },
+    { name: 'Messer / Dolch', schaden: '2w10' },
+    { name: 'Steinschleuder / Wurfwaffe', schaden: '3w10' },
+    { name: 'Axt / Streitkolben / Kriegshammer / Baseballschläger', schaden: '4w10' },
+    { name: 'Schwert / Machete', schaden: '5w10' },
+    { name: 'Bogen / Armbrust', schaden: '6w10' },
+    { name: 'Pistole', schaden: '7w10' },
+    { name: 'Gewehr', schaden: '8w10' },
+    { name: 'Schrotflinte (Schaden nimmt mit der Entfernung ab)', schaden: '9w10' },
+    { name: 'Bombe / Granate / Mine / Raketenwerfer', schaden: '10w10' }
+];
+
+function waffenRichtwerteAufbauen() {
+    const sel = document.getElementById('new-weapon-richtwert');
+    if (!sel || sel.options.length > 1) return;
+    WAFFEN_RICHTWERTE.forEach((w, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = `${w.name} - ${w.schaden.toUpperCase()}`;
+        sel.appendChild(opt);
+    });
+}
+
+function waffeRichtwertWaehlen(sel) {
+    const w = WAFFEN_RICHTWERTE[parseInt(sel.value)];
+    if (!w) return;
+    const dmg = document.getElementById('new-weapon-dmg');
+    const name = document.getElementById('new-weapon-name');
+    if (dmg) dmg.value = w.schaden;
+    // Name nur vorschlagen, wenn noch nichts eingetippt ist - ein eigener Name gewinnt
+    if (name && !name.value.trim()) name.value = w.name.split(' / ')[0].split(' (')[0];
+    sel.value = '';
+}
+
 function rollInitiative() {
     const handlnAttr = parseInt(appData['attr_handeln']) || 0;
     const w10Result = Math.floor(Math.random() * 10) + 1;
@@ -2661,7 +2837,7 @@ function rollInitiative() {
     }
 }
 
-function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category = null) {
+function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category = null, skillId = null) {
     // Regelwerk S.8: "keine Fähigkeiten über 100 Punkte haben kann" - der Fähigkeitswert selbst
     // wird für den Wurf hart bei 100 gedeckelt, auch wenn auf dem Bogen mehr investiert ist.
     let capHint = '';
@@ -2681,9 +2857,16 @@ function rollSkillCheck(skillName, skillValue, isBaseAttribute = false, category
     const critFailMin = 90 + Math.round(skillValue / 10);
 
     const modifier = consumeModifier();
-    if (modifier.mod !== 0) {
-        modifier.str = modifier.mod > 0 ? ` (inkl. +${modifier.mod} Bonus)` : ` (inkl. ${modifier.mod} Malus)`;
-    }
+    // Status-Effekte mit "wirkt auf" genau dieser Fertigkeit (siehe addCustomStatus/
+    // statusBonusFuerSkill) fließen automatisch mit ein, getrennt vom manuellen
+    // Bonus/Malus-Feld ausgewiesen, damit im Logbuch klar bleibt, was woher kommt.
+    const statusBonus = statusBonusFuerSkill(skillId);
+    const manuellerAnteil = modifier.mod;
+    modifier.mod += statusBonus.summe;
+    const modTeile = [];
+    if (manuellerAnteil) modTeile.push(manuellerAnteil > 0 ? `+${manuellerAnteil} Bonus` : `${manuellerAnteil} Malus`);
+    if (statusBonus.summe) modTeile.push(`${statusBonus.summe > 0 ? '+' : ''}${statusBonus.summe} durch ${statusBonus.quellen.join(', ')}`);
+    modifier.str = modTeile.length ? ` (inkl. ${modTeile.join(', ')})` : '';
     // Erfolgsschwelle inklusive SL-Bonus. Auf dem W100 gibt es über 100 nichts mehr
     // zu treffen und unter 0 nichts mehr zu verlieren.
     const zielwert = Math.max(0, Math.min(100, skillValue + modifier.mod));

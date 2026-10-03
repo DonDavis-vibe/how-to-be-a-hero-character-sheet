@@ -57,6 +57,57 @@ function loadMultiplayerSession() {
     try { return JSON.parse(sessionStorage.getItem(MULTIPLAYER_SESSION_KEY) || 'null'); } catch (e) { return null; }
 }
 
+// --- Einladungslink: ?raum=X7B9 ----------------------------------------------
+// Der SL teilt per "Link kopieren" im Dashboard einen Link mit seinem Raum-Code.
+// Beim Öffnen wird der Code einmalig aus der Adresse gelesen (und aus ihr
+// entfernt, damit ein Reload nicht erneut das Fenster aufpoppen lässt) und im
+// Beitreten-Fenster vorausgefüllt. Bewusst KEIN automatisches Beitreten: der
+// Spieler soll vorher seinen Charakter laden können, sonst sieht der SL erst
+// einen leeren Standardbogen.
+const MULTIPLAYER_EINLADUNG = (() => {
+    try {
+        const url = new URL(location.href);
+        const code = (url.searchParams.get('raum') || '').trim().toUpperCase();
+        if (!/^[A-Z0-9]{4}$/.test(code)) return null;
+        url.searchParams.delete('raum');
+        history.replaceState(null, '', url.pathname + url.search + url.hash);
+        return code;
+    } catch (e) { return null; }
+})();
+
+function multiplayerEinladungsLink() {
+    const code = (document.getElementById('gm-room-code') || {}).innerText || '';
+    if (!/^[A-Z0-9]{4}$/.test(code)) return '';
+    return `${location.origin}${location.pathname}?raum=${code}`;
+}
+
+function multiplayerLinkKopieren(btn) {
+    const link = multiplayerEinladungsLink();
+    if (!link) return;
+    const fertig = () => {
+        if (!btn) return;
+        const alt = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Kopiert';
+        setTimeout(() => { btn.innerHTML = alt; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(fertig, () => window.prompt('Einladungslink kopieren:', link));
+    } else {
+        window.prompt('Einladungslink kopieren:', link);
+    }
+}
+
+function multiplayerEinladungAnzeigen() {
+    if (!MULTIPLAYER_EINLADUNG) return;
+    setTimeout(() => {
+        openMultiplayerModal();
+        const feld = document.getElementById('multiplayer-join-code');
+        if (feld) feld.value = MULTIPLAYER_EINLADUNG;
+        // Nach dem PeerJS-Laden, sonst überschreibt dessen Callback (leert den Status) die Meldung
+        ensurePeerJsLoaded(() => updateMultiplayerStatus(`Einladung zu Raum <b>${MULTIPLAYER_EINLADUNG}</b> - lade ggf. erst deinen Charakter, dann „Beitreten“.`, '#57F287'));
+    }, 700);
+}
+
 let multiplayerAutoRestoreAttempted = false;
 
 function tryRestoreMultiplayerSession() {
@@ -65,6 +116,9 @@ function tryRestoreMultiplayerSession() {
 
     const stored = loadMultiplayerSession();
     if (!stored || !stored.roomCode) return;
+    // Einladungslink hat Vorrang vor einer alten Spieler-Sitzung (der SL-Fall
+    // bleibt: ein offener Host-Raum wird immer wiederhergestellt).
+    if (MULTIPLAYER_EINLADUNG && stored.role !== 'gm') return;
 
     if (stored.role === 'gm') {
         updateMultiplayerStatus("Stelle vorherige Sitzung wieder her...", "#fbbf24");
@@ -76,6 +130,7 @@ function tryRestoreMultiplayerSession() {
 }
 
 document.addEventListener('DOMContentLoaded', tryRestoreMultiplayerSession);
+document.addEventListener('DOMContentLoaded', multiplayerEinladungAnzeigen);
 
 function openMultiplayerModal() {
     if (!peerJsLoaded) {
@@ -259,6 +314,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
             if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
             if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(conn.peer);
+            if (typeof fluesternAktualisieren === 'function') fluesternAktualisieren();
             if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
             addGmLogSystemMessage(`Spieler hat den Raum verlassen.`);
         });
@@ -391,6 +447,8 @@ function exitGmMode() {
 function handleIncomingData(peerId, payload) {
     // Tischmitte (tischmitte.js): Nehmen / Ablegen
     if (typeof tischmitteAnfrageVerarbeiten === 'function' && tischmitteAnfrageVerarbeiten(peerId, payload)) return;
+    // Anflüstern (fluestern.js): Spieler bestätigt, die Nachricht gelesen zu haben
+    if (typeof fluesternAnfrageVerarbeiten === 'function' && fluesternAnfrageVerarbeiten(peerId, payload)) return;
     if (payload.type === 'state') {
         const neuerSpieler = !connectedPlayersData[peerId];
         connectedPlayersData[peerId] = payload.data;
@@ -398,6 +456,7 @@ function handleIncomingData(peerId, payload) {
         if (neuerSpieler && typeof renderTischmitteGm === 'function') renderTischmitteGm();
         if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
         if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(peerId);
+        if (neuerSpieler && typeof fluesternAktualisieren === 'function') fluesternAktualisieren();
     } else if (payload.type === 'log') {
         const charName = connectedPlayersData[peerId] ? [connectedPlayersData[peerId].vorname, connectedPlayersData[peerId].name].filter(Boolean).join(' ') : 'Unbekannt';
         addGmLogEntry(charName, payload.message, payload.emoji);
@@ -405,7 +464,10 @@ function handleIncomingData(peerId, payload) {
             updateGmPlayerBigDiceResult(payload.bigNumber, payload.subtitle, charName);
             // Team-Würfel (teamwuerfel.js): nur echte Würfe (bigNumber gesetzt)
             // gehen an die Gruppe weiter, keine allgemeinen Logbuch-Einträge.
-            if (typeof teamwuerfelVerteilen === 'function') teamwuerfelVerteilen(charName, payload);
+            // Team-Würfel nur, wenn der Spieler das nicht per Toggle auf "nur SL"
+            // gestellt hat (mitGruppeTeilen === false). Der SL sieht den Wurf hier
+            // oben (addGmLogEntry) trotzdem immer.
+            if (payload.mitGruppeTeilen !== false && typeof teamwuerfelVerteilen === 'function') teamwuerfelVerteilen(charName, payload);
         }
 
         // Trigger Effects based on log content
@@ -649,6 +711,7 @@ function renderGmDashboard() {
                 <span style="font-size: 0.7rem; opacity: 0.5; margin-right: 0.2rem;"><i class="fa-solid fa-palette"></i></span>
                 ${colorDotsHtml}
                 <button class="gm-btn gm-eingriff-btn" data-eingriff="${escapeHtml(peerId)}" title="Gegenstand geben oder Status setzen - auf Wunsch verdeckt"><i class="fa-solid fa-hand-sparkles"></i> Eingriff</button>
+                <button class="gm-btn" data-fluestern="${escapeHtml(peerId)}" title="Diesem Spieler eine private Nachricht zuflüstern - die anderen sehen nichts"><i class="fa-solid fa-comment-dots"></i> Anflüstern</button>
             </div>
             
             ${statusHtml ? `<div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem;">${statusHtml}</div>` : ''}
@@ -702,6 +765,8 @@ function renderGmDashboard() {
             sicherSpeichern('gmNotes_' + e.target.dataset.charname, e.target.value);
         });
         
+        const fluesternBtn = card.querySelector('[data-fluestern]');
+        if (fluesternBtn && typeof fluesternOeffnen === 'function') fluesternBtn.addEventListener('click', () => fluesternOeffnen(fluesternBtn.dataset.fluestern));
         const eingriffBtn = card.querySelector('[data-eingriff]');
         if (eingriffBtn && typeof openEingriff === 'function') eingriffBtn.addEventListener('click', () => openEingriff(eingriffBtn.dataset.eingriff));
 
@@ -729,6 +794,10 @@ function renderGmDashboard() {
 }
 
 let gmLogHistory = [];
+// Letzter GM-Wurf, den man per gmWurfTeilen() an die Gruppe schicken kann -
+// bewusst nicht automatisch: der SL würfelt oft geheim (Fallen, NSC-Werte)
+// und soll selbst entscheiden, ob ein konkreter Wurf sichtbar wird.
+let gmLetzterWurf = null;
 
 function loadGmLogHistory() {
     try {
@@ -822,6 +891,8 @@ function rollGmDice(max) {
     const text = `1W${max}`;
     updateGmBigDiceResult(res, text);
     addGmLogEntry('Spielleiter (Lokal)', `${text}: ${res}`, '🎲');
+    gmLetzterWurf = { text, big: res };
+    gmWurfTeilenButtonAktualisieren();
     
     if (typeof fireConfetti === 'function') {
         if (max === 100 && res <= 5) fireConfetti();
@@ -829,6 +900,38 @@ function rollGmDice(max) {
         else if (max !== 100 && res === max) fireConfetti();
         else if (max !== 100 && res === 1) fireFumble();
     }
+}
+
+// Der SL sieht seinen Wurf immer zuerst lokal (siehe rollGmDice/rollGmCustomDice)
+// und kann ihn dann bewusst freigeben - Vorbild ist teamwuerfel.js (Spieler-Würfe
+// an die Gruppe verteilen), nur eben SL -> Gruppe und explizit statt automatisch.
+// Feste Bernstein-Farbe, damit ein geteilter SL-Wurf im Team-Würfel-Feed der
+// Spieler klar als SL-Wurf erkennbar bleibt.
+function gmWurfTeilenButtonAktualisieren() {
+    const btn = document.getElementById('gm-wurf-teilen-btn');
+    if (btn) btn.disabled = !gmLetzterWurf;
+}
+
+function gmWurfTeilen() {
+    if (!gmLetzterWurf) return;
+    if (typeof clientConnections === 'undefined') return;
+    const nachricht = {
+        type: 'teamWurf',
+        name: 'Spielleiter',
+        farbe: '#e0922f',
+        message: `${gmLetzterWurf.text}: ${gmLetzterWurf.big}`,
+        emoji: '🎲',
+        bigNumber: gmLetzterWurf.big,
+        subtitle: gmLetzterWurf.text,
+        zeit: Date.now()
+    };
+    let anzahl = 0;
+    Object.values(clientConnections).forEach(conn => {
+        if (conn && conn.open) { try { conn.send(nachricht); anzahl++; } catch (e) { /* weg */ } }
+    });
+    addGmLogSystemMessage(anzahl
+        ? `Wurf mit ${anzahl} Spieler${anzahl === 1 ? '' : 'n'} geteilt: ${gmLetzterWurf.text} = ${gmLetzterWurf.big}`
+        : 'Niemand verbunden - Wurf konnte nicht geteilt werden.');
 }
 
 function rollGmCustomDice(diceStr) {
@@ -856,6 +959,8 @@ function rollGmCustomDice(diceStr) {
     const text = `${diceStr} (${rolls.join(', ')})`;
     updateGmBigDiceResult(total, text);
     addGmLogEntry('Spielleiter (Lokal)', `${text}: ${total}`, '🎲');
+    gmLetzterWurf = { text, big: total };
+    gmWurfTeilenButtonAktualisieren();
     
     if (typeof fireConfetti === 'function') {
         if (total === count * max) fireConfetti();
@@ -934,6 +1039,8 @@ function joinMultiplayerSession(codeArg) {
                 if (typeof stopAllAudio === 'function') stopAllAudio();
             } else if (payload && payload.type === 'fadeOutSound') {
                 if (typeof fadeOutAllAudio === 'function') fadeOutAllAudio();
+            } else if (payload && typeof fluesternNachrichtVerarbeiten === 'function' && fluesternNachrichtVerarbeiten(payload)) {
+                // erledigt in fluestern.js (privat - landet bewusst nicht im Logbuch)
             } else if (payload && typeof tischmitteNachrichtVerarbeiten === 'function' && tischmitteNachrichtVerarbeiten(payload)) {
                 // erledigt in tischmitte.js
             } else if (payload && typeof gruppeNachrichtVerarbeiten === 'function' && gruppeNachrichtVerarbeiten(payload)) {
@@ -1073,7 +1180,11 @@ function sendMultiplayerLog(message, emoji = "🎲", bigNumber = null, subtitle 
         message: message,
         emoji: emoji,
         bigNumber: bigNumber,
-        subtitle: subtitle
+        subtitle: subtitle,
+        // Steuert nur, ob der SL diesen Wurf an die restliche Gruppe weitergibt
+        // (Team-Würfel, siehe teamwuerfel.js) - der SL selbst sieht ihn über sein
+        // Live-Log so oder so.
+        mitGruppeTeilen: typeof teamwuerfelTeiltMitGruppe === 'function' ? teamwuerfelTeiltMitGruppe() : true
     });
 }
 

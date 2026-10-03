@@ -102,6 +102,7 @@
             <span class="save-indicator" id="save-indicator"><i class="fa-solid fa-check"></i> Gespeichert</span>
             <button class="tool-btn" onclick="resetData()"><i class="fa-solid fa-eraser"></i> Neu</button>
             <button class="tool-btn" onclick="openWizard()" title="Charakter-Erstellungs-Assistent"><i class="fa-solid fa-hat-wizard"></i> Assistent</button>
+            <button class="tool-btn" onclick="gbpAuffrischen()" title="Neuer Abend / neues Abenteuer: alle Geistesblitzpunkte wieder auf das Maximum auffüllen"><i class="fa-solid fa-lightbulb"></i> GBP auffrischen</button>
             <button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Speichern (JSON)</button>
             <label class="tool-btn">
                 <i class="fa-solid fa-upload"></i> Laden (JSON)
@@ -122,6 +123,9 @@
             </button>
             <button id="btn-multiplayer-sync" class="tool-btn" onclick="openMultiplayerModal()" title="Live-Sync (Multiplayer)" style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: white; cursor: pointer;">
                 <i class="fa-solid fa-satellite-dish"></i>
+            </button>
+            <button id="btn-fluesterpost" class="tool-btn" onclick="fluesterpostVerlaufOeffnen()" title="Private Nachrichten vom Spielleiter" style="display:none; background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; color: white; cursor: pointer;">
+                <i class="fa-solid fa-comment-dots"></i> Flüsterpost <span class="fl-zahl" style="display:none"></span>
             </button>
             
             <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('multiplayer')" title="Hilfe zu Multiplayer & Discord" style="font-size: 1.2rem; cursor: pointer; color: #9ca3af; align-self: center; margin-left: 0.2rem; margin-right: 0.5rem;"></i>
@@ -195,6 +199,9 @@
                                 <option value="bonus">Bonus (Grün)</option>
                                 <option value="neutral">Neutral (Grau)</option>
                     </select>
+                            <select id="new-status-skill" onmousedown="statusSkillAuswahlAktualisieren()" title="Optional: steht im Wert-Feld eine Zahl, wird sie automatisch in Würfe dieser Fertigkeit eingerechnet (Malus zieht ab, Bonus addiert)" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: white; padding: 0.2rem; outline: none; font-size: 0.85rem; max-width: 160px;">
+                                <option value="">Wirkt auf: keine Fertigkeit</option>
+                            </select>
                             <button onclick="addCustomStatus()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; cursor: pointer; padding: 0.2rem 0.5rem; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><i class="fa-solid fa-plus"></i> Hinzufügen</button>
                         </div>
                     </div>
@@ -224,6 +231,7 @@
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
                             <input type="number" id="attr-handeln" class="attr-val" value="17" data-field="attr_handeln" readonly onclick="rollSkillCheck('Basiswert: Handeln', parseInt(this.value), true, 'handeln')" title="Auf Basiswert Handeln würfeln">
                             <button class="tool-btn" onclick="rollInitiative()" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;" title="1W10 + Handeln"><i class="fa-solid fa-bolt"></i> Initiative</button>
+                            <button class="tool-btn" onclick="rollParade()" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px;" title="Parade: Wurf auf Handeln, einmal pro Runde. Kritische Angriffe und Schusswaffen lassen sich nicht parieren."><i class="fa-solid fa-shield-halved"></i> Parade</button>
                         </div>
                     </div>
                     <div class="attr-gbp">
@@ -302,11 +310,11 @@
                     <h2 class="cat-title" style="margin: 0;"><img id="icon-inventar" src="assets/icon_inventar.jpg" class="category-icon" alt=""> Inventar <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('inventory')" title="Hilfe zum Sortieren"></i></h2>
                     <div class="currency-badge" style="display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; background: rgba(10,10,15,0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(251,191,36,0.45); padding: 0.45rem 1rem; border-radius: 20px; color: #fbbf24; font-weight: bold; font-size: 1.05rem; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">
                         <i class="fa-solid fa-coins"></i>
-                        <input type="text" id="currency-name" class="currency-name" value="Credits" oninput="autoSizeCurrencyName(this)" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; text-shadow: inherit; outline: none; border-bottom: 1px dashed rgba(251,191,36,0.7); font-size: inherit; width: 90px; flex-shrink: 0;">
+                        <input type="text" id="currency-name" class="currency-name" value="Credits" oninput="autoSizeCurrencyField(this)" onchange="updateCurrency()" style="background: transparent; border: none; color: inherit; font-weight: inherit; text-shadow: inherit; outline: none; border-bottom: 1px dashed rgba(251,191,36,0.7); font-size: inherit; width: 90px; flex-shrink: 0;">
                         <div style="display: flex; align-items: center; gap: 5px;">
-    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) - 1; updateCurrency();" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">-</button>
-    <input type="number" id="currency-val" class="currency-val" value="0" onchange="updateCurrency()" style="text-align: right; background: transparent; border: none; color: white; font-weight: bold; outline: none; font-size: inherit; width: 50px;">
-    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) + 1; updateCurrency();" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">+</button>
+    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) - 1; updateCurrency(); autoSizeCurrencyField(el);" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">-</button>
+    <input type="number" id="currency-val" class="currency-val" value="0" oninput="autoSizeCurrencyField(this)" onchange="updateCurrency()" style="text-align: right; background: transparent; border: none; color: white; font-weight: bold; outline: none; font-size: inherit; width: 50px;">
+    <button onclick="let el = document.getElementById('currency-val'); el.value = parseInt(el.value || 0) + 1; updateCurrency(); autoSizeCurrencyField(el);" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 3px; width: 24px; height: 24px;">+</button>
 </div>
                     </div>
                 </div>
@@ -334,6 +342,9 @@
                     <!-- Populated by JS -->
                 </div>
                                 <div class="add-item-box" style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
+                    <select id="new-weapon-richtwert" onchange="waffeRichtwertWaehlen(this)" title="Richtwerte aus dem Regelwerk - der Spielleiter darf nach oben oder unten anpassen" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: var(--text-secondary); outline: none; margin-bottom: 0.5rem;">
+                        <option value="">Richtwert aus dem Regelwerk wählen …</option>
+                    </select>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="text" id="new-weapon-name" placeholder="Waffen Name..." style="flex: 2; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;">
                         <input type="text" id="new-weapon-dmg" placeholder="Schaden (z.B. 1w10)" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.5rem; color: white; outline: none;">
@@ -393,6 +404,7 @@
                 <div class="hp-bar-container">
                     <div class="hp-bar-fill" id="hp-bar"></div>
                 </div>
+                <div id="hp-zustand" class="hp-zustand" style="display: none;"></div>
 
                 <div class="hp-controls">
                     <button class="btn-dmg" onclick="adjustHp(-10)">-10</button>
@@ -484,6 +496,7 @@
     <script src="nscliste.js"></script>
     <script src="quests.js"></script>
     <script src="spielerlog.js"></script>
+    <script src="fluestern.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
     <script src="gmlayout.js"></script>
@@ -624,6 +637,7 @@
                     <span class="gm-group-label">Raum-Code</span>
                     <strong id="gm-room-code">----</strong>
                     <span id="gm-room-status"></span>
+                    <button class="gm-btn" onclick="multiplayerLinkKopieren(this)" title="Link kopieren, über den Spieler direkt in diesen Raum kommen - ohne den Code einzutippen"><i class="fa-solid fa-link"></i> Link kopieren</button>
                 </div>
                 <!-- Gruppe: Notizen & Speicherstand -->
                 <div class="gm-group">
@@ -637,6 +651,7 @@
                     </label>
                     <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmNotes')" title="Hilfe zu SL Notizen"></i>
                 </div>
+                <button class="gm-btn" onclick="fluesternOeffnen()" title="Einem oder mehreren Spielern eine private Nachricht zuflüstern"><i class="fa-solid fa-comment-dots"></i> Anflüstern</button>
                 <button class="gm-btn gm-btn-ghost gm-toolbar-end" onclick="exitGmMode()" title="Dashboard schließen"><i class="fa-solid fa-xmark"></i> Dashboard schließen</button>
             </div>
 
@@ -800,6 +815,7 @@
                         <div id="gm-dice-big-result" style="font-size: 2.5rem; font-weight: 900; color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,0.5);">--</div>
                         <div id="gm-dice-subtitle" style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">Dein letzter Wurf</div>
                     </div>
+                    <button id="gm-wurf-teilen-btn" class="tool-btn" onclick="gmWurfTeilen()" disabled title="Schickt genau diesen Wurf an alle verbundenen Spieler (Team-Würfel-Feed)" style="width: 100%; justify-content: center; margin-top: 0.7rem; background: rgba(224,146,47,0.15); border: 1px solid #e0922f; color: #e0922f; font-weight: bold; padding: 0.7rem;"><i class="fa-solid fa-bullhorn"></i> Mit Gruppe teilen</button>
                 </div>
 
                 <!-- Letzter Spieler-Wurf -->
