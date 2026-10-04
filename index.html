@@ -135,6 +135,9 @@
             <button id="btn-fluesterpost" class="tool-btn" onclick="fluesterpostVerlaufOeffnen()" title="Private Nachrichten vom Spielleiter" style="display:none; background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; color: white; cursor: pointer;">
                 <i class="fa-solid fa-comment-dots"></i> Flüsterpost <span class="fl-zahl" style="display:none"></span>
             </button>
+            <button id="btn-handouts" class="tool-btn" onclick="handoutVerlaufOeffnen()" title="Handouts, die der Spielleiter gezeigt hat" style="display:none; background: rgba(212, 175, 55, 0.15); border: 1px solid var(--color-accent); color: white; cursor: pointer;">
+                <i class="fa-solid fa-scroll"></i> Handouts
+            </button>
             
             <i class="fa-solid fa-circle-question help-icon" onclick="showHelp('multiplayer')" title="Hilfe zu Multiplayer & Discord" style="font-size: 1.2rem; cursor: pointer; color: #9ca3af; align-self: center; margin-left: 0.2rem; margin-right: 0.5rem;"></i>
 
@@ -528,6 +531,8 @@
     <script src="netzwerk.js"></script>
     <script src="spielernetz.js"></script>
     <script src="fluestern.js"></script>
+    <script src="handouts.js"></script>
+    <script src="pnpbridge.js"></script>
     <script src="mobilenav.js"></script>
     <script src="mobilestatus.js"></script>
     <script src="eingriff.js"></script>
@@ -702,6 +707,8 @@
                     <i class="fa-solid fa-circle-question help-icon" onclick="event.stopPropagation(); showHelp('gmNotes')" title="Hilfe zu SL Notizen"></i>
                 </div>
                 <button class="gm-btn" onclick="fluesternOeffnen()" title="Einem oder mehreren Spielern eine private Nachricht zuflüstern"><i class="fa-solid fa-comment-dots"></i> Anflüstern</button>
+                <button class="gm-btn" onclick="handoutsOeffnenGm()" title="Handout-Bibliothek: Briefe, Bilder und Vorlesetexte den Spielern zeigen"><i class="fa-solid fa-scroll"></i> Handouts</button>
+                <button class="gm-btn" onclick="pnpOeffnen()" title="Mit PenNodePaper verbinden (Handouts, NSCs und Musik-Stichworte empfangen)"><span id="pnp-toolbar-status" class="pnp-punkt" data-status="getrennt"></span><i class="fa-solid fa-diagram-project"></i> PenNodePaper</button>
                 <button class="gm-btn gm-btn-ghost gm-toolbar-end" onclick="exitGmMode()" title="Dashboard schließen"><i class="fa-solid fa-xmark"></i> Dashboard schließen</button>
             </div>
 

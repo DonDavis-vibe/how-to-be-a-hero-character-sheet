@@ -432,9 +432,11 @@ function enterGmMode(roomCode) {
     if (typeof refreshCustomSoundUI === 'function') refreshCustomSoundUI();
     // Das Dashboard war bis eben ausgeblendet - Sprungleiste erst jetzt aufbauen
     if (typeof gmjumpRender === 'function') gmjumpRender();
+    if (typeof pnpGmStart === 'function') pnpGmStart();
 }
 
 function exitGmMode() {
+    if (typeof pnpGmStop === 'function') pnpGmStop();
     if (peer) peer.destroy();
     peer = null;
     isGmMode = false;
@@ -1043,6 +1045,8 @@ function joinMultiplayerSession(codeArg) {
                 if (typeof fadeOutAllAudio === 'function') fadeOutAllAudio();
             } else if (payload && typeof fluesternNachrichtVerarbeiten === 'function' && fluesternNachrichtVerarbeiten(payload)) {
                 // erledigt in fluestern.js (privat - landet bewusst nicht im Logbuch)
+            } else if (payload && typeof handoutNachrichtVerarbeiten === 'function' && handoutNachrichtVerarbeiten(payload)) {
+                // erledigt in handouts.js
             } else if (payload && typeof tischmitteNachrichtVerarbeiten === 'function' && tischmitteNachrichtVerarbeiten(payload)) {
                 // erledigt in tischmitte.js
             } else if (payload && typeof gruppeNachrichtVerarbeiten === 'function' && gruppeNachrichtVerarbeiten(payload)) {
