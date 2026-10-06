@@ -2771,3 +2771,24 @@ body { padding-bottom: 5rem; }
 .gm-jump-chip:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); border-color: var(--color-accent); }
 .gm-jump-chip i { color: var(--color-accent); }
 .gm-jump-highlight { animation: mobilenav-blitz 1.2s ease; border-radius: 12px; }
+
+/* --- Handouts (handouts.js) und PenNodePaper-Brücke (pnpbridge.js) --------- */
+.handouts-modal { max-width: 560px; }
+.ho-eintrag { padding: 0.6rem 0.7rem; margin-bottom: 0.6rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--color-accent); }
+.ho-kopf { display: flex; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.4rem; }
+.ho-kopf span { font-family: var(--font-mono); font-size: 0.72rem; opacity: 0.65; }
+.ho-bild { display: block; max-width: 100%; max-height: 60vh; margin: 0.3rem auto 0.5rem; border-radius: 6px; }
+.ho-text { white-space: pre-wrap; word-break: break-word; line-height: 1.5; font-size: 0.95rem; margin-bottom: 0.4rem; }
+.ho-aktionen { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.4rem; }
+.pnp-modal { max-width: 520px; }
+.pnp-feld { display: block; margin-bottom: 0.7rem; font-size: 0.85rem; }
+.pnp-feld input {
+    width: 100%; box-sizing: border-box; margin-top: 0.25rem; padding: 0.5rem 0.6rem; border-radius: 6px; outline: none;
+    background: rgba(0,0,0,0.5); border: 1px solid var(--panel-border); color: var(--text-primary); font-family: inherit;
+}
+.pnp-fuss { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin: 0.4rem 0 0.8rem; }
+.pnp-status-zeile { font-size: 0.85rem; opacity: 0.85; }
+.pnp-status-zeile[data-status="verbunden"] { color: var(--color-heal); opacity: 1; }
+.pnp-punkt { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.35rem; background: #6b7280; }
+.pnp-punkt[data-status="verbunden"] { background: #57F287; }
+.pnp-punkt[data-status="verbinde"] { background: #fee75c; }
