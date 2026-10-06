@@ -30,6 +30,11 @@ const PNP_KEY = 'htbah_pnp_link';
 const PNP_STANDARD_URL = 'ws://127.0.0.1:4317/bridge';
 const PNP_PROTOKOLL = 1;
 const PNP_PARTY_INTERVALL_MS = 1500;
+
+// Vorschläge für die Felder (PenNodePaper zeigt sie als Auswahlliste; eigene Werte bleiben möglich).
+// Die Haltungen treffen die Farben der NSC-Liste (nscHaltungTon in nscliste.js): grün / grau / rot.
+const PNP_HALTUNGEN = ['freundlich', 'hilfsbereit', 'zugewandt', 'verbündet', 'treu', 'neutral', 'neugierig', 'ängstlich', 'gleichgültig', 'argwöhnisch', 'ablehnend', 'feindselig'];
+const PNP_ROLLEN = ['Wirt / Wirtin', 'Händler', 'Schmuggler', 'Kapitän', 'Steuermann', 'Matrose', 'Schiffsarzt', 'Pirat', 'Soldat', 'Stadtwache', 'Adliger', 'Gelehrter', 'Heiler', 'Priester', 'Zauberer', 'Dieb', 'Söldner', 'Fischer', 'Handwerker', 'Bettler'];
 const PNP_BRUECKEN_VERSION = '1.0';   // das Tool hat keine eigene Versionsnummer - Stand der Brücke
 
 let pnpLink = null;            // { reportParty, close }
@@ -111,11 +116,11 @@ function pnpProfil() {
                     for: ['npc', 'enemy'],
                     fields: [
                         text('ort', 'Ort', 'Auftreten'),
-                        text('rolle', 'Rolle', 'Auftreten', { help: 'z.B. Wirtin, Schmuggler, Schiffsarzt' }),
-                        text('haltung', 'Haltung', 'Auftreten', { help: 'gegenüber der Gruppe, z.B. freundlich, misstrauisch, feindlich' }),
+                        text('rolle', 'Rolle', 'Auftreten', { suggestions: PNP_ROLLEN, help: 'was er tut, z.B. Wirtin, Schmuggler, Schiffsarzt' }),
+                        text('haltung', 'Haltung', 'Auftreten', { suggestions: PNP_HALTUNGEN, help: 'gegenüber der Gruppe' }),
                         text('auffaelligkeit', 'Auffälligkeit', 'Auftreten', { help: 'woran man ihn erkennt' }),
                         text('motivation', 'Motivation', 'Auftreten'),
-                        text('wesen', 'Wesen / Art', 'Auftreten', { help: 'z.B. Mensch, Zwerg, Untoter' })
+                        text('wesen', 'Wesen / Art', 'Auftreten', { suggestions: ['Mensch', 'Zwerg', 'Elf', 'Ork', 'Halbling', 'Untoter', 'Dämon', 'Tier'], help: 'Volk oder Art, falls es eine Rolle spielt' })
                     ]
                 },
                 {
