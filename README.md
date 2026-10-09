@@ -119,9 +119,6 @@ Wechsle das Design deines Charakterbogens passend zur Kampagne. Alle Themes ver�
 ---
 
 ## 🤝 Kompatible Tools & Integrationen
-Dieses Tool ist voll kompatibel mit dem **[PnPMaster](https://github.com/Rec0iL/PnPMaster)** – einem umfangreichen GM Tool von **[@Rec0iL](https://github.com/Rec0iL)**. 
-Du kannst Charaktere (via `.json` Export) direkt in PnPMaster einlesen und verwalten!
-
 ### 🧭 PenNodePaper-Brücke (SL)
 Das SL-Dashboard lässt sich mit **[PenNodePaper](https://github.com/Rec0iL/PenNodePaper)** verbinden - einem KI-gestützten Welten- und Story-Baukasten für Pen & Paper. Was dort vorbereitet wurde, landet per Knopfdruck im Dashboard (Dashboard → **PenNodePaper**: Adresse und Pairing-Token stehen in PenNodePaper unter ⚙ Einstellungen → *VTT link*). Alles kommt **zuerst nur beim SL** an - die Spieler sehen nur, was du ausdrücklich zeigst.
 
