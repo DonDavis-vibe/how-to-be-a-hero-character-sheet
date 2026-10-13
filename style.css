@@ -72,14 +72,14 @@ body.theme-steampunk {
 
 body.theme-apocalyptic {
     background-image: url('assets/bg_apokalypse.jpg');
-    --glass-bg: rgba(40, 10, 10, 0.7);
-    --glass-border: rgba(255, 60, 60, 0.3);
-    --text-primary: #ffeaea;
-    --text-secondary: #ffbaba;
+    --glass-bg: rgba(14, 22, 14, 0.78);
+    --glass-border: rgba(132, 204, 22, 0.32);
+    --text-primary: #eef7e4;
+    --text-secondary: #b9d09f;
     --color-action: #ff3333; /* Blood Red */
     --color-knowledge: #ff9933; /* Hazard Orange */
     --color-social: #cccc00; /* Toxic Yellow */
-    --color-accent: #d93838;
+    --color-accent: #84cc16;
 }
 
 body.theme-cyberpunk {
@@ -89,8 +89,8 @@ body.theme-cyberpunk {
     --text-primary: #e0e0e0;
     --text-secondary: #00f0ff;
     --color-action: #ff007f;
-    --color-wissen: #00f0ff;
-    --color-soziales: #00f0ff;
+    --color-knowledge: #00f0ff;
+    --color-social: #b266ff;
     --color-accent: #ff007f;
     background-image: url('assets/bg_cyberpunk.jpg');
 }
@@ -1414,8 +1414,8 @@ body.theme-mafia {
     --text-primary: #e6dfcc;
     --text-secondary: #b3a890;
     --color-action: #c2a15f;
-    --color-wissen: #b3a890;
-    --color-soziales: #d1c8b4;
+    --color-knowledge: #8fa3ad;
+    --color-social: #a85a5a;
     --color-accent: #c2a15f;
     background-image: url('assets/bg_mafia.jpg'); 
 }
@@ -1462,8 +1462,8 @@ body.theme-lovecraft {
     --text-primary: #d0e5da;
     --text-secondary: #7ba38c;
     --color-action: #4ade80;
-    --color-wissen: #38bdf8;
-    --color-soziales: #c084fc;
+    --color-knowledge: #38bdf8;
+    --color-social: #c084fc;
     --color-accent: #4ade80;
     background-image: url('assets/bg_lovecraft.jpg'); 
 }
@@ -1510,8 +1510,8 @@ body.theme-magic {
     --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
     --color-action: #eab308; 
-    --color-wissen: #38bdf8;
-    --color-soziales: #a855f7; 
+    --color-knowledge: #38bdf8;
+    --color-social: #a855f7; 
     --color-accent: #eab308;
     background-image: url('assets/bg_magic.jpg'); 
 }
@@ -1551,9 +1551,9 @@ body.theme-deepspace {
     --glass-border: rgba(56, 189, 248, 0.4); 
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
-    --color-action: #0ea5e9; 
-    --color-wissen: #38bdf8;
-    --color-soziales: #818cf8; 
+    --color-action: #fb923c; 
+    --color-knowledge: #38bdf8;
+    --color-social: #818cf8; 
     --color-accent: #38bdf8;
     background-image: url('assets/bg_deepspace.jpg'); 
 }
@@ -1597,9 +1597,9 @@ body.theme-wildwest {
     --glass-border: rgba(200, 120, 50, 0.3); 
     --text-primary: #f5deb3;
     --text-secondary: #d2b48c;
-    --color-action: #cc5500; 
-    --color-wissen: #8b4513;
-    --color-soziales: #c19a6b; 
+    --color-action: #e0651a; 
+    --color-knowledge: #6b8fb3; /* Denim */
+    --color-social: #d9b36a; 
     --color-accent: #b87333;
     background-image: url('assets/bg_wildwest.jpg'); 
 }
@@ -1625,25 +1625,30 @@ body.theme-wildwest .btn-primary:hover {
     box-shadow: 0 0 15px rgba(200, 120, 50, 0.5); 
 }
 
-@keyframes tumbleweedRoll {
-    0% { transform: translate(0vw, 0) rotate(0deg) scale(0.5); opacity: 0; }
-    10% { opacity: 1; transform: translate(-10vw, -20px) rotate(-45deg) scale(0.6); }
-    20% { transform: translate(-20vw, 0) rotate(-90deg) scale(0.7); }
-    30% { transform: translate(-30vw, -30px) rotate(-135deg) scale(0.8); }
-    40% { transform: translate(-40vw, 0) rotate(-180deg) scale(0.9); }
-    50% { transform: translate(-50vw, -40px) rotate(-225deg) scale(1); }
-    60% { transform: translate(-60vw, 0) rotate(-270deg) scale(1.1); }
-    70% { transform: translate(-70vw, -30px) rotate(-315deg) scale(1.2); }
-    80% { transform: translate(-80vw, 0) rotate(-360deg) scale(1.3); }
-    90% { opacity: 1; transform: translate(-90vw, -20px) rotate(-405deg) scale(1.4); }
-    100% { transform: translate(-120vw, 0) rotate(-450deg) scale(1.5); opacity: 0; }
-}
-
 @keyframes dustDrift {
     0% { transform: translate(0, 0); opacity: 0; }
     15% { opacity: 0.5; }
     85% { opacity: 0.4; }
     100% { transform: translate(-30vw, -8vh); opacity: 0; }
+}
+
+@keyframes westSunGlow {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
+@keyframes westMote {
+    0% { transform: translate(0, 0); opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.6; }
+    100% { transform: translate(var(--wx, 6vw), var(--wy, -3vh)); opacity: 0; }
+}
+
+@keyframes westGust {
+    0% { transform: translateX(-70vw); opacity: 0; }
+    25% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { transform: translateX(110vw); opacity: 0; }
 }
 
 @keyframes buzzardFly {
@@ -1662,8 +1667,8 @@ body.theme-pirates {
     --text-primary: #fdf5e6;
     --text-secondary: #c0c0c0;
     --color-action: #b22222; /* Firebrick */
-    --color-wissen: #20b2aa; /* Light Sea Green */
-    --color-soziales: #daa520; /* Goldenrod */
+    --color-knowledge: #20b2aa; /* Light Sea Green */
+    --color-social: #daa520; /* Goldenrod */
     --color-accent: #d4af37; /* Metallic Gold */
     background-image: url('assets/bg_pirates.jpg'); 
 }
@@ -1710,8 +1715,8 @@ body.theme-superhero {
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
     --color-action: #ef4444;
-    --color-wissen: #3b82f6;
-    --color-soziales: #facc15;
+    --color-knowledge: #3b82f6;
+    --color-social: #facc15;
     --color-accent: #06b6d4;
     background-image: url('assets/bg_superhero.jpg');
 }
@@ -1723,9 +1728,9 @@ body.theme-medieval {
     --text-primary: #e6d5c3; /* Parchment white */
     --text-secondary: #a39281;
     --color-action: #b22222; /* Firebrick red */
-    --color-wissen: #4682b4; /* Steel blue */
-    --color-soziales: #daa520; /* Goldenrod */
-    --color-accent: #8b4513; /* Saddle brown */
+    --color-knowledge: #4682b4; /* Steel blue */
+    --color-social: #daa520; /* Goldenrod */
+    --color-accent: #d08a3c; /* Fackel-Bernstein */
     background-image: url('assets/bg_medieval.jpg');
 }
 
@@ -1858,13 +1863,6 @@ body.theme-medieval {
   100% { transform: translateY(-100vh) scale(0.5) translateX(var(--sway-amount, 20vw)); opacity: 0; }
 }
 
-@keyframes flameFlicker {
-  0% { transform: translateY(0) scale(1) rotate(-45deg); opacity: 0; }
-  20% { opacity: 0.9; }
-  50% { transform: translateY(-10vh) scale(1.2) rotate(-35deg); opacity: 0.7; }
-  100% { transform: translateY(-25vh) scale(0.2) rotate(-55deg); opacity: 0; }
-}
-
 /* Ultracore Theme */
 body.theme-ultracore {
     --bg-color: #0b1a20;
@@ -1873,8 +1871,8 @@ body.theme-ultracore {
     --text-primary: #e0f2fe;
     --text-secondary: #7dd3fc;
     --color-action: #a855f7; /* Magitek purple */
-    --color-wissen: #38bdf8; /* Energy blue */
-    --color-soziales: #f472b6; /* Pink/Purple */
+    --color-knowledge: #38bdf8; /* Energy blue */
+    --color-social: #f472b6; /* Pink/Purple */
     --color-accent: #0284c7; /* Deep blue */
     background-image: url('assets/bg_ultracore.jpg');
 }

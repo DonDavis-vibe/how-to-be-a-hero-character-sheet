@@ -1622,38 +1622,36 @@ function startWildWestFx() {
     const layer = document.getElementById('fx-layer');
     if(!layer) return;
 
-    const spawnTumbleweed = () => {
-        const tumbleweed = document.createElement('div');
-        tumbleweed.style.position = 'absolute';
-        const size = Math.random() * 40 + 30; // 30-70px
-        tumbleweed.style.width = size + 'px';
-        tumbleweed.style.height = size + 'px';
-        tumbleweed.style.borderRadius = '50%';
-        tumbleweed.style.background = `url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 30 Q50 10 80 30 T80 70 T20 70 T20 30" fill="none" stroke="%23a0522d" stroke-width="3"/><path d="M30 20 Q10 50 30 80 T70 80 T70 20 T30 20" fill="none" stroke="%23cd853f" stroke-width="2"/><path d="M10 50 Q50 90 90 50 T50 10 T10 50" fill="none" stroke="%238b4513" stroke-width="4"/><path d="M40 10 Q80 50 40 90 T10 50 T40 10" fill="none" stroke="%23d2b48c" stroke-width="2"/><circle cx="50" cy="50" r="45" fill="none" stroke="%238b4513" stroke-width="2" stroke-dasharray="5,5"/></svg>') center/contain no-repeat`;
-        tumbleweed.style.border = 'none';
-        tumbleweed.style.left = '100vw'; // Start off-screen right
-        tumbleweed.style.bottom = (Math.random() * 20 + 5) + 'vh'; // Roll along the bottom
-        tumbleweed.style.opacity = '0.8';
+    // Sonnenschein: ein weicher, warmer Lichtschein von rechts oben, der sehr langsam atmet (kein Objekt, das durchs Bild zieht)
+    const sonne = document.createElement('div');
+    sonne.style.position = 'absolute';
+    sonne.style.inset = '0';
+    sonne.style.background = 'radial-gradient(ellipse 70% 60% at 85% 0%, rgba(255, 190, 90, 0.20) 0%, rgba(255, 150, 60, 0.07) 45%, transparent 75%)';
+    sonne.style.mixBlendMode = 'screen';
+    sonne.style.animation = 'westSunGlow 9s ease-in-out infinite';
+    layer.appendChild(sonne);
 
-        const duration = Math.random() * 4 + 3.5; // 3.5-7.5s rolling across, a bit livelier than before
-        tumbleweed.style.animation = `tumbleweedRoll ${duration}s linear forwards`;
-
-        layer.appendChild(tumbleweed);
-
-        setTimeout(() => {
-            if (tumbleweed.parentNode) tumbleweed.parentNode.removeChild(tumbleweed);
-        }, duration * 1000);
+    // Goldstaub, der träge im Gegenlicht schwebt
+    const spawnMote = () => {
+        const mote = document.createElement('div');
+        mote.style.position = 'absolute';
+        const size = Math.random() * 3 + 1.5; // 1.5-4.5px
+        mote.style.width = size + 'px';
+        mote.style.height = size + 'px';
+        mote.style.borderRadius = '50%';
+        mote.style.background = 'rgba(255, 214, 140, 0.9)';
+        mote.style.boxShadow = '0 0 6px rgba(255, 190, 90, 0.8)';
+        mote.style.left = Math.random() * 100 + 'vw';
+        mote.style.top = Math.random() * 100 + 'vh';
+        mote.style.opacity = '0';
+        mote.style.setProperty('--wx', (Math.random() * 14 - 4) + 'vw');
+        mote.style.setProperty('--wy', (Math.random() * 10 - 5) + 'vh');
+        const duration = Math.random() * 8 + 10; // 10-18s
+        mote.style.animation = `westMote ${duration}s ease-in-out forwards`;
+        layer.appendChild(mote);
+        setTimeout(() => { if (mote.parentNode) mote.parentNode.removeChild(mote); }, duration * 1000);
     };
-
-    const scheduleTumbleweed = () => {
-        spawnTumbleweed();
-        // Gelegentlich rollt gleich noch eins kurz hinterher nach
-        if (Math.random() < 0.3) {
-            setTimeout(spawnTumbleweed, Math.random() * 800 + 300);
-        }
-        fxInterval = setTimeout(scheduleTumbleweed, Math.random() * 2500 + 2500); // alle 2.5-5s statt starr alle 4.5s
-    };
-    scheduleTumbleweed();
+    fxInterval = setInterval(spawnMote, 700);
 
     // Treibender Wüstenstaub über die komplette Fläche, damit nicht nur der untere Rand lebt
     const spawnDust = () => {
@@ -1679,33 +1677,29 @@ function startWildWestFx() {
     };
     fxInterval2 = setInterval(spawnDust, 850);
 
-    // Seltener dramatischer Höhepunkt: ein Bussard zieht oben durchs Bild
-    const spawnBuzzard = () => {
-        const buzzard = document.createElement('div');
-        buzzard.style.position = 'absolute';
-        buzzard.style.width = '80px';
-        buzzard.style.height = '32px';
-        buzzard.style.background = `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg"><path d="M0,20 Q15,0 30,15 Q40,20 50,10 Q60,20 70,15 Q85,0 100,20 Q85,25 70,20 Q60,15 50,22 Q40,15 30,20 Q15,25 0,20 Z" fill="%23231208"/></svg>') center/contain no-repeat`;
-        buzzard.style.left = '100vw';
-        buzzard.style.top = Math.random() * 30 + 5 + 'vh';
-        buzzard.style.opacity = '0';
-
-        const duration = Math.random() * 6 + 14; // 14-20s, langsam gleitend
-        buzzard.style.animation = `buzzardFly ${duration}s linear forwards`;
-
-        layer.appendChild(buzzard);
-
-        setTimeout(() => {
-            if (buzzard.parentNode) buzzard.parentNode.removeChild(buzzard);
-        }, duration * 1000);
+    // Gelegentlich eine Windböe: ein breiter, weicher Staubschleier, der quer übers Bild weht (selten, kein scharfes Objekt)
+    const spawnGust = () => {
+        const gust = document.createElement('div');
+        gust.style.position = 'absolute';
+        gust.style.left = '0';
+        gust.style.width = '70vw';
+        gust.style.height = Math.random() * 14 + 12 + 'vh';
+        gust.style.top = Math.random() * 60 + 30 + 'vh';
+        gust.style.background = 'linear-gradient(90deg, transparent 0%, rgba(205, 160, 105, 0.16) 40%, rgba(205, 160, 105, 0.10) 70%, transparent 100%)';
+        gust.style.filter = 'blur(18px)';
+        gust.style.opacity = '0';
+        const duration = Math.random() * 3 + 7; // 7-10s
+        gust.style.animation = `westGust ${duration}s ease-in-out forwards`;
+        layer.appendChild(gust);
+        setTimeout(() => { if (gust.parentNode) gust.parentNode.removeChild(gust); }, duration * 1000);
     };
-    const scheduleBuzzard = () => {
+    const scheduleGust = () => {
         fxInterval3 = setTimeout(() => {
-            spawnBuzzard();
-            scheduleBuzzard();
-        }, Math.random() * 10000 + 25000); // alle 25-35s
+            spawnGust();
+            scheduleGust();
+        }, Math.random() * 10000 + 14000); // alle 14-24s
     };
-    scheduleBuzzard();
+    scheduleGust();
 }
 
 function startPiratesFx() {
@@ -1823,57 +1817,56 @@ function startMedievalFx() {
     clearFx();
     const layer = document.getElementById('fx-layer');
     if(!layer) return;
-    
-    const spawnParticle = () => {
-        const isFlame = Math.random() > 0.6; // 40% chance for a flame
+
+    // Funkenflug von den Fackeln und Feuern der Burg: nur spärliche, aufsteigende Glut. Eine durchgehende
+    // Flammenwand am unteren Bildrand passte zum alten Lagerfeuer-Hintergrund, zur Burg im Morgennebel nicht mehr.
+    const spawnEmber = () => {
         const particle = document.createElement('div');
         particle.style.position = 'absolute';
         particle.style.left = Math.random() * 100 + 'vw';
         particle.style.bottom = '-20px';
-        
-        if (isFlame) {
-            // Flame particle (larger, fast, stays lower)
-            particle.style.width = Math.random() * 15 + 10 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.background = Math.random() > 0.5 ? '#ff4500' : '#ff8c00';
-            particle.style.borderRadius = '50% 0 50% 50%'; // Teardrop fire shape
-            particle.style.boxShadow = `0 0 20px ${particle.style.background}`;
-            particle.style.opacity = '0';
-            particle.style.pointerEvents = 'none';
-            particle.style.filter = 'blur(3px)';
-            
-            const duration = Math.random() * 1.5 + 1; // 1-2.5 seconds
-            particle.style.animation = `flameFlicker ${duration}s ease-in forwards`;
-            
-            layer.appendChild(particle);
-            setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, duration * 1000);
-        } else {
-            // Ember particle (small, rises high)
-            particle.style.width = Math.random() * 4 + 2 + 'px';
-            particle.style.height = particle.style.width;
-            const colors = ['#ff4500', '#ff8c00', '#ffd700'];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            particle.style.background = color;
-            particle.style.borderRadius = '50%';
-            particle.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-            particle.style.opacity = '0';
-            particle.style.pointerEvents = 'none';
-            
-            const duration = Math.random() * 4 + 3; // 3-7 seconds
-            particle.style.animation = `emberRise ${duration}s ease-in forwards`;
-            
-            const sway = (Math.random() - 0.5) * 100;
-            particle.style.setProperty('--sway-amount', `${sway}px`);
-            
-            layer.appendChild(particle);
-            setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, duration * 1000);
-        }
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        const colors = ['#ff4500', '#ff8c00', '#ffd700'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = color;
+        particle.style.borderRadius = '50%';
+        particle.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+        particle.style.opacity = '0';
+        particle.style.pointerEvents = 'none';
+
+        const duration = Math.random() * 4 + 4; // 4-8 Sekunden
+        particle.style.animation = `emberRise ${duration}s ease-in forwards`;
+        particle.style.setProperty('--sway-amount', `${(Math.random() - 0.5) * 100}px`);
+
+        layer.appendChild(particle);
+        setTimeout(() => { if (particle.parentNode) particle.parentNode.removeChild(particle); }, duration * 1000);
     };
-    
-    // Initial burst
-    for(let i=0; i<30; i++) setTimeout(spawnParticle, Math.random() * 1500);
-    
-    fxInterval = setInterval(spawnParticle, 100); // Spawn faster for dense fire
+    for(let i=0; i<6; i++) setTimeout(spawnEmber, Math.random() * 1500);
+    fxInterval = setInterval(spawnEmber, 450);
+
+    // Raben ziehen hoch oben durchs Bild (wie im Hintergrund), langsam und selten
+    const spawnRaven = () => {
+        const raven = document.createElement('div');
+        raven.style.position = 'absolute';
+        raven.style.width = '64px';
+        raven.style.height = '26px';
+        raven.style.background = `url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg"><path d="M0,20 Q15,0 30,15 Q40,20 50,10 Q60,20 70,15 Q85,0 100,20 Q85,25 70,20 Q60,15 50,22 Q40,15 30,20 Q15,25 0,20 Z" fill="%2310101a"/></svg>') center/contain no-repeat`;
+        raven.style.left = '100vw';
+        raven.style.top = Math.random() * 25 + 4 + 'vh';
+        raven.style.opacity = '0';
+        const duration = Math.random() * 6 + 12; // 12-18s
+        raven.style.animation = `buzzardFly ${duration}s linear forwards`;
+        layer.appendChild(raven);
+        setTimeout(() => { if (raven.parentNode) raven.parentNode.removeChild(raven); }, duration * 1000);
+    };
+    const scheduleRaven = () => {
+        fxInterval3 = setTimeout(() => {
+            spawnRaven();
+            scheduleRaven();
+        }, Math.random() * 12000 + 18000); // alle 18-30s
+    };
+    scheduleRaven();
 }
 
 function startUltracoreFx() {

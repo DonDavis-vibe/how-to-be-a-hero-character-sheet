@@ -38,9 +38,9 @@ A white-stone royal castle with tall glowing violet spires on a hill above an en
 
 The observation deck of a large starship looking out at a ringed gas giant with a glowing blue nebula behind it and a distant space station, a small shuttle passing the window, shafts of starlight and lens glare, sleek dark metal bulkheads with faint blue indicator lights, a holographic star map hovering above a console. Cold deep blue, black and silver palette with a hint of orange from the planet's rim.
 
-## Wilder Westen - `bg_wildwest.jpg` (Seed 101)
+## Wilder Westen - `bg_wildwest.jpg` (Seed 201)
 
-A wooden trestle railway bridge across a red-rock canyon at golden hour, a steam locomotive with a long plume of smoke crossing it, towering sandstone buttes and mesas, a small frontier town with a saloon and water tower in the distance, a lone rider on the canyon rim, tumbleweed and dust in the warm light. Warm orange, red and gold palette with long shadows.
+View from the porch of a weathered wooden saloon at golden sunset: in the left foreground a hitching rail with a coiled lasso and a worn blanket draped over it, on the right the dark wooden porch with a whiskey barrel (plain, no lettering), a hanging oil lantern, swinging saloon doors, a warmly lit window and a saddle, and out in front a wide dusty desert with huge red sandstone monument buttes, a small distant frontier town with a dirt road and a lone rider on horseback. All boards and signs are plain and unmarked, no signboards. Warm golden-orange light, long shadows, dust glowing in the air, palette of red rock, sand, burnt orange and dark weathered wood.
 
 ## Piraten - `bg_pirates.jpg` (Seed 101)
 
