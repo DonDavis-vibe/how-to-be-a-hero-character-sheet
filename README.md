@@ -130,11 +130,12 @@ Das SL-Dashboard lässt sich mit **[PenNodePaper](https://github.com/Rec0iL/PenN
 | PenNodePaper schickt … | … und HeroHQ macht daraus |
 |---|---|
 | **Handout** (Vorlesetext oder Bild) | Eintrag in der **Handout-Bibliothek** (Knopf *Handouts*), auf Wunsch sofort allen oder einem Spieler gezeigt; Spieler lesen es über *Handouts* nach |
+| **Karte / Szene** (quadratisches Raster) | neue Karte in der **Kartenbibliothek** mit Bild, Raster und den NSC-Figuren; Gegner stehen **verdeckt** darauf. Die Spieler sehen sie erst, wenn du *Karte für Spieler freigeben* einschaltest - auch bei „jetzt zeigen“ aus PenNodePaper. Hex-Raster nur als Hintergrund ohne Raster |
 | **NSC / Gegner** | Eintrag der **NSC-Liste** |
 | **Musik-Stichwort** | wird über dein **Soundboard** abgespielt (Titel aus dessen Liste; Musik läuft auf Schleife bis zum Ausfaden). Audiodateien überträgt PenNodePaper nicht |
 | *(Gegenrichtung)* die **Gruppe** | PenNodePaper zeigt deine verbundenen Spieler samt Werten (ohne Notizen und Quest-Log) und sendet beim Schreiben der Geschichte mit |
 
-Die Brücke steckt in `pnpbridge.js` (Protokoll siehe [vtt-bridge-spec](https://github.com/Rec0iL/PenNodePaper/blob/main/docs/vtt-bridge-spec.md)), die Handouts in `handouts.js`. Ohne Verbindung ändert sich nichts. Kartenszenen werden hier nicht unterstützt, weil HeroHQ keine Karte hat.
+Die Brücke steckt in `pnpbridge.js` (Protokoll siehe [vtt-bridge-spec](https://github.com/Rec0iL/PenNodePaper/blob/main/docs/vtt-bridge-spec.md)), die Handouts in `handouts.js`. Ohne Verbindung ändert sich nichts.
 
 ---
 

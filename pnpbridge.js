@@ -2,10 +2,10 @@
 //
 // Verbindet das SL-Dashboard mit PenNodePaper (https://github.com/Rec0iL/PenNodePaper),
 // einem KI-gestützten Welten- und Story-Baukasten für Pen & Paper. PenNodePaper
-// bereitet Inhalte vor (Handouts, NSCs, Musik-Stichworte) und schiebt sie
+// bereitet Inhalte vor (Handouts, Karten, NSCs, Musik-Stichworte) und schiebt sie
 // über eine WebSocket-Verbindung ins Dashboard; HeroHQ übersetzt sie in die
 // eigenen Module. Nichts davon geht automatisch an die Spieler - alles landet
-// zuerst beim SL (NSC-Liste, Handout-Bibliothek), nur was
+// zuerst beim SL (Kartenbibliothek, NSC-Liste, Handout-Bibliothek), nur was
 // PenNodePaper ausdrücklich "aufdecken" lässt, wird gezeigt.
 //
 // Protokoll: PenNodePaper docs/vtt-bridge-spec.md (Version 1). Kurzfassung:
@@ -16,12 +16,19 @@
 //
 // Zuordnung:
 //   handout    -> Handout-Bibliothek (handouts.js); reveal/to zeigt sie sofort
+//   scene      -> neue Karte in der Kartenbibliothek (karten.js), Raster und Figuren
+//                 gesetzt; ohne Raster (grid.hidden) = reiner Hintergrund. activate
+//                 macht sie beim SL zur aktiven Karte. Die Spieler sehen sie trotzdem
+//                 erst, wenn der SL die Karte freigegeben hat ("Karte für Spieler
+//                 freigeben") - das Protokoll sagt bei activate "den Spielern zeigen",
+//                 HeroHQ hält die Freigabe aber bewusst allein beim SL. Figuren von
+//                 Gegnern kommen verdeckt auf die Karte, damit eine Freigabe keinen
+//                 Hinterhalt verrät.
 //   character  -> NSC-Liste (nscliste.js)
 //   music_cue  -> Soundboard (multiplayer.js: sendGmSound). Die Titel kommen aus
 //                 dem Dropdown des Soundboards, PenNodePaper schickt keine Audiodaten
 //   party      -> die verbundenen Spieler-Bögen (connectedPlayersData), nur
 //                 öffentliche Felder - keine Notizen, kein Quest-Log
-//   scene      -> wird (noch) nicht unterstützt: dieses Tool hat keine Karte
 //
 // Die Verbindung läuft nur im SL-Modus und baut sich nach einem Reload selbst
 // wieder auf, solange der SL sie nicht ausdrücklich getrennt hat.
@@ -35,7 +42,7 @@ const PNP_PARTY_INTERVALL_MS = 1500;
 // Die Haltungen treffen die Farben der NSC-Liste (nscHaltungTon in nscliste.js): grün / grau / rot.
 const PNP_HALTUNGEN = ['freundlich', 'hilfsbereit', 'zugewandt', 'verbündet', 'treu', 'neutral', 'neugierig', 'ängstlich', 'gleichgültig', 'argwöhnisch', 'ablehnend', 'feindselig'];
 const PNP_ROLLEN = ['Wirt / Wirtin', 'Händler', 'Schmuggler', 'Kapitän', 'Steuermann', 'Matrose', 'Schiffsarzt', 'Pirat', 'Soldat', 'Stadtwache', 'Adliger', 'Gelehrter', 'Heiler', 'Priester', 'Zauberer', 'Dieb', 'Söldner', 'Fischer', 'Handwerker', 'Bettler'];
-const PNP_BRUECKEN_VERSION = '1.0';   // das Tool hat keine eigene Versionsnummer - Stand der Brücke
+const PNP_BRUECKEN_VERSION = '1.1';   // das Tool hat keine eigene Versionsnummer - Stand der Brücke
 
 let pnpLink = null;            // { reportParty, close }
 let pnpStatus = 'getrennt';    // 'getrennt' | 'verbinde' | 'verbunden'
@@ -101,6 +108,7 @@ function pnpProfil() {
         protocol: PNP_PROTOKOLL,
         push: {
             handout: { text: true, image: true, toPlayer: true },
+            scene: { grids: ['square'], tokens: true, characterTokens: true },
             character: {},
             music_cue: { tracks: true, mood: true }
         },
@@ -317,6 +325,71 @@ async function pnpHandout(p) {
     return { shownTo: 0, library: true };
 }
 
+// --- Szene -> Karte -----------------------------------------------------------
+
+async function pnpSzene(p) {
+    if (!p || !p.id) throw new Error('scene: id missing');
+    if (typeof BattleMap === 'undefined' || typeof karten === 'undefined') throw new Error('karten.js not loaded');
+    // Die Karte baut sich erst im SL-Dashboard auf
+    if (!karteMap && typeof renderKarteGm === 'function') renderKarteGm();
+    if (!karteMap) throw new Error('The map panel is not ready - open the GM dashboard first.');
+    pnpBildPruefen(p.image, 'scene');
+    const g = p.grid || {};
+    if (g.type === 'hex') throw new Error('Hex grids are not supported (square only). Send it with grid.hidden as a backdrop instead.');
+
+    const res = await BattleMap.bildVerkleinern(pnpBlob(p.image));
+    const skala = Number(p.width) > 0 ? res.breite / Number(p.width) : 1;
+    const zustand = karteLeererZustand();
+    zustand.bild = res.dataUrl;
+    zustand.raster = Object.assign({}, KARTE_RASTER_STANDARD, {
+        rasterGroesse: Math.max(5, (Number(g.size) || 50) * skala),
+        rasterVersatzX: (Number(g.offsetX) || 0) * skala,
+        rasterVersatzY: (Number(g.offsetY) || 0) * skala,
+        rasterSichtbar: !g.hidden,
+        einheit: Number(g.unitsPerCell) || 1,
+        einheitName: g.unit || 'm'
+    });
+
+    // Spieler-Figuren entstehen von selbst (karteSpielerFigurenAbgleichen), 'pc'-Marken brauchen wir nicht.
+    // Eine Figur, die für einen Charakter von PenNodePaper steht (t.character; die Charaktere folgen direkt nach der Karte),
+    // ist der NSC-Eintrag dieses Charakters: gleiche Id wie beim Setzen aus der NSC-Liste (karteNscPlatzieren), also kein
+    // Doppelgänger. Steht ein Charakter mehrfach auf der Karte, ist die erste Figur der NSC, die weiteren sind gleichnamige
+    // freie Figuren (eine Figur-Id gibt es nur einmal). Eine Figur ohne Charakter, deren Label wie ein NSC der Liste heißt,
+    // wird ebenfalls dieser NSC.
+    const nscs = typeof nscListe !== 'undefined' ? nscListe : [];
+    let verdeckt = 0;
+    (p.tokens || []).forEach((t, i) => {
+        if (t.kind === 'pc') return;
+        const nsc = t.character ? nscs.find(n => n.id === 'nsc_pnp_' + pnpSlug(t.character))
+            : t.label ? nscs.find(n => String(n.name).toLowerCase() === String(t.label).toLowerCase()) : null;
+        let id = t.character ? 'nsc:nsc_pnp_' + pnpSlug(t.character) : nsc ? 'nsc:' + nsc.id : null;
+        if (!id || zustand.figuren.some(f => f.id === id)) id = 'pnp:' + p.id + ':' + i;
+        const figur = {
+            id, name: t.label || (nsc && nsc.name) || (t.kind === 'enemy' ? 'Gegner' : 'NSC'),
+            x: Number(t.x) + 0.5, y: Number(t.y) + 0.5,    // Figuren sitzen auf Gitterpunkten, die Marke meint die Feldmitte
+            groesse: 1, besitzer: 'sl', farbe: t.kind === 'enemy' ? '#a3342b' : '#d4a24c'
+        };
+        if (t.kind === 'enemy') { figur.verdeckt = true; verdeckt++; }
+        zustand.figuren.push(figur);
+    });
+
+    const id = 'pnp_' + pnpSlug(p.id);
+    karteAktuelleZurueckschreiben();
+    const eintrag = { id, name: String(p.name || 'Szene').slice(0, 80), zustand };
+    const stelle = karten.findIndex(k => k.id === id);
+    if (stelle >= 0) karten[stelle] = eintrag; else karten.push(eintrag);
+
+    if (p.activate || id === karteAktivId) {
+        karteAktivId = null;     // erzwingt das Neuladen auch dann, wenn genau diese Karte schon offen war
+        karteWechseln(id);
+    } else {
+        karteSichern();
+        renderKarteGm();
+    }
+    // visibleToPlayers: nur wahr, wenn der SL die Karte freigegeben hat UND dies die aktive Karte ist
+    return { map: eintrag.name, tokens: zustand.figuren.length, hiddenEnemies: verdeckt, active: karteAktivId === id, visibleToPlayers: karteFreigabe && karteAktivId === id };
+}
+
 // --- Figur -> NSC-Liste ---------------------------------------------
 
 async function pnpFigur(c) {
@@ -422,6 +495,7 @@ function pnpVerbinden(url, token, automatisch) {
         url, token, profile: pnpProfil(),
         onPush: async (kind, payload) => {
             if (kind === 'handout') return pnpHandout(payload);
+            if (kind === 'scene') return pnpSzene(payload);
             if (kind === 'character') return pnpFigur(payload);
             if (kind === 'music_cue') return pnpMusik(payload);
             throw new Error(`Unsupported push "${kind}"`);
