@@ -158,6 +158,7 @@ function renderNscListeGm() {
                 ${n.ort ? `<span class="nsc-badge"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(n.ort)}</span>` : ''}
                 ${n.rolle ? `<span class="nsc-badge">${escapeHtml(n.rolle)}</span>` : ''}
                 ${n.haltung ? `<span class="status-badge ${ton}">${escapeHtml(n.haltung)}</span>` : ''}
+                <button class="x-mini" data-nscmap="${escapeHtml(n.id)}" title="Als Figur auf die Karte setzen (bleibt für die Spieler verborgen, bis du die Karte freigibst bzw. die Figur aufdeckst)"><i class="fa-solid fa-map-pin"></i></button>
                 <button class="x-mini" data-nscdup="${escapeHtml(n.id)}" title="Duplizieren (z.B. Wache 2, Wache 3, ...)"><i class="fa-solid fa-copy"></i></button>
                 <button class="x-mini x-mini-danger" data-nscdel="${escapeHtml(n.id)}" title="NSC entfernen"><i class="fa-solid fa-trash"></i></button>
             </div>
@@ -203,6 +204,10 @@ function renderNscListeGm() {
         renderNscListeGm();
     });
     box.querySelectorAll('[data-nscdel]').forEach(b => b.addEventListener('click', () => nscListeEntfernen(b.dataset.nscdel)));
+    box.querySelectorAll('[data-nscmap]').forEach(b => b.addEventListener('click', () => {
+        const nsc = nscListe.find(n => n.id === b.dataset.nscmap);
+        if (nsc && typeof karteNscPlatzieren === 'function') karteNscPlatzieren(nsc);
+    }));
     box.querySelectorAll('[data-nscdup]').forEach(b => b.addEventListener('click', () => nscListeDuplizieren(b.dataset.nscdup)));
     box.querySelectorAll('[data-nscnotiz]').forEach(t => {
         nscNotizAutoSize(t);

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo-herohq.svg" alt="HeroHQ Logo" width="140" />
+  <img src="assets/logo-herohq.png" alt="HeroHQ Logo" width="140" />
   <h1>🎲 HeroHQ 🎲</h1>
 
   <p>
@@ -55,6 +55,7 @@ Dank WebRTC (PeerJS) bietet das Tool einen echten Live-Modus. **Keine Registrier
   * **🎲 Zufallsgenerator:** SL-Vorbereitungswerkzeug im Dashboard - Namen, NSC, Orte, Gegenstände, Begegnungen und Gerüchte würfeln. Ergebnisse lassen sich per Klick in die SL-Notizen übernehmen oder (bei Gegenständen) direkt versteckt in die Tischmitte legen. Rein lokal beim SL, nichts geht automatisch an Spieler raus.
   * **🪄 SL-Eingriff:** Per Knopf in der Spielerkarte einem Charakter direkt Gegenstände, Waffen oder Geld geben und Status-Effekte setzen oder entfernen - auf Wunsch **verdeckt**, also ohne Logbuch-Eintrag oder Hinweis beim Spieler (für Flüche, heimlich zugesteckte Dinge, schleichende Vergiftungen). In deinem Live-Feed steht jeder Eingriff.
   * **🤯 Tischmitte (Loot-Ablage):** Beute (Gegenstände, Waffen, Geld) schon vor der Session anlegen und **versteckt** halten - nur du siehst sie. Findet die Gruppe die Truhe, ein Klick auf *Aufdecken* und die Beute erscheint bei allen Spielern; per *Geben an …* landet etwas direkt bei einem Charakter. Die Tischmitte bleibt in deinem Browser gespeichert.
+  * **🗺️ Karte:** Beliebig viele Karten mit Raster, Messwerkzeug (Linie, Kreis, Kegel, Strahl), Zeichnungen, **Pins** (optional mit Handout), Spieler- und NSC-Figuren sowie **Nebel des Krieges**. Die Karte ist standardmäßig nur bei dir sichtbar - erst der Schalter *Karte für Spieler freigeben* zeigt sie der Gruppe, ausschalten nimmt sie allen wieder weg. Spieler ziehen ihre eigene Figur frei oder als Vorschlag, den du bestätigst. Karten bleiben in deinem Browser gespeichert.
   * **🎛️ Integriertes Live-Soundboard:** 43 ausgewählte P&P Sounds & Ambient-Tracks (Epic Boss Musik, Taverne, Schießerei uvm.), die der Spielleiter über das Dashboard synchron bei allen Spielern auslösen kann. Inklusive globalem Lautstärke-Slider und weicher "Fade Out"-Funktion!
   * **💡 Pro-Tipp (Integriertes Sound-Mixing):** Da Sounds nicht automatisch stoppen, wenn ein neuer gestartet wird, fungiert das Tool als echter Soundmixer! Der Spielleiter kann zum Beispiel prasselnden Regen als Endlos-Kulisse laufen lassen und *währenddessen* jederzeit eine Schießerei, einen Schrei oder einen Glockenschlag abspielen, ohne dass die Atmosphäre unterbrochen wird.
 
@@ -72,6 +73,10 @@ Einfach den 4-stelligen Code des Spielleiters eingeben und auf "Beitreten" klick
 **⚡ Status mit Wirkung:** Ein Status-Effekt kann auf eine Fertigkeit wirken - eine Zahl im Wert-Feld wird dann bei jeder Probe darauf automatisch eingerechnet (Malus zieht ab, Bonus addiert).
 
 **👥 Gruppe:** Rechts zwischen Würfel-Tool und Logbuch siehst du deine Mitspieler - Name, Lebenspunkte und Status-Effekte, live. Mehr bewusst nicht; Skills, Inventar und Notizen der anderen bleiben privat.
+
+**📱 Handy-Ansicht:** Auf dem Smartphone zeigt der Bogen unten fünf Reiter (*Held, Proben, Inventar, LP/Würfel, Mehr*) statt einer endlos langen Seite. Im Reiter *Proben* würfelt ein Tipp auf die Skill-Zeile die Probe, das Ergebnis erscheint kurz oben im Bild; *Bearbeiten* blendet die Regler zum Verteilen der Punkte ein. Oben bleibt die Lebenspunkte-Leiste stehen.
+
+**🗺️ Karte:** Gibt der Spielleiter die Karte frei, erscheint auf deinem Bogen der Abschnitt *Karte*. Zieh deine Figur, miss Entfernungen und tippe auf Pins, um ihre Notiz zu lesen. Vorher siehst du davon nichts.
 
 **🤯 Tischmitte:** Deckt der Spielleiter Beute auf, klappt auf deinem Bogen die Tischmitte auf. *Nehmen* legt den Gegenstand in dein Inventar (Waffen zu den Waffen, Geld in die Kasse) - greifen zwei gleichzeitig zu, bekommt ihn nur einer. Umgekehrt kannst du eigene Sachen in die Mitte legen, um sie einem Mitspieler zu geben.
 

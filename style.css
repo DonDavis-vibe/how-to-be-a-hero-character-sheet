@@ -2792,3 +2792,186 @@ body { padding-bottom: 5rem; }
 .pnp-punkt { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.35rem; background: #6b7280; }
 .pnp-punkt[data-status="verbunden"] { background: #57F287; }
 .pnp-punkt[data-status="verbinde"] { background: #fee75c; }
+
+/* --- Karte (karten.js + battlemap.js) ------------------------------------ */
+/* Rahmen von SL-Panel und Spieler-Abschnitt wie bei der Tischmitte */
+.gm-karte { background: rgba(0,0,0,0.3); padding: 1.2rem 1.5rem; border-radius: 8px; border: 1px solid var(--panel-border); }
+.gm-karte .tm-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+.gm-karte .tm-title { font-weight: bold; color: #fbbf24; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+.karte-section { margin-top: 2rem; }
+.karte-section .cat-title { margin: 0; }
+.karte-section .category-icon-fa { color: var(--color-accent); font-size: 1.4rem; width: 36px; text-align: center; }
+/* Freigabe-Schalter: grün = die Gruppe sieht die Karte, gedämpft = nur der SL */
+.kt-freigabe { border-color: rgba(251,191,36,0.35); background: rgba(251,191,36,0.05); }
+.kt-freigabe-status { font-size: 0.82rem; display: inline-flex; align-items: center; gap: 0.4rem; }
+.kt-freigabe-aus { color: var(--text-secondary); }
+.kt-freigabe-an { color: #86efac; }
+.ir-hint { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 1rem 0; }
+.tool-btn-aktiv { border-color: var(--color-accent) !important; color: var(--text-primary) !important; }
+.sk-karten-werkzeuge { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
+.sk-karten-werkzeuge .tool-btn { font-size: 0.78rem; padding: 0.35rem 0.7rem; }
+.sk-canvas { width: 100%; height: 420px; display: block; border-radius: 8px; border: 1px solid var(--panel-border); background: var(--karte-blatt); touch-action: none; cursor: grab; }
+@media (max-width: 700px) { .sk-canvas { height: 300px; } }
+.sk-mal-art { max-width: 200px; }
+.sk-mal-farbe { width: 34px; height: 34px; padding: 2px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: transparent; cursor: pointer; }
+.sk-mal-deckkraft-label { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.6rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 7px; color: var(--text-secondary); font-size: 0.78rem; cursor: pointer; }
+.sk-mal-deckkraft-label input[type="range"] { width: 70px; accent-color: var(--color-accent); cursor: pointer; }
+.sk-mal-deckkraft-label span { min-width: 2.4em; text-align: right; font-family: var(--font-mono); }
+.sk-kt-gruppen { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.8rem 0; }
+.sk-kt-gruppe { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.6rem 0.8rem; }
+.sk-kt-gruppe-titel { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+.sk-kt-gruppe-titel i { color: var(--color-accent); }
+.sk-kt-gruppe-reihe { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.sk-kt-trenner { width: 1px; align-self: stretch; min-height: 1.6rem; background: rgba(255,255,255,0.12); margin: 0 0.1rem; }
+.karte-vollbild-overlay { position: fixed; inset: 0; z-index: 1200; background: rgba(3, 7, 11, 0.97); display: flex; flex-direction: column; padding: 1rem; }
+.karte-vollbild-werkzeuge { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.7rem; flex-shrink: 0; }
+.karte-vollbild-werkzeuge .sk-kt-trenner { min-height: 1.8rem; }
+.karte-vollbild-schliessen { margin-left: auto; }
+.karte-vollbild-leinwand-host { flex: 1; min-height: 0; display: flex; }
+.karte-vollbild-leinwand-host .sk-canvas { flex: 1; height: auto; }
+.sk-raster-feld { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--text-secondary); }
+.sk-marker-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+.sk-vorschlaege { background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.3); border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.sk-vorschlaege-titel { font-size: 0.82rem; font-weight: 700; color: #f0b429; }
+.sk-vorschlag-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
+.sk-vorschlag-zeile span { flex: 1 1 160px; }
+.sk-input { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 0.45rem 0.6rem; color: white; outline: none; font-family: inherit; font-size: 0.85rem; }
+.sk-input:focus { border-color: var(--color-accent); }
+.sk-input option { background: #0f172a; color: #f8fafc; }
+.sk-input-schmal { max-width: 90px; }
+.sk-einheiten-liste { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1rem; }
+.sk-farbpunkt { width: 10px; height: 10px; border-radius: 50%; background: var(--sk-farbe, var(--color-accent)); flex-shrink: 0; }
+.sk-badge-x { background: none; border: none; color: inherit; cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; opacity: 0.7; }
+.sk-badge-x:hover { opacity: 1; }
+.sk-badge-groesse { background: none; border: 1px solid currentColor; color: inherit; cursor: pointer; font-size: 0.7rem; line-height: 1; width: 15px; height: 15px; border-radius: 50%; padding: 0; opacity: 0.7; display: inline-flex; align-items: center; justify-content: center; }
+.sk-badge-groesse:hover { opacity: 1; }
+.sk-mini-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: var(--text-secondary); font-size: 0.75rem; padding: 0.3rem 0.6rem; cursor: pointer; white-space: nowrap; }
+.sk-mini-btn:hover { color: var(--text-primary); border-color: var(--color-accent); }
+.kt-figur { padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.kt-pins { margin: 0.6rem 0; }
+.kt-pin-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; padding: 0.4rem 0; border-top: 1px dashed var(--glass-border); }
+.kt-pin-icon { width: 4rem; }
+.kt-pin-label { flex: 1 1 130px; min-width: 100px; }
+.kt-pin-text { flex: 2 1 200px; min-width: 140px; }
+.kt-pin-handout { flex: 1 1 140px; max-width: 220px; }
+.kt-pin-popover { position: fixed; z-index: 1300; width: min(300px, calc(100vw - 16px)); background: var(--glass-bg, rgba(7,18,22,0.92)); backdrop-filter: blur(10px); border: 1px solid color-mix(in srgb, var(--color-accent, #45d694) 45%, transparent); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.kt-pin-popover-kopf { display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
+.kt-pin-popover-icon { font-size: 1.5rem; }
+.kt-pin-popover-text { white-space: pre-wrap; font-size: 0.9rem; color: var(--text-secondary); }
+.kt-auswahl-leiste { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.4rem 0; }
+.kt-figur-gewaehlt { box-shadow: inset 3px 0 0 #22d3ee; background: rgba(34,211,238,0.07); }
+.kt-pins-kopf { cursor: pointer; font-weight: 700; color: #fbbf24; display: flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0; }
+
+/* ===== Handy-Reiter (mobiletabs.js) ==========================================
+   Bis 768px zeigt die Seite nur den gewählten Reiter (Held / Proben / Inventar /
+   LP+Würfel / Mehr) statt eines 6000 px hohen Stapels. Am Desktop bleibt alles
+   wie vorher - die Reiterleiste und der Wurf-Hinweis sind dort gar nicht da. */
+.mobile-tabs, .mobile-wurf-toast, .mt-proben-leiste { display: none; }
+@media (max-width: 768px) {
+    body.mt-aktiv .mobile-nav { display: none !important; }
+    body.mt-aktiv .header-banner { display: none; }
+    body.mt-aktiv { padding-bottom: calc(4.8rem + env(safe-area-inset-bottom, 0px)); }
+    /* Ränder schmaler: vorher blieben von 375 px nur ~227 px für den Inhalt übrig */
+    body.mt-aktiv { padding-left: 0.5rem; padding-right: 0.5rem; }
+    /* minmax(0, ...): eine 1fr-Spalte wächst sonst auf die Mindestbreite ihres breitesten Inhalts (z.B. Inventarzeilen) */
+    body.mt-aktiv .app-container { margin-top: 0.4rem; padding: 0; gap: 0.8rem; grid-template-columns: minmax(0, 1fr); }
+    body.mt-aktiv .app-container .glass-panel,
+    body.mt-aktiv .app-container .gruppe-panel,
+    body.mt-aktiv .app-container .teamwuerfel-section { padding: 0.9rem 0.8rem; }
+
+    body.mt-aktiv[data-mtab="held"] [data-mtab]:not([data-mtab="held"]),
+    body.mt-aktiv[data-mtab="proben"] [data-mtab]:not([data-mtab="proben"]),
+    body.mt-aktiv[data-mtab="inventar"] [data-mtab]:not([data-mtab="inventar"]),
+    body.mt-aktiv[data-mtab="wuerfel"] [data-mtab]:not([data-mtab="wuerfel"]),
+    body.mt-aktiv[data-mtab="mehr"] [data-mtab]:not([data-mtab="mehr"]),
+    body.mt-aktiv .mt-leer { display: none !important; }
+
+    /* "App Info"-Knopf: schwebte über dem (am Handy ausgeblendeten) Banner, liegt jetzt im Reiter "Mehr" */
+    body.mt-aktiv > button[data-mtab] { position: static !important; display: block; margin: 0.6rem auto 0 !important; }
+
+    /* Reiterleiste */
+    body.mt-aktiv .mobile-tabs {
+        display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+        background: rgba(6, 13, 18, 0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        border-top: 1px solid var(--glass-border);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .mobile-tab {
+        flex: 1 1 0; min-width: 0; position: relative;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
+        min-height: 3.6rem; padding: 0.4rem 0.2rem;
+        background: none; border: 0; border-top: 2px solid transparent;
+        color: var(--text-secondary); font-family: var(--font-main); font-size: 0.66rem; font-weight: 600;
+        cursor: pointer; -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-tab i { font-size: 1.25rem; }
+    .mobile-tab span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .mobile-tab.mt-aktiv { color: var(--color-accent); border-top-color: var(--color-accent); background: rgba(87, 194, 240, 0.08); }
+    .mobile-tab.mt-punkt::after {
+        content: ''; position: absolute; top: 0.45rem; left: calc(50% + 0.7rem);
+        width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--color-dmg);
+        box-shadow: 0 0 6px var(--color-dmg);
+    }
+
+    /* Wurf-Hinweis unter der HP-Leiste */
+    body.mt-aktiv .mobile-wurf-toast {
+        display: block; position: fixed; left: 0.6rem; right: 0.6rem; z-index: 950;
+        top: calc(2.9rem + env(safe-area-inset-top, 0px));
+        background: rgba(6, 13, 18, 0.97); border: 1px solid var(--color-accent); border-radius: 12px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6); padding: 0.6rem 0.9rem;
+        transform: translateY(-160%); opacity: 0; pointer-events: none;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    body.mt-aktiv .mobile-wurf-toast.mt-zeigen { transform: none; opacity: 1; pointer-events: auto; }
+    .mwt-titel { font-size: 0.78rem; color: var(--text-secondary); }
+    .mwt-wert { font-size: 1.05rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Proben: kompakte Liste, Antippen würfelt */
+    body.mt-aktiv .mt-proben-leiste {
+        display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.8rem;
+    }
+    .mt-proben-hinweis { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; }
+    .mt-punkte { color: var(--text-primary); font-family: var(--font-mono); }
+    .mt-punkte.mt-ueber { color: var(--color-dmg); }
+    .mt-bearbeiten-btn { flex-shrink: 0; min-height: 2.4rem; }
+    .mt-bearbeiten-btn.mt-an { border-color: var(--color-accent); color: var(--color-accent); }
+    body.mt-aktiv .attributes-grid { gap: 1rem; margin-bottom: 0; }
+    body.mt-aktiv .attribute-card { padding: 0.9rem; }
+    body.mt-aktiv .skills-list { gap: 0.45rem; }
+
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .skill-item {
+        flex-direction: row; align-items: center; gap: 0.6rem;
+        min-height: 3.1rem; padding: 0.3rem 0.4rem 0.3rem 0.8rem; cursor: pointer;
+        -webkit-tap-highlight-color: rgba(87, 194, 240, 0.2);
+    }
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .skill-item:active { background: rgba(87, 194, 240, 0.14); }
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .skill-item .skill-name-input {
+        flex: 1; width: auto; min-width: 0; padding: 0; background: none; border: 0;
+        font-size: 1rem; pointer-events: none; -webkit-user-select: none; user-select: none;
+    }
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .skill-item-controls { display: contents; }
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .skill-item-controls > :not(.skill-total) { display: none !important; }
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .skill-total {
+        min-width: 3.6rem; text-align: center; font-size: 1.2rem; padding: 0.45rem 0.7rem;
+        background: rgba(87, 194, 240, 0.12); border: 1px solid rgba(87, 194, 240, 0.35); border-radius: 10px;
+    }
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .add-skill-btn,
+    body.mt-aktiv #attributes-grid:not(.mt-bearbeiten) .add-skill-select { display: none; }
+
+    /* Eingabezeilen (Item/Waffe hinzufügen) dürfen schrumpfen statt über den Rand zu laufen */
+    body.mt-aktiv .inventory-section input, body.mt-aktiv .weapons-section input,
+    body.mt-aktiv .inventory-section select, body.mt-aktiv .weapons-section select { min-width: 0; }
+
+    /* Mehr: Werkzeugleiste als saubere Knopf-Tabelle statt unregelmäßig umbrechender Zeilen */
+    body.mt-aktiv .toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; align-items: stretch; }
+    body.mt-aktiv .toolbar > * { margin: 0 !important; min-width: 0; }
+    body.mt-aktiv .toolbar > .tool-btn { justify-content: center; min-height: 2.9rem; width: 100%; }
+    body.mt-aktiv .toolbar > .points-counter,
+    body.mt-aktiv .toolbar > .player-volume-box,
+    body.mt-aktiv .toolbar > .theme-wrapper,
+    body.mt-aktiv .toolbar > .save-indicator { grid-column: 1 / -1; }
+    body.mt-aktiv .toolbar > .help-icon { display: none; }
+
+    /* Bearbeiten: größere Tippflächen für die Knöpfe */
+    body.mt-aktiv #attributes-grid.mt-bearbeiten .skill-item-controls button { min-height: 2.2rem; min-width: 2.2rem; }
+}

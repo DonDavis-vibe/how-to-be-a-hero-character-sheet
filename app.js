@@ -499,6 +499,8 @@ function calculatePoints() {
             containerEl.classList.remove('over-limit');
         }
     }
+    // Handy-Reiter (mobiletabs.js): Punktestand auch in der Proben-Leiste zeigen
+    if (typeof mobiletabsPunkteAktualisieren === 'function') mobiletabsPunkteAktualisieren(totalInvested, max);
 }
 
 function updateMaxPoints() {
@@ -925,6 +927,7 @@ function addToLog(dice, result, timestamp) {
     });
 
     logList.prepend(li);
+    if (typeof mobiletabsWurfToast === 'function') mobiletabsWurfToast(dice, result);
     
     // Keep log max 10 entries
     if (logList.children.length > 10) {

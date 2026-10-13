@@ -20,6 +20,7 @@ const GMJUMP_LABELS = {
     netzwerk: { icon: 'fa-diagram-project', label: 'Netz' },
     quests: { icon: 'fa-scroll', label: 'Quests' },
     tischmitte: { icon: 'fa-hand-holding', label: 'Tischmitte' },
+    karte: { icon: 'fa-map', label: 'Karte' },
     notizen: { icon: 'fa-book-journal-whills', label: 'Notizen' }
 };
 

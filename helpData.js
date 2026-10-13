@@ -16,7 +16,7 @@ const helpData = {
     gmLayout: "<h3>Panels umsortieren</h3><p>Jedes Panel in der Hauptspalte (Spielerkarten, Zufallsgenerator, NSC-Liste, Beziehungsnetz, Quest-Logbuch, Tischmitte, SL-Notizen) hat oben einen kleinen Ziehgriff <i class='fa-solid fa-grip-lines'></i>. Daran gepackt, kannst du das Panel per Drag &amp; Drop an eine beliebige Position ziehen.</p><p>Die Reihenfolge bleibt in diesem Browser gespeichert, auch über einen Reload hinweg. Über <b>Reihenfolge zurücksetzen</b> geht's zurück zur Standard-Anordnung.</p>",
 
     gmSitzung: "<h3>SL-Sitzung sichern/laden</h3>" +
-               "<p>Alles, was du als Spielleiter aufbaust - NSC-Liste, Beziehungsnetz, Tischmitte, Quest-Log - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
+               "<p>Alles, was du als Spielleiter aufbaust - NSC-Liste, Beziehungsnetz, Tischmitte, Karten, Quest-Log - speichert sich automatisch in diesem Browser. Ihr könnt also jederzeit an einem anderen Abend nahtlos weiterspielen, solange du denselben Browser auf demselben Gerät nutzt - dafür musst du nichts klicken.</p>" +
                "<p><b>Sichern</b> lädt trotzdem eine Datei herunter, die genau diesen Stand einfriert - praktisch als Backup vor größeren Änderungen, oder um auf einem anderen Gerät/Browser weiterzumachen.</p>" +
                "<p><b>Laden</b> ersetzt die aktuellen SL-Daten in diesem Browser komplett durch den Inhalt der Datei (mit Rückfrage) und lädt die Seite danach neu.</p>" +
                "<p><i>Das ist nicht dasselbe wie \"Speichern (JSON)\" oben - das sichert nur den Charakterbogen eines einzelnen Spielers. Für Spieler-Notizen gibt es außerdem ein eigenes Archiv (Notizen-Bereich).</i></p>",
@@ -85,6 +85,14 @@ const helpData = {
     spielerlog: "<h3>Mein Logbuch</h3>" +
                 "<p>Dein eigenes Tagebuch, zusätzlich zum freien <b>Notizen</b>-Feld: pro Eintrag hältst du fest, welchen <b>NSC</b> du wann getroffen hast und was er dir erzählt bzw. welche Hinweise er gegeben hat. NSC und Zeitpunkt sind optional - manchmal reicht auch einfach nur der Text.</p>" +
                 "<p>Die Einträge gehören ganz dir: sie bleiben in deinem Charakterbogen, gehen nie an den Spielleiter oder andere Spieler raus, und wandern beim <b>Speichern (JSON)</b> mit deinem Charakter mit.</p>",
+
+    karte: "<h3>Karte</h3>" +
+           "<p><b>Für den Spielleiter:</b> Lege beliebig viele Karten an (Bild laden, Raster an das Bild anpassen) und stelle Figuren, Markierungen, Zeichnungen und <b>Pins</b> darauf. Spieler-Figuren entstehen automatisch, sobald jemand beitritt; NSCs setzt du per <i class='fa-solid fa-map-pin'></i> in der NSC-Liste auf die Karte. Pins können ein Handout tragen, das du den Spielern per Knopf zeigst.</p>" +
+           "<p><b>Sichtbarkeit:</b> Die Karte ist standardmäßig nur bei dir sichtbar - bereite sie in Ruhe vor. Erst der Schalter <b>Karte für Spieler freigeben</b> schickt sie an die Gruppe; ausschalten nimmt sie allen wieder weg. Der Schalter startet in jeder neuen Sitzung ausgeschaltet.</p>" +
+           "<p><b>Nebel des Krieges:</b> Aktiviere ihn, decke Bereiche auf (nur du siehst den Entwurf) und gib sie mit <i>Für Spieler freigeben</i> frei. Versteckte Figuren und Pins sehen die Spieler nie.</p>" +
+           "<p><b>Bewegung:</b> Spieler ziehen nur ihre eigene Figur - entweder frei oder (Einstellung <i>Spieler-Bewegung</i>) als Vorschlag, den du bestätigst. <i>Messen</i> zeigt Strecken, Kreise, Kegel und Strahlen; das Vollbild nutzt den ganzen Bildschirm.</p>" +
+           "<p><b>Für Spieler:</b> Der Abschnitt <i>Karte</i> taucht erst auf, wenn der Spielleiter sie freigibt. Zieh deine Figur, miss Entfernungen und klick auf Pins, um ihre Notiz zu lesen. Hängt die Karte, hilft <i>Aktualisieren</i>.</p>" +
+           "<p><i>Karten bleiben im Browser des Spielleiters gespeichert und sind Teil von <b>SL-Sitzung sichern</b>. Große Bilder werden vor dem Speichern verkleinert.</i></p>",
 
     nscliste: "<h3>NSC-Liste</h3>" +
                "<p>Dein Gedächtnis für Nichtspielercharaktere, die im Laufe der Runde auftauchen - bleibt komplett bei dir, geht nie an Spieler raus.</p>" +

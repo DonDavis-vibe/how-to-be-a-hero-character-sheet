@@ -24,6 +24,7 @@ const MOBILENAV_ZIELE = [
     { id: 'weapons-section', icon: 'fa-khanda', label: 'Waffen', immer: true },
     { id: 'tischmitte-section', icon: 'fa-box-archive', label: 'Tischmitte' },
     { id: 'quest-section', icon: 'fa-scroll', label: 'Quests' },
+    { id: 'karte-section', icon: 'fa-map', label: 'Karte' },
     { id: 'spielerlog-section', icon: 'fa-journal-whills', label: 'Mein Log' },
     { id: 'spielernetz-section', icon: 'fa-diagram-project', label: 'Mein Netz' },
     { id: 'notes-panel', icon: 'fa-pen', label: 'Notizen', immer: true },
@@ -96,6 +97,8 @@ function mobilenavSichtfeldBeobachten(elemente) {
 function mobilenavSpringenZu(id) {
     const ziel = document.getElementById(id);
     if (!ziel) return;
+    // Handy-Reiter (mobiletabs.js): erst zum Reiter wechseln, in dem das Panel liegt
+    if (typeof mobiletabsZeigeFuer === 'function') mobiletabsZeigeFuer(ziel);
     ziel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     ziel.classList.add('mobile-nav-highlight');
     setTimeout(() => ziel.classList.remove('mobile-nav-highlight'), 1200);

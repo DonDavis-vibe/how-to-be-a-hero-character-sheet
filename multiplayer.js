@@ -312,6 +312,7 @@ function hostMultiplayerSession(preferredCodeArg) {
             delete connectedPlayersData[conn.peer];
             renderGmDashboard();
             if (typeof renderTischmitteGm === 'function') renderTischmitteGm();
+            if (typeof karteSpielerEntfernen === 'function') karteSpielerEntfernen(conn.peer);
             if (typeof gruppeThumbVergessen === 'function') gruppeThumbVergessen(conn.peer);
             if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(conn.peer);
             if (typeof fluesternAktualisieren === 'function') fluesternAktualisieren();
@@ -323,6 +324,7 @@ function hostMultiplayerSession(preferredCodeArg) {
 
         const begruessen = () => {
             if (typeof tischmitteAnVerbindung === 'function') tischmitteAnVerbindung(conn);
+            if (typeof karteAnVerbindung === 'function') karteAnVerbindung(conn);
             if (typeof gruppeAnVerbindung === 'function') gruppeAnVerbindung(conn);
             if (typeof questeAnVerbindung === 'function') questeAnVerbindung(conn);
         };
@@ -417,6 +419,7 @@ function enterGmMode(roomCode) {
     document.querySelector('.app-container').style.display = 'none';
     document.getElementById('gm-dashboard').style.display = 'flex';
     document.getElementById('gm-room-code').innerText = roomCode;
+    if (typeof karteSitzungStart === 'function') karteSitzungStart();
     document.getElementById('gm-live-log').innerHTML = '';
     const gridCol = document.getElementById('gm-players-grid');
     if (gridCol) gridCol.innerHTML = '';
@@ -451,6 +454,8 @@ function exitGmMode() {
 function handleIncomingData(peerId, payload) {
     // Tischmitte (tischmitte.js): Nehmen / Ablegen
     if (typeof tischmitteAnfrageVerarbeiten === 'function' && tischmitteAnfrageVerarbeiten(peerId, payload)) return;
+    // Karte (karten.js): Zugvorschlag für die eigene Figur, Aktualisieren
+    if (typeof karteAnfrageVerarbeiten === 'function' && karteAnfrageVerarbeiten(peerId, payload)) return;
     // Anflüstern (fluestern.js): Spieler bestätigt, die Nachricht gelesen zu haben
     if (typeof fluesternAnfrageVerarbeiten === 'function' && fluesternAnfrageVerarbeiten(peerId, payload)) return;
     if (payload.type === 'state') {
@@ -458,6 +463,9 @@ function handleIncomingData(peerId, payload) {
         connectedPlayersData[peerId] = payload.data;
         renderGmDashboard();
         if (neuerSpieler && typeof renderTischmitteGm === 'function') renderTischmitteGm();
+        // Kartenfigur: neu anlegen bzw. Name/Farbe live nachziehen (karten.js)
+        if (neuerSpieler && typeof renderKarteGm === 'function') renderKarteGm();
+        else if (typeof karteSpielerFigurenAbgleichen === 'function') karteSpielerFigurenAbgleichen();
         if (typeof gruppeVerteilen === 'function') gruppeVerteilen();
         if (typeof eingriffAktualisieren === 'function') eingriffAktualisieren(peerId);
         if (neuerSpieler && typeof fluesternAktualisieren === 'function') fluesternAktualisieren();
@@ -1010,6 +1018,7 @@ function joinMultiplayerSession(codeArg) {
             // Send initial state
             sendMultiplayerState();
             if (typeof tischmitteBeitritt === 'function') tischmitteBeitritt();
+            if (typeof karteSpielerBeitritt === 'function') karteSpielerBeitritt();
             if (typeof renderGruppe === 'function') renderGruppe();
             if (typeof teamwuerfelBeitritt === 'function') teamwuerfelBeitritt();
             if (typeof questeBeitritt === 'function') questeBeitritt();
@@ -1019,6 +1028,7 @@ function joinMultiplayerSession(codeArg) {
             hostConnection = null;
             clearMultiplayerSession();
             if (typeof tischmitteGetrennt === 'function') tischmitteGetrennt();
+            if (typeof karteSpielerGetrennt === 'function') karteSpielerGetrennt();
             if (typeof gruppeGetrennt === 'function') gruppeGetrennt();
             if (typeof teamwuerfelGetrennt === 'function') teamwuerfelGetrennt();
             if (typeof questeGetrennt === 'function') questeGetrennt();
@@ -1049,6 +1059,8 @@ function joinMultiplayerSession(codeArg) {
                 // erledigt in handouts.js
             } else if (payload && typeof tischmitteNachrichtVerarbeiten === 'function' && tischmitteNachrichtVerarbeiten(payload)) {
                 // erledigt in tischmitte.js
+            } else if (payload && typeof karteNachrichtVerarbeiten === 'function' && karteNachrichtVerarbeiten(payload)) {
+                // erledigt in karten.js
             } else if (payload && typeof gruppeNachrichtVerarbeiten === 'function' && gruppeNachrichtVerarbeiten(payload)) {
                 // erledigt in gruppe.js
             } else if (payload && typeof teamwuerfelNachrichtVerarbeiten === 'function' && teamwuerfelNachrichtVerarbeiten(payload)) {
@@ -1258,6 +1270,7 @@ function importGmNotes(event) {
 const GM_SITZUNG_KEYS = [
     'htbah_gm_nscliste', 'htbah_gm_nscliste_offen', 'htbah_gm_nscliste_sortierung',
     'htbah_gm_tischmitte', 'htbah_gm_tischmitte_offen',
+    'htbah_gm_karten', 'htbah_gm_karten_offen',
     'htbah_gm_netzwerk',
     'htbah_gm_queste', 'htbah_gm_queste_offen',
     'htbah_gm_panel_reihenfolge', 'htbah_gm_randomizer_offen'
@@ -1298,7 +1311,7 @@ function importGmSession(event) {
                 alert('Das ist keine gültige HTBAH-SL-Sitzungsdatei.');
                 return;
             }
-            if (!confirm('Aktuelle SL-Daten in diesem Browser (NSC-Liste, Beziehungsnetz, Tischmitte, Quests) werden durch die Datei ersetzt. Fortfahren?')) return;
+            if (!confirm('Aktuelle SL-Daten in diesem Browser (NSC-Liste, Beziehungsnetz, Tischmitte, Karten, Quests) werden durch die Datei ersetzt. Fortfahren?')) return;
             GM_SITZUNG_KEYS.forEach(k => {
                 if (Object.prototype.hasOwnProperty.call(bundle.daten, k)) sicherSpeichern(k, bundle.daten[k]);
                 else localStorage.removeItem(k);

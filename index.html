@@ -11,7 +11,8 @@
     <meta name="author" content="DonDavis">
     <meta name="theme-color" content="#57c2f0">
     <link rel="canonical" href="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
-    <link rel="icon" type="image/svg+xml" href="assets/logo-herohq.svg">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-herohq-64.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
     <!-- Open Graph / Facebook / Discord -->
     <meta property="og:type" content="website">
@@ -20,14 +21,18 @@
     <meta property="og:url" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
     <meta property="og:title" content="HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero">
     <meta property="og:description" content="HeroHQ ist der kostenlose Online-Charakterbogen & GM-Dashboard für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
-    <meta property="og:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/preview.png">
+    <meta property="og:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/og-herohq.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="HeroHQ - goldenes Wappen mit HQ-Monogramm vor einem Spieltisch mit Charakterbogen, Würfeln und Kerze">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/">
     <meta property="twitter:title" content="HeroHQ - Charakterbogen & GM-Dashboard für How to be a Hero">
     <meta property="twitter:description" content="HeroHQ ist der kostenlose Online-Charakterbogen & GM-Dashboard für das Pen & Paper 'How to be a Hero' (RBTV). Mit Live-Multiplayer, integriertem Soundboard und 1-Klick-Würfeln.">
-    <meta property="twitter:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/preview.png">
+    <meta property="twitter:image" content="https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/assets/og-herohq.jpg">
 
     <!-- Structured Data für Google (Rich Results) -->
     <script type="application/ld+json">
@@ -87,7 +92,7 @@
     <div class="header-banner" style="max-width: 1200px; height: 220px; margin: 0.5rem auto 1.5rem auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid var(--glass-border, rgba(255,255,255,0.2)); background: rgba(0,0,0,0.5); position: relative;">
         <img id="header-banner-img" src="assets/header-herohq.jpg" alt="HeroHQ Banner" style="width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 25%;">
         <div style="position: absolute; left: 18px; bottom: 16px; display: flex; align-items: center; gap: 12px;">
-            <img src="assets/logo-herohq-drip.svg" alt="" aria-hidden="true" style="width: 50px; height: auto; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));">
+            <img src="assets/logo-herohq.png" alt="" aria-hidden="true" style="width: 50px; height: auto; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));">
             <div>
                 <div style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 2rem; line-height: 1.15; color: #fff; letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 22px rgba(0,0,0,0.6);">HeroHQ</div>
                 <div style="font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 0.8rem; color: rgba(255,255,255,0.9); text-shadow: 0 1px 6px rgba(0,0,0,0.95);">Charakterbogen &amp; Spielleiter-Dashboard für How to be a Hero</div>
@@ -389,6 +394,10 @@
                  geteilt hat - bleibt bis dahin komplett unsichtbar (quests.js) -->
             <div id="quest-section" class="quest-section" style="display: none;"></div>
 
+            <!-- Karte: erscheint erst, wenn der SL sie für die Gruppe freigibt - bis dahin
+                 komplett unsichtbar, es geht auch nichts an den Browser (karten.js) -->
+            <div id="karte-section" class="karte-section" style="display: none;"></div>
+
             <!-- Mein Logbuch: eigenes Tagebuch des Spielers (getroffene NSCs, Hinweise) -
                  rein lokal, geht nie an den SL raus (spielerlog.js) -->
             <div id="spielerlog-section" class="spielerlog-section" style="display: none;"></div>
@@ -511,6 +520,10 @@
 
     </div>
 
+    <!-- Karten-Vollbild: die Leinwand (SL oder Spieler) wandert per appendChild
+         hier rein und beim Schließen wieder zurück (karten.js) -->
+    <div id="karte-vollbild-overlay" class="karte-vollbild-overlay" style="display:none"></div>
+
     <!-- Celebration Effect Canvas -->
     <canvas id="confetti-canvas"></canvas>
 
@@ -532,9 +545,12 @@
     <script src="spielernetz.js"></script>
     <script src="fluestern.js"></script>
     <script src="handouts.js"></script>
+    <script src="battlemap.js"></script>
+    <script src="karten.js"></script>
     <script src="pnpbridge.js"></script>
     <script src="mobilenav.js"></script>
     <script src="mobilestatus.js"></script>
+    <script src="mobiletabs.js"></script>
     <script src="eingriff.js"></script>
     <script src="randomizer.js"></script>
     <script src="gmlayout.js"></script>
@@ -950,6 +966,13 @@
                     <div id="gm-tischmitte" class="gm-tischmitte"></div>
                 </div>
 
+                <!-- Karte: Kartenbibliothek mit Figuren, Nebel und Pins; für Spieler erst
+                     nach Freigabe sichtbar (karten.js + battlemap.js) -->
+                <div class="gm-panel-slot" data-panel="karte">
+                    <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
+                    <div id="gm-karte" class="gm-karte"></div>
+                </div>
+
                 <!-- General GM Notes -->
                 <div class="gm-panel-slot" data-panel="notizen">
                     <div class="gm-panel-griff" title="Ziehen zum Umsortieren"><i class="fa-solid fa-grip-lines"></i></div>
@@ -966,7 +989,7 @@
     <footer class="site-footer">
         <div class="footer-grid">
             <div class="footer-col footer-col-brand">
-                <div class="footer-brand"><img src="assets/logo-herohq.svg" alt="" aria-hidden="true" class="footer-brand-icon"> HeroHQ</div>
+                <div class="footer-brand"><img src="assets/logo-herohq.png" alt="" aria-hidden="true" class="footer-brand-icon"> HeroHQ</div>
                 <p class="footer-tagline">Ein Fan-Werkzeug für "How to be a Hero" – Charakterbogen, Spielleiter-Dashboard und Echtzeit-Multiplayer im Browser. Keine Anmeldung, alles bleibt in deinem Browser.</p>
                 <p class="footer-meta">Code: MIT · Regeln: CC BY-NC-SA 4.0</p>
             </div>
