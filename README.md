@@ -25,7 +25,7 @@ Dieses Projekt ist aus reiner Leidenschaft für das *How to be a Hero* Regelwerk
 **Das absolute Highlight:** Ein integriertes, serverloses **Multiplayer-System**. Spieler und Spielleiter (SL/GM) können sich in Sekundenschnelle live verbinden – komplett kostenlos, ohne Accounts und ohne Server-Setup!
 
 ## 🚀 Live Demo & Nutzung
-🔗 **[Hier geht's direkt zur App (Live-Demo)](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/)**
+🔗 **[Hier geht's direkt zur App (Live-Demo)](https://herohq.redneck-design.de)**
 
 **Kurzanleitung:**
 1. Öffne den Link in deinem Browser.
@@ -158,6 +158,3 @@ Sie werden hier ausschließlich im Rahmen eines kostenlosen Community-Projekts f
 ## 📜 Lizenzen
 - **Code:** Der Quellcode dieses Tools steht unter der [MIT License](LICENSE).
 - **Regelwerk:** Das P&P Regelsystem "How to be a Hero" der *Rocket Beans* Community steht unter der **CC BY-NC-SA 4.0** Lizenz. (Siehe [howtobeahero.de](https://howtobeahero.de/))
-
-## 📇 Impressum & Datenschutz
-[Impressum](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/impressum.html) · [Datenschutzerklärung](https://dondavis-vibe.github.io/how-to-be-a-hero-character-sheet/datenschutz.html)
